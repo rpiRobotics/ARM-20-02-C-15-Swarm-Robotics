@@ -1,0 +1,34 @@
+number_of_robots: 8
+# command_topics: 
+#   - "/spacenav/twist/repub"
+#   - "/spacenav/twist/repub2"
+#   - "/spacenav/twist/repub3"
+command_topics:
+  - "desired_swarm_vel"
+  - "just_swarm_vel"
+  - "just_robot_vel_0"
+  - "just_robot_vel_1"
+  - "just_robot_vel_2"
+  - "/spacenav/twist/repub2"
+  - "/spacenav/twist/repub3"
+  - "cmd_vel"
+robot_node_names:
+  - []
+  - []
+  - []
+  - []
+  - []
+  - ["/uwb_front_oarbot_silver","/uwb_back_oarbot_silver","/sensor_fusion_oarbot_silver","/oarbot_silver_ctrl"]
+  - ["/uwb_front_oarbot_blue","/uwb_back_oarbot_blue","/sensor_fusion_oarbot_blue","/oarbot_blue_ctrl"]
+  - []
+robot_type_information:
+  - "swarm"
+  - "swarm_f"
+  - "rob_0"
+  - "rob_1"
+  - "rob_2"
+  - "OB1_S"
+  - "OB_B"
+  - "RB"
+
+input_command_topic: 'spacenav/twist'

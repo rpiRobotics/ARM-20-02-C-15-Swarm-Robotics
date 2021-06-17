@@ -1,0 +1,14 @@
+velocity_feedback_type: "Twist"
+velocity_feedback_topic_name: "oarbot_blue/vel_feedback"
+uwb_front_topic_name: "oarbot_blue/uwb_serial_front"
+uwb_back_topic_name: "oarbot_blue/uwb_serial_back"
+
+tf_frame_name_uwb: "oarbot_blue_uwb"
+tf_frame_name_fused: "oarbot_blue_fusion"
+position_feedback_topic_name: "oarbot_blue/position"
+
+tag_loc_front_x: 0.3060
+tag_loc_front_y: -0.1976
+
+tag_loc_back_x: 0.0391
+tag_loc_back_y: 0.2110

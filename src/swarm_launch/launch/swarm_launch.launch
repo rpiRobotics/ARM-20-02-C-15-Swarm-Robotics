@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<launch>
+   <!-- <include file="$(find ridgeback_description)/launch/description.launch"/> -->
+   
+  <rosparam command="load" file="$(find swarm_launch)/config/gui_params.yaml"/>
+  <node name="swarm_gui" pkg="swarm_gui" type="swarm_gui_user.py"/>
+     
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find swarm_launch)/launch/config.rviz"/>
+
+  <include file="$(find spacenav_node)/launch/classic.launch"/>
+
+  <node name="swarm_control_node" pkg="swarm_control" type="swarm_control.py">
+    <rosparam file="$(find swarm_launch)/config/swarm_control.yaml"/>
+  </node>
+
+  <!-- <group>
+	  <machine name="Husky1" address="192.168.1.15" env-loader="/home/kinect/catkin_ws/devel_isolated/env.sh" user="kinect" password="1234"/>
+	  <arg name="enable_ekf" default="$(optenv ENABLE_EKF true)"/>
+	  <arg name="config_extras"
+       default="$(eval optenv('HUSKY_CONFIG_EXTRAS', find('husky_control') + '/config/empty.yaml'))"/>
+	  
+	  <arg name="port" default="$(optenv HUSKY_PORT /dev/ttyUSB0)" />
+	  <node machine="Husky1" pkg="husky_base" type="husky_node" name="husky_node">
+        <rosparam subst_value="true">
+            port: /dev/ttyUSB0
+
+            control_frequency: 10.0
+            diagnostic_frequency: 1.0
+
+            max_acceleration: 3.0
+            max_speed: 1.0
+            wheel_diameter: 0.3302
+            polling_timeout: 10.0
+        </rosparam>
+    </node>
+	<node machine="Husky1" pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
+        <rosparam command="load" file="$(find husky_base)/config/diagnostics.yaml"/>
+    </node>
+	  <node machine="Husky1" name="base_controller_spawner" pkg="controller_manager" type="spawner"
+	        args="husky_joint_publisher husky_velocity_controller"/>
+
+	  <group if="$(arg enable_ekf)" >
+    <node machine="Husky1" pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+      <rosparam command="load" file="$(find husky_control)/config/localization.yaml" />
+    </node>
+  </group>
+
+	  <node machine="Husky1" pkg="interactive_marker_twist_server" type="marker_server" name="twist_marker_server" output="screen"/>
+	  <arg name="robot_namespace" default="/"/>
+  	<arg name="laser_enabled" default="$(optenv HUSKY_LMS1XX_ENABLED false)"/>
+  	<arg name="realsense_enabled" default="$(optenv HUSKY_REALSENSE_ENABLED false)"/>
+  	<arg name="urdf_extras" default="$(optenv HUSKY_URDF_EXTRAS)"/>
+
+  	<param name="robot_description" command="$(find xacro)/xacro '$(find husky_description)/urdf/husky.urdf.xacro'
+    robot_namespace:=$(arg robot_namespace)
+    laser_enabled:=$(arg laser_enabled)
+    realsense_enabled:=$(arg realsense_enabled)
+    urdf_extras:=$(arg urdf_extras)
+    " />
+	  <node machine="Husky1" name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+	  <node machine="Husky1" pkg="twist_mux" type="twist_mux" name="twist_mux">
+	    <rosparam command="load" file="$(find husky_control)/config/twist_mux.yaml" />
+	    <remap from="cmd_vel_out" to="husky_velocity_controller/cmd_vel"/>
+	  </node>
+
+	  <rosparam command="load" file="$(arg config_extras)" />
+
+  </group> -->
+   
+  <group>
+	  <machine name="oarbot_silver-NUC" address="192.168.1.101" env-loader="/home/oarbot_silver/catkin_ws/devel_isolated/env.sh" user="oarbot_silver" password="1234"/>
+	  <node machine="oarbot_silver-NUC" name="sensor_fusion_oarbot_silver" pkg="sensor_fusion" type="sensor_fusion.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_sensor_fusion.yaml"/>
+	  </node>
+	  <node machine="oarbot_silver-NUC" name="uwb_front_oarbot_silver" pkg="uwb_reader" type="uwb_reader.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_uwb_front.yaml"/>
+	  </node>
+	  <node machine="oarbot_silver-NUC" name="uwb_back_oarbot_silver" pkg="uwb_reader" type="uwb_reader.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_uwb_back.yaml"/>
+	  </node>
+	  <node machine="oarbot_silver-NUC" name="oarbot_silver_ctrl" pkg="oarbot_control" type="oarbot_control.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_control_info.yaml"/>
+	  </node>
+	  <node machine="oarbot_silver-NUC" name="oarbot_silver_cl_state" pkg="vel_controller" type="vel_controller.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_cl_state.yaml"/>
+	  </node>
+  </group> 
+
+<group>
+	  <machine name="oarbot_blue-NUC" address="192.168.1.102" env-loader="/home/oarbot_blue/catkin_ws/devel_isolated/env.sh" user="oarbot_blue" password="1234"/>
+	  <node machine="oarbot_blue-NUC" name="uwb_front_oarbot_blue" pkg="sensor_fusion" type="sensor_fusion.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot2_uwb_front.yaml"/>
+	  </node>
+	  <node machine="oarbot_blue-NUC" name="uwb_back_oarbot_blue" pkg="uwb_reader" type="uwb_reader.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_uwb_back.yaml"/>
+	  </node>
+	  <node machine="oarbot_blue-NUC" name="sensor_fusion_oarbot_blue" pkg="uwb_reader" type="uwb_reader.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_sensor_fusion.yaml"/>
+	  </node>
+	  <node machine="oarbot_blue-NUC" name="oarbot_blue_ctrl" pkg="oarbot_control" type="oarbot_control.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_control_info.yaml"/>
+	  </node>
+	  <node machine="oarbot_blue-NUC" name="oarbot_blue_cl_state" pkg="swarm_robot" type="vel_controller.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_cl_state.yaml"/>
+	  </node>
+  </group>
+
+
+</launch>

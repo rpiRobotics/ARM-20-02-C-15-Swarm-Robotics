@@ -1,0 +1,14 @@
+velocity_feedback_type: "Twist"
+velocity_feedback_topic_name: "oarbot_silver/vel_feedback"
+uwb_front_topic_name: "oarbot_silver/uwb_serial_front"
+uwb_back_topic_name: "oarbot_silver/uwb_serial_back"
+
+tf_frame_name_uwb: "oarbot_silver_uwb"
+tf_frame_name_fused: "oarbot_silver_fusion"
+position_feedback_topic_name: "oarbot_silver/position"
+
+tag_loc_front_x: 0.3060
+tag_loc_front_y: -0.1976
+
+tag_loc_back_x: 0.0391
+tag_loc_back_y: 0.2110
