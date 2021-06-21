@@ -15,4 +15,6 @@ chmod +x /dev/ttyACM1
 
 # source $ROS_WS/devel/env.sh
 
+roslaunch ridgeback.launch
+
 exec "$@"
