@@ -113,7 +113,7 @@
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_sensor_fusion.yaml"/>
 	  </node>
 	  <node machine="ridgeback" name="uwb_front_ridgeback" pkg="uwb_reader" type="uwb_reader.py">
-	    <rosparam file="$(find swarm_launch)/config/ridgebacke_uwb_front.yaml"/>
+	    <rosparam file="$(find swarm_launch)/config/ridgeback_uwb_front.yaml"/>
 	  </node>
 	  <node machine="ridgeback" name="uwb_back_ridgeback" pkg="uwb_reader" type="uwb_reader.py">
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_uwb_back.yaml"/>
