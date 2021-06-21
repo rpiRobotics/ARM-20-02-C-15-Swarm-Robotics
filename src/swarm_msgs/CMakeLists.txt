@@ -49,7 +49,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate messages in the 'msg' folder
 add_message_files(
   FILES
-  FrameTeist.msg
+  FrameTwist.msg
   MotorCmd.msg
   MotorStatus.msg
   State2D.msg
