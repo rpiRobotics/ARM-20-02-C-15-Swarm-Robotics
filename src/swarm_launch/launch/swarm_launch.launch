@@ -123,7 +123,7 @@
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_cl_state.yaml"/>
 	  </node>
 
-  <include file="$(find ridgeback_description)/launch/description.launch" />
+  <include machine="ridgeback" file="$(find ridgeback_description)/launch/description.launch" />
 
   <node  machine="ridgeback" pkg="rosserial_python" type="message_info_service.py" name="rosserial_message_info" />
 
