@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export ROS_WS=/home/administrator/catkin_ws
-export ROS_KINETIC=/etc/ros/kinetic
+export ROS_KINETIC=/etc/ros/
 source $ROS_WS/devel/setup.bash
 source $ROS_KINETIC/setup.bash
 export PATH=$ROS_ROOT/bin:$PATH
@@ -15,6 +15,6 @@ chmod +x /dev/ttyACM1
 
 # source $ROS_WS/devel/env.sh
 
-roslaunch ridgeback.launch
+roslaunch $ROS_WS/scripts/ridgeback.launch
 
 exec "$@"
