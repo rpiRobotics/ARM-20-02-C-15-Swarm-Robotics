@@ -48,3 +48,4 @@ qtcreator-*
 CATKIN_IGNORE
 
 src/CMakeLists.txt
+.catkin_workspace
