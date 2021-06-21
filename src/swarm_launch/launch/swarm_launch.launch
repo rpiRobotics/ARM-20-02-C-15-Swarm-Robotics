@@ -89,7 +89,7 @@
 	</group> 
 
 <group>
-	  <machine name="oarbot_blue-NUC" address="192.168.1.102" env-loader="/home/oarbot_silver/catkin_ws/scripts/env_oarbot_blue.sh" user="oarbot_blue" password="1234"/>
+	  <machine name="oarbot_blue-NUC" address="192.168.1.102" env-loader="/home/oarbot_blue/catkin_ws/scripts/env_oarbot_blue.sh" user="oarbot_blue" password="1234"/>
 	  <node machine="oarbot_blue-NUC" name="sensor_fusion_oarbot_blue" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_sensor_fusion.yaml"/>
 	  </node>
