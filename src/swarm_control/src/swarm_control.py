@@ -2,7 +2,7 @@
 import rospy
 
 # import State2D.msg
-from swarm_control.msg import State2D
+from swarm_msgs.msg import State2D
 from geometry_msgs.msg import Twist
 import geometry_msgs.msg
 

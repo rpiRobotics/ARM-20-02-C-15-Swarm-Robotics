@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from geometry_msgs.msg import Twist
-from oarbot_control.msg import Twist2D, MotorStatus, MotorCmd
+from swarm_msgs.msg import Twist2D, MotorStatus, MotorCmd
 from roboteq_handler import RoboteqHandler
 import roboteq_commands as cmds
 import math

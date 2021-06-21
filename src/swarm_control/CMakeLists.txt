@@ -11,7 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
-  message_generation
+  swarm_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -48,10 +48,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-  FILES
-  State2D.msg
-)
+# add_message_files(
+#   FILES
+#   State2D.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -72,6 +72,7 @@ generate_messages(
   DEPENDENCIES
   std_msgs
   geometry_msgs
+  swarm_msgs
 )
 
 ################################################
@@ -106,7 +107,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES swarm_control
-   CATKIN_DEPENDS rospy std_msgs geometry_msgs message_runtime
+   CATKIN_DEPENDS rospy std_msgs geometry_msgs message_runtime swarm_msgs
 #  DEPENDS system_lib
 )
 

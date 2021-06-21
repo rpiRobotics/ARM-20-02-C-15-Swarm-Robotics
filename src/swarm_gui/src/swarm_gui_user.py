@@ -21,7 +21,7 @@ from led_indicator import LEDIndicator
 import rosnode
 import signal
 import std_msgs.msg
-from swarm_gui.msg import FrameTwist
+from swarm_msgs.msg import FrameTwist
 
 callback_lock=threading.Lock()
 

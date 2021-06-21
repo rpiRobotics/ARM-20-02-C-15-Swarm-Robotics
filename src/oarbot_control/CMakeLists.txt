@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   std_msgs
   message_generation
+  swarm_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -52,12 +53,12 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(
-   FILES
-   Twist2D.msg
-   MotorStatus.msg
-   MotorCmd.msg
-)
+# add_message_files(
+#    FILES
+#    Twist2D.msg
+#    MotorStatus.msg
+#    MotorCmd.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -78,6 +79,7 @@ generate_messages(
    DEPENDENCIES
    std_msgs
    geometry_msgs
+   swarm_msgs
 )
 
 ################################################

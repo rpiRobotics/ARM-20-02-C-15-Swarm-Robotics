@@ -10,7 +10,7 @@ import tf2_ros
 import tf2_msgs.msg
 import geometry_msgs.msg
 
-from state_closed_loop.msg import State2D # Custom message
+from swarm_msgs.msg import State2D # Custom message
 
 import tf_conversions # quaternion stuff
 
