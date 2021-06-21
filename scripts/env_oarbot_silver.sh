@@ -1,7 +1,7 @@
 export ROS_WS=/home/oarbot_silver/catkin_ws
 export ROS_KINETIC=/etc/ros/kinetic
 #source $ROS_WS/devel/setup.bash
-source /home/oarbot_silver/catkin_ws/devel/setup.bash
+source ~/catkin_ws/devel/setup.bash
 source $ROS_KINETIC/setup.bash
 export PATH=$ROS_ROOT/bin:$PATH
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_WS
