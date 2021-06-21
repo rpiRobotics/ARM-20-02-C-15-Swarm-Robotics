@@ -109,6 +109,9 @@
 
 	<group>
 	  <machine name="ridgeback" address="192.168.1.103" env-loader="/home/administrator/catkin_ws/scripts/env_ridgeback.sh" user="administrator" password="clearpath"/>
+
+	  <include machine="ridgeback" file="ridgeback.launch" />
+
 	  <node machine="ridgeback" name="sensor_fusion_ridgeback" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_sensor_fusion.yaml"/>
 	  </node>
@@ -122,33 +125,6 @@
 	  <node machine="ridgeback" name="ridgeback_cl_state" pkg="vel_controller" type="vel_controller.py">
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_cl_state.yaml"/>
 	  </node>
-
-  <include machine="ridgeback" file="$(find ridgeback_description)/launch/description.launch" />
-
-  <node  machine="ridgeback" pkg="rosserial_python" type="message_info_service.py" name="rosserial_message_info" />
-
-  <node  machine="ridgeback" pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter">
-    <rosparam>
-      gain: 0.1
-      zeta: 0.001
-      publish_tf: false
-      use_magnetic_field_msg: true
-    </rosparam>
-  </node>
-
-  <node  machine="ridgeback" pkg="ridgeback_base" type="ridgeback_node" name="ridgeback_node" output="screen" />
-
-
-  <!-- Mecanum controller and basic localization -->
-  <include  machine="ridgeback" file="$(find ridgeback_control)/launch/control.launch" />
-
-  <!-- Teleoperation via joystick and rviz interactive markers -->
-  <include  machine="ridgeback" file="$(find ridgeback_control)/launch/teleop.launch" />
-
-  <!-- Diagnostic Aggregator for robot monitor usage -->
-  <node  machine="ridgeback" pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
-    <rosparam command="load" file="$(find ridgeback_base)/config/diagnostic_analyzers.yaml" />
-  </node>
 	</group>
 
 
