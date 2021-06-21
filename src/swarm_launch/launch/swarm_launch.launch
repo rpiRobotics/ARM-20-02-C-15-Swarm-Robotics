@@ -110,7 +110,7 @@
 	<group>
 	  <machine name="ridgeback" address="192.168.1.103" env-loader="/home/administrator/catkin_ws/scripts/env_ridgeback.sh" user="administrator" password="clearpath"/>
 
-	  <include machine="ridgeback" file="ridgeback.launch" />
+	  <include machine="ridgeback" file="$(find swarm_launch)/launch/ridgeback.launch" />
 
 	  <node machine="ridgeback" name="sensor_fusion_ridgeback" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_sensor_fusion.yaml"/>
