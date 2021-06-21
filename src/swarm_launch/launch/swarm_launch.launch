@@ -70,7 +70,7 @@
   </group> -->
    
   <group>
-	  <machine name="oarbot_silver-NUC" address="192.168.1.101" env-loader="/home/oarbot_silver/catkin_ws/devel_isolated/env.sh" user="oarbot_silver" password="1234"/>
+	  <machine name="oarbot_silver-NUC" address="192.168.1.101" env-loader="/home/oarbot_silver/catkin_ws/scripts/env_oarboat_silver.sh" user="oarbot_silver" password="1234"/>
 	  <node machine="oarbot_silver-NUC" name="sensor_fusion_oarbot_silver" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_sensor_fusion.yaml"/>
 	  </node>
@@ -88,7 +88,7 @@
 	  </node>
   </group> 
 
-<group>
+<!-- <group>
 	  <machine name="oarbot_blue-NUC" address="192.168.1.102" env-loader="/home/oarbot_blue/catkin_ws/devel_isolated/env.sh" user="oarbot_blue" password="1234"/>
 	  <node machine="oarbot_blue-NUC" name="uwb_front_oarbot_blue" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot2_uwb_front.yaml"/>
@@ -106,6 +106,6 @@
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_cl_state.yaml"/>
 	  </node>
   </group>
-
+ -->
 
 </launch>
