@@ -1,0 +1,14 @@
+feedback_gain: 3.0
+
+cmd_input_type: 'State2D'
+#cmd_input_type: 'Twist'
+cmd_input_topic_name: 'ridgeback_desired_state'
+position_feedback_topic_name: '/ridgeback/position'
+control_cmd_publish_topic_name: 'cmd_vel'
+frame_name: 'ridgeback_qd'
+
+vel_lim_x: 1.0
+vel_lim_y: 1.0
+vel_lim_theta: 2.0
+
+space_mouse_topic_name: 'spacenav/joy'

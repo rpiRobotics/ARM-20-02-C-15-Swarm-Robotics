@@ -1,0 +1,18 @@
+velocity_feedback_type: "Odometry"
+velocity_feedback_topic_name: "ridgeback_velocity_controller/odom"
+uwb_front_topic_name: "ridgeback/uwb_serial_front"
+uwb_back_topic_name: "ridgeback/uwb_serial_back"
+
+tf_frame_name_uwb: "ridgeback_uwb"
+tf_frame_name_fused: "ridgeback_fusion"
+position_feedback_topic_name: "ridgeback/position"
+
+# RIDGEBACK
+#TAG_LOC_FRONT = np.array([[0.5054],[0.0254]])
+#TAG_LOC_BACK = np.array([[-0.17405],[0.0254]])
+
+tag_loc_front_x: 0.5054
+tag_loc_front_y: 0.0254
+
+tag_loc_back_x: -0.17405
+tag_loc_back_y: 0.0254
