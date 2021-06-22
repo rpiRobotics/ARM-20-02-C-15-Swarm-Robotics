@@ -69,7 +69,7 @@
 
   </group> -->
    
-<!--   <group>
+  <group>
 	  <machine name="oarbot_silver-NUC" address="192.168.1.101" env-loader="/home/oarbot_silver/catkin_ws/scripts/env_oarbot_silver.sh" user="oarbot_silver" password="1234"/>
 	  <node machine="oarbot_silver-NUC" name="sensor_fusion_oarbot_silver" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_sensor_fusion.yaml"/>
@@ -87,8 +87,8 @@
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_cl_state.yaml"/>
 	  </node>
 	</group> 
- -->
-<!-- <group>
+
+<group>
 	  <machine name="oarbot_blue-NUC" address="192.168.1.102" env-loader="/home/oarbot_blue/catkin_ws/scripts/env_oarbot_blue.sh" user="oarbot_blue" password="1234"/>
 	  <node machine="oarbot_blue-NUC" name="sensor_fusion_oarbot_blue" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_sensor_fusion.yaml"/>
@@ -106,8 +106,8 @@
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_cl_state.yaml"/>
 	  </node>
 	</group>
- -->
-<!-- 	<group>
+
+	<group>
 	  <machine name="ridgeback" address="192.168.1.103" env-loader="/home/administrator/catkin_ws/scripts/env_ridgeback.sh" user="administrator" password="clearpath" />
 
 	  <node machine="ridgeback" name="sensor_fusion_ridgeback" pkg="sensor_fusion" type="sensor_fusion.py">
@@ -123,7 +123,7 @@
 	  <node machine="ridgeback" name="ridgeback_cl_state" pkg="vel_controller" type="vel_controller.py">
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_cl_state.yaml"/>
 	  </node>
-	</group> -->
+	</group>
 
 
 </launch>
