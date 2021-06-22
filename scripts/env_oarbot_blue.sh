@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 export ROS_WS=/home/oarbot_blue/catkin_ws
-export ROS_KINETIC=/etc/ros/kinetic
+export ROS_KINETIC=/opt/ros/kinetic
 source $ROS_WS/devel/setup.bash
 source $ROS_KINETIC/setup.bash
 export PATH=$ROS_ROOT/bin:$PATH
