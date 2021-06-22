@@ -45,9 +45,9 @@ Parameters:
 
 # Max time (in seconds) to consider UWB readings to happen simulataneously
 # Note that UWB readings happen at 10 Hz
-UWB_TIMEOUT = 0.03
+UWB_TIMEOUT = 0.05
 
-DEBUG_UWB = True
+DEBUG_UWB = False
 
 class Fusion:
 	def __init__(self):
