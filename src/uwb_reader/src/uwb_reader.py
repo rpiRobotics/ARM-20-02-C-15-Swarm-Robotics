@@ -82,7 +82,7 @@ if __name__ == '__main__':
 		while True:
 			ser_bytes = ser.readline()
 			if(ser_bytes):
-				rospy.loginfo(ser_bytes)
+				#rospy.loginfo(ser_bytes)
 				pub.publish(ser_bytes)
 
 	except KeyboardInterrupt:
