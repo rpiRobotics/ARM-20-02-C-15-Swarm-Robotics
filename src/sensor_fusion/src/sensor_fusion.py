@@ -111,6 +111,8 @@ class Fusion:
 				self.velocity_feedback_topic_name, Twist, self.odom_callback)
 
 	def uwb_serial_front_callback(self, data):
+		if DEBUG_UWB:
+			rospy.logwarn("uwb_serial_front_callback")
 		valid, anchor_mat, dists = parse_lec_line(data.data)
 		if not valid:
 			rospy.logwarn("NOT VALID")
@@ -125,6 +127,8 @@ class Fusion:
 			self.combine_uwb_readings()
 
 	def uwb_serial_back_callback(self, data):
+		if DEBUG_UWB:
+			rospy.logwarn("uwb_serial_back_callback")
 		valid, anchor_mat, dists = parse_lec_line(data.data)
 		if not valid:
 			rospy.logwarn("NOT VALID")
