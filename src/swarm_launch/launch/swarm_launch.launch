@@ -69,7 +69,7 @@
 
   </group> -->
    
-  <group>
+ <!--  <group>
 	  <machine name="oarbot_silver-NUC" address="192.168.1.101" env-loader="/home/oarbot_silver/catkin_ws/scripts/env_oarbot_silver.sh" user="oarbot_silver" password="1234"/>
 	  <node machine="oarbot_silver-NUC" name="sensor_fusion_oarbot_silver" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_sensor_fusion.yaml"/>
@@ -123,7 +123,7 @@
 	  <node machine="ridgeback" name="ridgeback_cl_state" pkg="vel_controller" type="vel_controller.py">
 	    <rosparam file="$(find swarm_launch)/config/ridgeback_cl_state.yaml"/>
 	  </node>
-	</group>
+	</group> -->
 
 
 </launch>
