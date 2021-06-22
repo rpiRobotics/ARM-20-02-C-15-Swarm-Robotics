@@ -123,6 +123,9 @@ class Fusion:
 		self.front_anchors = anchor_mat
 		self.front_dists = dists
 
+		if DEBUG_UWB:
+			rospy.logwarn("self.front_t - self.back_t")
+			rospy.logwarn(self.front_t - self.back_t)
 		if (self.front_t - self.back_t) < UWB_TIMEOUT:
 			self.combine_uwb_readings()
 
@@ -139,6 +142,9 @@ class Fusion:
 		self.back_anchors = anchor_mat
 		self.back_dists = dists
 
+		if DEBUG_UWB:
+			rospy.logwarn("self.back_t - self.front_t")
+			rospy.logwarn(self.back_t - self.front_t)
 		if (self.back_t - self.front_t) < UWB_TIMEOUT:
 			self.combine_uwb_readings()
 
