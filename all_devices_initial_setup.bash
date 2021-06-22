@@ -55,7 +55,7 @@ for i in ${!HOSTS[*]} ; do
     # echo ${PASSWORDS[i]}
     echo ${SCRIPTS[i]}
     # sudo apt-get install sshpass
-    sshpass -p ${PASSWORDS[i]} ssh -o StrictHostKeyChecking=no -o ConnectTimeout=2 -l ${USERNAMES[i]} ${HOSTS[i]} "${SCRIPTS[i]}"
+    sshpass -p ${PASSWORDS[i]} ssh -t -o StrictHostKeyChecking=no -o ConnectTimeout=2 -l ${USERNAMES[i]} ${HOSTS[i]} "${SCRIPTS[i]}"
     # ssh -o StrictHostKeyChecking=no -l ${USERNAMES[i]} ${HOSTS[i]} "${SCRIPTS[i]}"
 done
 
