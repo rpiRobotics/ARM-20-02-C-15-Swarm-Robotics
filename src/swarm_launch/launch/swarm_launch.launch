@@ -74,12 +74,12 @@
 	  <node machine="oarbot_silver-NUC" name="sensor_fusion_oarbot_silver" pkg="sensor_fusion" type="sensor_fusion.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_sensor_fusion.yaml"/>
 	  </node>
-	  <node machine="oarbot_silver-NUC" name="uwb_front_oarbot_silver" pkg="uwb_reader" type="uwb_reader.py">
+<!-- 	  <node machine="oarbot_silver-NUC" name="uwb_front_oarbot_silver" pkg="uwb_reader" type="uwb_reader.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_uwb_front.yaml"/>
 	  </node>
 	  <node machine="oarbot_silver-NUC" name="uwb_back_oarbot_silver" pkg="uwb_reader" type="uwb_reader.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_uwb_back.yaml"/>
-	  </node>
+	  </node> -->
 	  <node machine="oarbot_silver-NUC" name="oarbot_silver_ctrl" pkg="oarbot_control" type="oarbot_control.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_silver_control_info.yaml"/>
 	  </node>
