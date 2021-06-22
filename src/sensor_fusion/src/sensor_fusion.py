@@ -47,6 +47,8 @@ Parameters:
 # Note that UWB readings happen at 10 Hz
 UWB_TIMEOUT = 0.03
 
+DEBUG_UWB = True
+
 class Fusion:
 	def __init__(self):
 		rospy.init_node('sensor_fusion', anonymous=False)
@@ -137,7 +139,8 @@ class Fusion:
 			self.combine_uwb_readings()
 
 	def combine_uwb_readings(self):
-
+		if DEBUG_UWB:
+			rospy.logwarn("Combining UWB readings!")
 		# Kalman filter
 		self.kalman_lock.acquire()
 		dt = max(self.front_t, self.back_t) - self.kalman_time;
@@ -260,8 +263,8 @@ def xyt2TF(xyt, header_frame_id, child_frame_id):
 
 
 if __name__ == '__main__':
-	#rospy.init_node('sensor_fusion', anonymous=False)
-	#rospy.set_param('~a_string', 'baz')
+	if DEBUG_UWB:
+			rospy.logwarn("Starting UWB debug mode on sensor fusion node!")
 
 	Fusion()
 	rospy.spin()
