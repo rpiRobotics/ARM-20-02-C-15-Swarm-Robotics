@@ -13,6 +13,4 @@ chmod +x /dev/ttyACM1
 chmod +x /dev/ttyACM2
 chmod +x /dev/ttyACM3
 
-# source $ROS_WS/devel/env.sh
-
 exec "$@"
