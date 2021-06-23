@@ -11,9 +11,13 @@
 	  <node machine="oarbot_blue-NUC" name="uwb_back_oarbot_blue" pkg="uwb_reader" type="uwb_reader.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_uwb_back.yaml"/>
 	  </node>
-	  <node machine="oarbot_blue-NUC" name="oarbot_blue_ctrl" pkg="oarbot_control" type="oarbot_control.py">
+	  
+
+	  <node machine="oarbot_blue-NUC" name="oarbot_blue_ctrl" pkg="oarbot_control" type="inv_kin.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_control_info.yaml"/>
 	  </node>
+
+
 	  <node machine="oarbot_blue-NUC" name="oarbot_blue_cl_state" pkg="vel_controller" type="vel_controller.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_cl_state.yaml"/>
 	  </node>
