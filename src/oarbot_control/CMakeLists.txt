@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(oarbot_control)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
@@ -9,21 +9,14 @@ project(oarbot_control)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   rospy
-  geometry_msgs
   std_msgs
-  message_generation
+  geometry_msgs
   swarm_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-catkin_install_python(PROGRAMS
- src/fwd_kin.py
- src/inv_kin.py
- src/motor_control.py
- DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -56,10 +49,8 @@ catkin_install_python(PROGRAMS
 
 ## Generate messages in the 'msg' folder
 # add_message_files(
-#    FILES
-#    Twist2D.msg
-#    MotorStatus.msg
-#    MotorCmd.msg
+#   FILES
+#   State2D.msg
 # )
 
 ## Generate services in the 'srv' folder
@@ -77,12 +68,12 @@ catkin_install_python(PROGRAMS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-#generate_messages(
+# generate_messages(
 #   DEPENDENCIES
 #   std_msgs
 #   geometry_msgs
 #   swarm_msgs
-#)
+# )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -115,10 +106,9 @@ catkin_install_python(PROGRAMS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES oarbot
-#  CATKIN_DEPENDS rospy std_msgs
+#  LIBRARIES oarbot_control
+   CATKIN_DEPENDS rospy std_msgs geometry_msgs message_runtime swarm_msgs
 #  DEPENDS system_lib
-  CATKIN_DEPENDS message_runtime
 )
 
 ###########
@@ -134,7 +124,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/oarbot.cpp
+#   src/${PROJECT_NAME}/oarbot_control.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -145,7 +135,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/oarbot_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/oarbot_control_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -163,6 +153,20 @@ include_directories(
 # )
 
 #############
+## Install ##
+#############
+
+# all install targets should use catkin DESTINATION variables
+# See http://ros.org/doc/api/catkin/html/adv_user_guide/variables.html
+
+## Mark executable scripts (Python etc.) for installation
+## in contrast to setup.py, you can choose the destination
+catkin_install_python(PROGRAMS
+  src/fwd_kin.py
+  src/inv_kin.py
+  src/motor_control.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
@@ -197,7 +201,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_oarbot.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_oarbot_control.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
