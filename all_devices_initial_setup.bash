@@ -10,7 +10,7 @@ SCRIPTS=(
     rm -rf {*,.*};
     git clone https://github.com/rpiRobotics/ARM-20-02-C-15-Swarm-Robotics.git .;
     source /opt/ros/noetic/setup.bash;
-    catkin_make -DCATKIN_WHITELIST_PACKAGES='swarm_msgs;swarm_gui';
+    catkin_make -DCATKIN_WHITELIST_PACKAGES='swarm_msgs;swarm_gui;swarm_launch';
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
     source ~/catkin_ws/devel/setup.bash;
