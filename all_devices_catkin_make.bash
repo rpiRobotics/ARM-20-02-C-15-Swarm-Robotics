@@ -14,6 +14,7 @@ for i in ${!HOSTS[*]} ; do
     echo ${USERNAMES[i]}
     # echo ${PASSWORDS[i]}
     echo ${SCRIPTS[i]}
+    ssh-keygen -f "$HOME/.ssh/known_hosts" -R ${HOSTS[i]}
     # sudo apt-get install sshpass
     sshpass -p ${PASSWORDS[i]} ssh -t -o StrictHostKeyChecking=no -o HostKeyAlgorithms='ssh-rsa' -o ConnectTimeout=2 -l ${USERNAMES[i]} ${HOSTS[i]} "${SCRIPTS[i]}"
     # ssh -o StrictHostKeyChecking=no -l ${USERNAMES[i]} ${HOSTS[i]} "${SCRIPTS[i]}"
