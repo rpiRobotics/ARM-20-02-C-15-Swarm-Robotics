@@ -1,5 +1,6 @@
 velocity_feedback_topic_name: "oarbot_blue/vel_feedback"
 motor_command_topic_name: "oarbot_blue/motor_command"
+motor_feedback_topic_name: "oarbot_blue/motor_feedback"
 republished_spacemouse: "spacenav/twist/repub3"
 serial_front: "/dev/serial/by-path/pci-0000:00:14.0-usb-0:4.1:1.0"
 serial_back: "/dev/serial/by-path/pci-0000:00:14.0-usb-0:4.2:1.0"

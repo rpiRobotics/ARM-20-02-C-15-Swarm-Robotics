@@ -16,6 +16,9 @@
 	  <node machine="oarbot_blue-NUC" name="oarbot_blue_ctrl" pkg="oarbot_control" type="inv_kin.py">
 	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_control_info.yaml"/>
 	  </node>
+	  <node machine="oarbot_blue-NUC" name="oarbot_blue_ctrl" pkg="oarbot_control" type="motor_control.py">
+	    <rosparam file="$(find swarm_launch)/config/oarbot_blue_control_info.yaml"/>
+	  </node>
 
 
 	  <node machine="oarbot_blue-NUC" name="oarbot_blue_cl_state" pkg="vel_controller" type="vel_controller.py">

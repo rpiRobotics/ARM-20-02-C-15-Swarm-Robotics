@@ -11,9 +11,14 @@ class OarbotControl_Motor():
         self.motor_lock = threading.Lock()
         rospy.init_node('oarbot_ctrl_motor', anonymous=True)
 
-        self.motor_cmd = MotorCmd()
         serial_front = rospy.get_param('~serial_front')
         serial_back = rospy.get_param('~serial_back')
+
+        self.motor_command_name=rospy.get_param('~motor_command_topic_name')
+        rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
+
+        self.motor_feedback_name=rospy.get_param('~motor_feedback_topic_name')
+        self.motor_cmd_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
 
         # connection to Roboteq robot controller
         self.controller_f = RoboteqHandler(debug_mode=False, exit_on_interrupt=False)
@@ -28,13 +33,18 @@ class OarbotControl_Motor():
         self.is_locked = False
         rospy.Timer(rospy.Duration(0.04),self.forward_kin)
 
-    def callback(self, msg):
+    def motor_cmd_callback(self, msg):
         self.inverse_kin(msg)
 
     def inverse_kin(self, msg):
+    	self.u1 = msg.v_fl
+    	self.u2 = msg.v_fr
+    	self.u3 = msg.v_rl
+    	self.u4 = msg.v_rr
+
         self.motor_lock.acquire()
-        self.controller_f.send_command(cmds.DUAL_DRIVE, -self.u1, self.u2)
-        self.controller_b.send_command(cmds.DUAL_DRIVE, self.u3, -self.u4)
+        self.controller_f.send_command(cmds.DUAL_DRIVE, self.u1, self.u2)
+        self.controller_b.send_command(cmds.DUAL_DRIVE, self.u3, self.u4)
         self.motor_lock.release()     
         
     def read_speed(self, controller, motor_number):
@@ -62,6 +72,12 @@ class OarbotControl_Motor():
         u4a = -self.read_speed(self.controller_b, 2)
     
         self.motor_lock.release()
+
+        motor_feedback_msg = MotorCmd()
+        motor_feedback_msg.v_fl = u1a
+        motor_feedback_msg.v_fr = u2a
+        motor_feedback_msg.v_rl = u3a
+        motor_feedback_msg.v_rr = u4a
 
 if __name__ == "__main__":
     oarbotControl_Motor = OarbotControl_Motor()
