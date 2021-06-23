@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 <group>
-  <machine name="tablet" address="192.168.1.99" env-loader="/home/oarbot_blue/catkin_ws/scripts/env_tablet.sh" user="tablet" password="1234" default="true"/>
+  <machine name="tablet" address="192.168.1.99" env-loader="/home/tablet/catkin_ws/scripts/env_tablet.sh" user="tablet" password="1234" default="true"/>
   <rosparam command="load" file="$(find swarm_launch)/config/gui_params.yaml"/>
   <node name="swarm_gui" pkg="swarm_gui" type="swarm_gui_user_py3.py"/>
      
