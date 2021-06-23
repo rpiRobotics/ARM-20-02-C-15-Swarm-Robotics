@@ -14,7 +14,7 @@ class OarbotControl_Motor():
         serial_front = rospy.get_param('~serial_front')
         serial_back = rospy.get_param('~serial_back')
 
-        self.motor_command_name=rospy.get_param('~motor_command_topic_name')
+        self.motor_command_topic_name=rospy.get_param('~motor_command_topic_name')
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
 
         self.motor_feedback_name=rospy.get_param('~motor_feedback_topic_name')
