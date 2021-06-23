@@ -66,10 +66,10 @@ class OarbotControl_Motor():
 
     def forward_kin(self,event):
         self.motor_lock.acquire()
-        u1a = -self.read_speed(self.controller_f, 1)
+        u1a = self.read_speed(self.controller_f, 1)
         u2a = self.read_speed(self.controller_f, 2)
         u3a = self.read_speed(self.controller_b, 1)
-        u4a = -self.read_speed(self.controller_b, 2)
+        u4a = self.read_speed(self.controller_b, 2)
     
         self.motor_lock.release()
 
