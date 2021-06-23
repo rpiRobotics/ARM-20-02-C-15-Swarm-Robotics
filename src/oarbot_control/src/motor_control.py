@@ -18,7 +18,7 @@ class OarbotControl_Motor():
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
 
         self.motor_feedback_name=rospy.get_param('~motor_feedback_topic_name')
-        self.motor_cmd_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
+        self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
 
         # connection to Roboteq robot controller
         self.controller_f = RoboteqHandler(debug_mode=False, exit_on_interrupt=False)
@@ -78,6 +78,8 @@ class OarbotControl_Motor():
         motor_feedback_msg.v_fr = u2a
         motor_feedback_msg.v_rl = u3a
         motor_feedback_msg.v_rr = u4a
+
+        motor_feedback_pub.publish(motor_feedback_msg)
 
 if __name__ == "__main__":
     oarbotControl_Motor = OarbotControl_Motor()
