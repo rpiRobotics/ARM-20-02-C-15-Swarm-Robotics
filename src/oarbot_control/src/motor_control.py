@@ -61,7 +61,7 @@ class OarbotControl_Motor():
                     print("ValueError! message recieved: ")
                     print(message)
                     #pass
-        return float(a[1])/60*2*math.pi
+        return float(a[1])
 
 
     def forward_kin(self,event):
