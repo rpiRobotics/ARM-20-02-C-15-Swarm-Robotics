@@ -23,9 +23,8 @@ class OarbotControl_InvKin():
  
 
         self.motor_cmd_pub = rospy.Publisher(self.motor_command_name, MotorCmd, queue_size=1)
-
-      
         rospy.Subscriber(self.teleop_command_name, Twist, self.callback, queue_size=1)
+
         self.oarbot = OarbotKinematics()
         self.u1 = 0
         self.u2 = 0
@@ -62,7 +61,6 @@ class OarbotControl_InvKin():
 
         self.motor_cmd_pub.publish(self.motor_cmd)
         
-
 if __name__ == "__main__":
     oarbotControl_InvKin = OarbotControl_InvKin()
     rospy.spin()

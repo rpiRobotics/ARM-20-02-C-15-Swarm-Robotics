@@ -9,7 +9,7 @@ import threading
 class OarbotControl_Motor():
     def __init__(self):
         self.motor_lock = threading.Lock()
-        rospy.init_node('oarbot_ctrl', anonymous=True)
+        rospy.init_node('oarbot_ctrl_motor', anonymous=True)
 
         self.motor_cmd = MotorCmd()
         serial_front = rospy.get_param('~serial_front')
