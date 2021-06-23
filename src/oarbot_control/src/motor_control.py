@@ -79,7 +79,7 @@ class OarbotControl_Motor():
         motor_feedback_msg.v_rl = u3a
         motor_feedback_msg.v_rr = u4a
 
-        motor_feedback_pub.publish(motor_feedback_msg)
+        self.motor_feedback_pub.publish(motor_feedback_msg)
 
 if __name__ == "__main__":
     oarbotControl_Motor = OarbotControl_Motor()
