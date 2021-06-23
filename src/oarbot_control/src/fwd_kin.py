@@ -35,7 +35,7 @@ class OarbotControl_FwdKin():
         u1a = -msg.v_fl/60*2*math.pi
         u2a =  msg.v_fr/60*2*math.pi
         u3a =  msg.v_rl/60*2*math.pi
-        u41 = -msg.v_rr/60*2*math.pi
+        u4a = -msg.v_rr/60*2*math.pi
 
 
         self.vel_feedback.linear.x = -self.oarbot.r/4 * (u1a + u2a + u3a + u4a) * self.oarbot.chain_drive_ratio * self.oarbot.gear_ratio
