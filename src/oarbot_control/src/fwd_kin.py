@@ -30,7 +30,6 @@ class OarbotControl_FwdKin():
     def motor_feedback_callback(self, msg):
         self.forward_kin(msg)
 
-
     def forward_kin(self,msg):    
         u1a = -msg.v_fl/60*2*math.pi
         u2a =  msg.v_fr/60*2*math.pi
@@ -42,7 +41,7 @@ class OarbotControl_FwdKin():
         self.vel_feedback.linear.y = self.oarbot.r/4 * (-u1a + u2a - u3a + u4a) * self.oarbot.chain_drive_ratio * self.oarbot.gear_ratio
         self.vel_feedback.angular.z = self.oarbot.r/(4*(self.oarbot.l + self.oarbot.w)) * (-u1a + u2a + u3a - u4a) * \
         self.oarbot.chain_drive_ratio * self.oarbot.gear_ratio
-        self.motor_lock.release()
+        
         self.vel_pub.publish(self.vel_feedback)
 
 if __name__ == "__main__":
