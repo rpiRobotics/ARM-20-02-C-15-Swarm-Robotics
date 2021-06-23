@@ -13,7 +13,7 @@ class OarbotKinematics():
         self.chain_drive_ratio = 10.0/15.0# 0.71429 # gear ratio of chain drive
         self.gear_ratio = 1.0/81.0*200/16
 
-class OarbotControl():
+class OarbotControl_FwdKin():
     def __init__(self):
         rospy.init_node('oarbot_ctrl_fwd_kin', anonymous=True)
 
@@ -34,5 +34,5 @@ class OarbotControl():
         self.vel_pub.publish(self.vel_feedback)
 
 if __name__ == "__main__":
-    oarbot = OarbotControl()
+    oarbotControl_FwdKin = OarbotControl_FwdKin()
     rospy.spin()
