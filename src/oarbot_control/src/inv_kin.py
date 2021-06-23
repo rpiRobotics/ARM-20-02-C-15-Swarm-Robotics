@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from geometry_msgs.msg import Twist
+from swarm_msgs.msg import MotorCmd
 import math
 
 class OarbotKinematics():
@@ -14,7 +15,7 @@ class OarbotKinematics():
 
 class OarbotControl_InvKin():
     def __init__(self):
-        rospy.init_node('oarbot_ctrl', anonymous=True)
+        rospy.init_node('oarbot_ctrl_inv_kin', anonymous=True)
 
         self.motor_cmd = MotorCmd()
         self.motor_command_name=rospy.get_param('~motor_command_topic_name')
