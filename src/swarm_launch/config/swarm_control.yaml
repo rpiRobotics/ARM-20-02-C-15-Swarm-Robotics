@@ -14,7 +14,7 @@ acc_lim_y_0: 0.6
 acc_lim_theta_0: 1  
 
 just_robot_vel_input_topic_name_1: just_robot_vel_1
-state_publish_topic_name_1: oarbot_blue_desired_state
+state_publish_topic_name_1: oarbot_blue/desired_state
 tf_frame_name_1: tf_robot_1
 vel_lim_x_1: 0.15
 vel_lim_y_1: 0.15
