@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find swarm_launch)/launch/control.launch" />
+    <include file="$(find swarm_launch)/launch/swarm_control.launch" />
     <include file="$(find swarm_launch)/launch/ui_tablet.launch" />
     <include file="$(find swarm_launch)/launch/oarbot_silver.launch" />
     <include file="$(find swarm_launch)/launch/oarbot_blue.launch" />

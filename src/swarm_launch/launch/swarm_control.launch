@@ -1,0 +1,5 @@
+<launch>
+    <node name="swarm_control_node" pkg="swarm_control" type="swarm_control.py">
+        <rosparam file="$(find swarm_launch)/config/swarm_control.yaml"/>
+    </node>
+</launch>
