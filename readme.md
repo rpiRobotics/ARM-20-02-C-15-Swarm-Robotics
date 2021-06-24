@@ -8,7 +8,7 @@
 | Oarbot (Blue)       | oarbot_blue   | 192.168.1.102 | 1234      | Ubuntu 16.04 | Kinetic |
 | Clearpath Ridgeback | administrator | 192.168.1.103 | clearpath | Ubuntu 16.04 | Kinetic |
 
-With the devices above configurations, just run all_devices_initial_setup.bash. It will install all the software automatically.
+With the devices above configurations, just run `./all_devices_initial_setup.bash`. It will install all the software automatically.
 
 # Ridgeback setup for remote host:
 run `sudo nano /usr/sbin/ros-start`
@@ -18,6 +18,3 @@ Change the line `export ROS_MASTER_URI=http://127.0.0.1:11311` to
 export ROS_MASTER_URI=http://192.168.1.100:11311/
 export ROS_IP=192.168.1.103
 ```
-
-# Spacemouse setup
-Follow instructions at http://wiki.ros.org/spacenav_node
