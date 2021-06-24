@@ -24,7 +24,7 @@ acc_lim_y_1: 0.6
 acc_lim_theta_1: 1.0  
 
 just_robot_vel_input_topic_name_2: just_robot_vel_2
-state_publish_topic_name_2:  ridgeback_desired_state
+state_publish_topic_name_2:  ridgeback/desired_state
 tf_frame_name_2: tf_robot_2
 vel_lim_x_2: 1.0
 vel_lim_y_2: 1.0

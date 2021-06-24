@@ -1,0 +1,40 @@
+<launch>
+  <group ns="ridgeback">
+	<remap from="/imu/data_raw" to="imu/data_raw" />
+	<remap from="/imu/data" to="imu/data" />
+	<remap from="/ridgeback_velocity_controller/odom" to="ridgeback_velocity_controller/odom" />
+	<remap from="/diagnostics" to="diagnostics" />
+	<remap from="/diagnostics_toplevel_state" to="diagnostics_toplevel_state" />
+	<remap from="/diagnostics_agg" to="diagnostics_agg" />
+	<remap from="/joint_states" to="joint_states" />
+	<remap from="/cmd_vel" to="/ridgeback/cmd_vel" />
+  <include file="$(find ridgeback_description)/launch/description.launch" />
+
+  <node pkg="rosserial_python" type="message_info_service.py" name="rosserial_message_info" />
+
+  <node pkg="imu_filter_madgwick" type="imu_filter_node" name="imu_filter">
+    <rosparam file="$(eval optenv('RIDGEBACK_MAG_CONFIG', find('ridgeback_base')+'/config/mag_config_default.yaml'))" />
+    <rosparam>
+      gain: 0.1
+      zeta: 0.001
+      publish_tf: false
+      use_magnetic_field_msg: true
+    </rosparam>
+  </node>
+
+  <node pkg="ridgeback_base" type="ridgeback_node" name="ridgeback_node" output="screen" >
+    <param name="use_mcu" type="bool" value="$(optenv RIDGEBACK_USE_MCU 1)" />
+  </node>
+
+  <!-- Mecanum controller and basic localization -->
+  <include file="$(find ridgeback_control)/launch/control.launch" />
+
+  <!-- Teleoperation via joystick and rviz interactive markers -->
+  <!-- include file="$(find ridgeback_control)/launch/teleop.launch" /-->
+
+  <!-- Diagnostic Aggregator for robot monitor usage -->
+  <node pkg="diagnostic_aggregator" type="aggregator_node" name="diagnostic_aggregator">
+    <rosparam command="load" file="$(find ridgeback_base)/config/diagnostic_analyzers.yaml" />
+  </node>
+  </group>
+</launch>
