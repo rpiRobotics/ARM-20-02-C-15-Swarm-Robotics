@@ -10,7 +10,7 @@ command_topics:
   - "just_robot_vel_1"
   - "just_robot_vel_2"
   - "/spacenav/twist/repub2"
-  - "/spacenav/twist/repub3"
+  - "oarbot_blue/cmd_vel"
   - "cmd_vel"
 robot_node_names:
   - []
