@@ -4,7 +4,7 @@ N_robots: 3
 theta_scale: 10.0
 
 just_robot_vel_input_topic_name_0: just_robot_vel_0
-state_publish_topic_name_0: oarbot_silver_desired_state
+state_publish_topic_name_0: oarbot_silver/desired_state
 tf_frame_name_0: tf_robot_0
 vel_lim_x_0: 0.15
 vel_lim_y_0: 0.15

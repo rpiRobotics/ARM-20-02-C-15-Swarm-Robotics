@@ -1,15 +1,13 @@
 feedback_gain: 3.0
 
 cmd_input_type: 'State2D'
-#cmd_input_type: 'Twist'
-cmd_input_topic_name: 'oarbot_silver_desired_state'
-#cmd_input_topic_name: '/spacenav/twist/repub'
-position_feedback_topic_name: '/oarbot_silver/position'
-control_cmd_publish_topic_name: '/spacenav/twist/repub2'
+cmd_input_topic_name: 'desired_state'
+position_feedback_topic_name: 'position'
+control_cmd_publish_topic_name: 'cmd_vel'
 frame_name: 'oarbot_1_qd'
 
 vel_lim_x: 1.0
 vel_lim_y: 1.0
 vel_lim_theta: 2.0
 
-space_mouse_topic_name: 'spacenav/joy'
+space_mouse_topic_name: '/spacenav/joy'
