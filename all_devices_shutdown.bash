@@ -4,11 +4,11 @@ USERNAMES=("tablet" "rockie" "oarbot_silver" "oarbot_blue" "administrator")
 PASSWORDS=("1234" "rockie" "1234" "1234" "clearpath")
 
 SCRIPTS=(
-    "echo 1234 | sudo shutdown -h now;"
-    "echo rockie | sudo shutdown -h now;"
-    "echo 1234 | sudo shutdown -h now;"
-    "echo 1234 | sudo shutdown -h now;"
-    "echo clearpath | sudo shutdown -h now;")
+    "echo 1234 | sudo -S shutdown -h now;"
+    "echo rockie | sudo -S shutdown -h now;"
+    "echo 1234 | sudo -S shutdown -h now;"
+    "echo 1234 | sudo -S shutdown -h now;"
+    "echo clearpath | sudo -S shutdown -h now;")
 
 echo ${SCRIPTS}
 for i in ${!HOSTS[*]} ; do
