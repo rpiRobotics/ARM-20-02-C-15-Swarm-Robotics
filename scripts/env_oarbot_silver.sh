@@ -14,9 +14,3 @@ chmod +x /dev/ttyACM2
 chmod +x /dev/ttyACM3
 
 exec "$@"
-
-# test line
-# Another test line
-# ASDSAD
-# asd
-# another one
