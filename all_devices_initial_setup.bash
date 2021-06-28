@@ -1,7 +1,7 @@
 #!/bin/bash
-HOSTS=("192.168.1.99" "192.168.1.100" "192.168.1.101" "192.168.1.102" "192.168.1.103")
-USERNAMES=("tablet" "rockie" "oarbot_silver" "oarbot_blue" "administrator")
-PASSWORDS=("1234" "rockie" "1234" "1234" "clearpath")
+HOSTS=("192.168.1.99" "192.168.1.100" "192.168.1.101" "192.168.1.102" "192.168.1.103" "192.168.1.104" "192.168.1.105")
+USERNAMES=("tablet" "rockie" "oarbot_silver" "oarbot_blue" "administrator" "husky_blue" "husky_black")
+PASSWORDS=("1234" "rockie" "1234" "1234" "clearpath" "1234" "1234")
 
 SCRIPTS=(
     "cd; 
@@ -63,6 +63,30 @@ SCRIPTS=(
     rm -rf {*,.*};
     git clone https://github.com/rpiRobotics/ARM-20-02-C-15-Swarm-Robotics.git .;
     source /opt/ros/kinetic/setup.bash;
+    catkin_make -DCATKIN_BLACKLIST_PACKAGES='swarm_gui;swarm_control;swarm_launch;oarbot_control';
+    grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
+    source ~/.bashrc;
+    source ~/catkin_ws/devel/setup.bash;
+    "
+    
+    "cd; 
+    mkdir catkin_ws; 
+    cd catkin_ws; 
+    rm -rf {*,.*};
+    git clone https://github.com/rpiRobotics/ARM-20-02-C-15-Swarm-Robotics.git .;
+    source /opt/ros/melodic/setup.bash;
+    catkin_make -DCATKIN_BLACKLIST_PACKAGES='swarm_gui;swarm_control;swarm_launch;oarbot_control';
+    grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
+    source ~/.bashrc;
+    source ~/catkin_ws/devel/setup.bash;
+    "
+    
+    "cd; 
+    mkdir catkin_ws; 
+    cd catkin_ws; 
+    rm -rf {*,.*};
+    git clone https://github.com/rpiRobotics/ARM-20-02-C-15-Swarm-Robotics.git .;
+    source /opt/ros/melodic/setup.bash;
     catkin_make -DCATKIN_BLACKLIST_PACKAGES='swarm_gui;swarm_control;swarm_launch;oarbot_control';
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
