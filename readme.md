@@ -27,3 +27,15 @@ Following https://www.clearpathrobotics.com/assets/guides/kinetic/ridgeback/star
 In the `/etc/ros/kinetic/ros.d` directory of the Ridgeback, move the existing files and copy the three files in the [`ridgeback_startup`](https://github.com/rpiRobotics/ARM-20-02-C-15-Swarm-Robotics/tree/main/ridgeback_startup) folder. These new launch files put all the Ridgeback nodes and topics into the `/ridgeback` namespace.
 
 You can run this automatically by running `./ridgeback_namespacing.bash`. This will move all the files currently in `/etc/ros/kinetic/ros.d` to the folder `/home/administrator/backup_ros_d`.
+
+# Setting up the Huskies without Clearpath computers
+
+Following http://www.clearpathrobotics.com/assets/guides/melodic/husky/InstallHuskySoftware.html
+
+Install Ubuntu and ROS
+
+Run `sudo apt-get install ros-melodic-husky-robot`
+
+Run `rosrun husky_bringup install`
+
+The installer will tell you to run one more command
