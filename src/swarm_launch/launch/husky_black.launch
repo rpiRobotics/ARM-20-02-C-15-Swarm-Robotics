@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<launch>
+<group ns="husky_black">
+    <machine name="husky_black" address="192.168.1.105" env-loader="/home/husky_black/catkin_ws/scripts/husky_black.sh" user="husky_black" password="1234" default="true"/>
+
+    <node name="sensor_fusion" pkg="sensor_fusion" type="sensor_fusion.py">
+        <rosparam file="$(find swarm_launch)/config/husky_black_sensor_fusion.yaml"/>
+    </node>
+
+    <node name="uwb_front" pkg="uwb_reader" type="uwb_reader.py">
+        <rosparam file="$(find swarm_launch)/config/husky_black_uwb_front.yaml"/>
+    </node>
+    <node name="uwb_back" pkg="uwb_reader" type="uwb_reader.py">
+        <rosparam file="$(find swarm_launch)/config/husky_black_uwb_back.yaml"/>
+    </node>
+
+    <!-- <node name="cl_state" pkg="vel_controller" type="vel_controller.py">
+        <rosparam file="$(find swarm_launch)/config/husky_black_cl_state.yaml"/>
+    </node> -->
+</group>
+</launch>
