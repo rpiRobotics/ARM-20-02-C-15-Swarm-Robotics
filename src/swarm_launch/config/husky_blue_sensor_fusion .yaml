@@ -1,0 +1,14 @@
+velocity_feedback_type: "Odometry"
+velocity_feedback_topic_name: "husky_velocity_controller/odom"
+uwb_front_topic_name: "uwb_serial_front"
+uwb_back_topic_name: "uwb_serial_back"
+
+tf_frame_name_uwb: "husky_blue_uwb"
+tf_frame_name_fused: "husky_blue_fusion"
+position_feedback_topic_name: "position"
+
+tag_loc_front_x: 0.288
+tag_loc_front_y: -0.255
+
+tag_loc_back_x: -0.268
+tag_loc_back_y: -0.255
