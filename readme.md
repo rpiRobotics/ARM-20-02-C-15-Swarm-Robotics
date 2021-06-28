@@ -38,4 +38,19 @@ Run `sudo apt-get install ros-melodic-husky-robot`
 
 Run `rosrun husky_bringup install`
 
-The installer will tell you to run one more command
+The installer will tell you to run one more command. Execute it.
+
+To make sure that ros.service by Clearpath starts after the network is really online, 
+edit `ros.service` file with command   
+`sudo nano /lib/systemd/system/ros.service`   
+and add the following lines   
+```
+After=network-online.target
+Wants=network-online.target
+```
+in place of the line   
+```
+After=network.target
+```
+[For further information about this above see this link.](https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/)
+
