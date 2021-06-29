@@ -206,11 +206,9 @@ class SWARMGUI(QtWidgets.QMainWindow):
 
     def offset_callback(self,data):
         with(callback_lock):
-            
-            
+            data.angular.z = data.angular.z*4.0
             for i in range(len(self.buttons)):
                 if(self.buttons[i].enabled):
-                    data.angular.z = data.angular.z*4
                     self.buttons[i].publisher.publish(data)
            
     
