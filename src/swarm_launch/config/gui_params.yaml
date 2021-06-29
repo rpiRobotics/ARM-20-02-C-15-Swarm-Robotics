@@ -4,16 +4,16 @@ number_of_robots: 10
 #   - "/spacenav/twist/repub2"
 #   - "/spacenav/twist/repub3"
 command_topics:
-  - "desired_swarm_vel"
-  - "just_swarm_vel"
-  - "just_robot_vel_0"
-  - "just_robot_vel_1"
-  - "just_robot_vel_2"
-  - "oarbot_silver/cmd_vel"
-  - "oarbot_blue/cmd_vel"
-  - "ridgeback/cmd_vel"
-  - "husky_black/cmd_vel"
-  - "husky_blue/cmd_vel"
+  - "/desired_swarm_vel"
+  - "/just_swarm_vel"
+  - "/just_robot_vel_0"
+  - "/just_robot_vel_1"
+  - "/just_robot_vel_2"
+  - "/oarbot_silver/cmd_vel"
+  - "/oarbot_blue/cmd_vel"
+  - "/ridgeback/cmd_vel"
+  - "/husky_black/cmd_vel"
+  - "/husky_blue/cmd_vel"
 robot_node_names:
   - []
   - []
