@@ -8,7 +8,7 @@ tf_frame_name_fused: "husky_black_fusion"
 position_feedback_topic_name: "position"
 
 tag_loc_front_x: 0.288
-tag_loc_front_y: -0.255
+tag_loc_front_y: 0.255
 
 tag_loc_back_x: -0.268
 tag_loc_back_y: -0.255
