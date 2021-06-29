@@ -8,7 +8,7 @@ export PATH=$ROS_ROOT/bin:$PATH
 export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_WS
 export ROS_MASTER_URI=http://192.168.1.100:11311/
 export ROS_IP=192.168.1.99
-chmod +x /dev/ttyACM0
+echo 1234 | sudo -S chmod 666 /dev/ttyACM0
 
 export DISPLAY=:0 # For rviz remote launch
 
