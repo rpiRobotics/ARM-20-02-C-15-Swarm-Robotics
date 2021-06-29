@@ -1,2 +1,2 @@
-arduino_topic: "arduino_pub"
+arduino_deadman_switch_topic: "deadman_switch"
 com_port: "/dev/ttyACM0"

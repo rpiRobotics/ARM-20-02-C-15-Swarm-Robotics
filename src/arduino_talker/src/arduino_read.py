@@ -9,13 +9,13 @@ import time
 class arduinoread:
 	def __init__(self):
 		rospy.init_node('arduino_talker', anonymous=True)
-		self.arduino_topic=rospy.get_param('~arduino_topic')
-		#self.arduino_topic="arduino_pub"
+		self.arduino_deadman_switch_topic=rospy.get_param('~arduino_deadman_switch_topic')
+		#self.arduino_deadman_switch_topic="arduino_pub"
 		self.comport=rospy.get_param('~com_port')
 		#self.comfreq=rospy.get_param('baudrate')
 		self.ser = serial.Serial(self.comport,115200,timeout=0.04)
 		#self.ser = serial.Serial('/dev/ttyACM0',115200,timeout=0.04)
-		self.arduino_pub = rospy.Publisher(self.arduino_topic, Bool, queue_size=10)
+		self.arduino_pub = rospy.Publisher(self.arduino_deadman_switch_topic, Bool, queue_size=1)
 		time.sleep(1)
 		rospy.Timer(rospy.Duration(0.04),self.read_serial)
 
