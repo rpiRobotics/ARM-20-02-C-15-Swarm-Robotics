@@ -31,8 +31,8 @@
 	</node>
 
 	<node pkg="twist_mux" type="twist_mux" name="twist_mux">
-    <rosparam command="load" file="$(find swarm_launch)/config/oarbot_silver_twist_mux.yaml" />
-    <remap from="cmd_vel_out" to="e_stop_cmd_vel"/>
-  </node>
+    	<rosparam command="load" file="$(find swarm_launch)/config/oarbot_silver_twist_mux.yaml" />
+    	<remap from="cmd_vel_out" to="e_stop_cmd_vel"/>
+  	</node>
 </group> 
 </launch>
