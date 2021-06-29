@@ -124,7 +124,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.number_of_bots=3
             self.nodenames=[["/rosout"],["hello"],["hello"]]
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
-            self.input_command_topic='spacenav/twist'
+            self.input_command_topic='deadman_switch_spacenav_twist'
         
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
         for i in range(self.number_of_bots):

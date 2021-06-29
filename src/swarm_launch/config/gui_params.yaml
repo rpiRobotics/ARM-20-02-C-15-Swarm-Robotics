@@ -37,4 +37,4 @@ robot_type_information:
   - "H_BLK"
   - "H_BLU"
 
-input_command_topic: 'spacenav/twist'
+input_command_topic: 'deadman_switch_spacenav_twist'
