@@ -1,0 +1,2 @@
+arduino_topic: "arduino_pub"
+com_port: "/dev/ttyACM0"
