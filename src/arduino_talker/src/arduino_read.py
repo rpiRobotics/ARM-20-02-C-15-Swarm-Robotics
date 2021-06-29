@@ -25,10 +25,10 @@ class arduinoread:
 			output=self.ser.read()
 			z=Bool()
 			if(int(output)==1):
-				z.data=1
+				z.data=0
 				self.arduino_pub.publish(z)
 			else:
-				z.data=0
+				z.data=1
 				self.arduino_pub.publish(z)
 			self.ser.reset_input_buffer()
 		else:
