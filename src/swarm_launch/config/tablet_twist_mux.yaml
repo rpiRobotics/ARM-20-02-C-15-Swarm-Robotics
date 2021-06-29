@@ -6,5 +6,5 @@ topics:
 locks:
 - name    : deadman_switch
   topic   : deadman_switch
-  timeout : 0.0
+  timeout : 0.1
   priority: 255
