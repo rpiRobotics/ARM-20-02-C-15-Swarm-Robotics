@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 <group ns="husky_blue">
-    <machine name="husky_blue" address="192.168.1.104 " env-loader="/home/husky_blue/catkin_ws/scripts/husky_blue.sh" user="husky_blue" password="1234" default="true"/>
+    <machine name="husky_blue" address="192.168.1.104 " env-loader="/home/husky_blue/catkin_ws/scripts/env_husky_blue.sh" user="husky_blue" password="1234" default="true"/>
 
     <node name="sensor_fusion" pkg="sensor_fusion" type="sensor_fusion.py">
         <rosparam file="$(find swarm_launch)/config/husky_blue_sensor_fusion.yaml"/>
