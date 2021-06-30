@@ -39,7 +39,7 @@ class arduinoread:
 				mes_deadman_switch.data = 0
 			if(output == 3):
 				mes_e_stop.data = 1
-				mes_deadman_switch.data = 0
+				mes_deadman_switch.data = 1
 
 
 			self.deadman_switch_pub.publish(mes_deadman_switch)
