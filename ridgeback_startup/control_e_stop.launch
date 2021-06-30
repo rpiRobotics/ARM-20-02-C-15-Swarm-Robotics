@@ -16,15 +16,15 @@
     <node pkg="twist_mux" type="twist_mux" name="twist_mux">
 <rosparam>
 topics:
-- name  : input_cmd_vel
-topic   : cmd_vel
-timeout : 0.5
-priority: 10
+- name    : input_cmd_vel
+  topic   : cmd_vel
+  timeout : 0.5
+  priority: 10
 locks:
-- name  : e_stop
-topic   : e_stop
-timeout : 0.0
-priority: 255
+- name    : e_stop
+  topic   : e_stop
+  timeout : 0.0
+  priority: 255
 </rosparam>
         <remap from="cmd_vel_out" to="ridgeback_velocity_controller/cmd_vel"/>
     </node>
