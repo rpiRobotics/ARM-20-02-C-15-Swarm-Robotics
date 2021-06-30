@@ -31,7 +31,7 @@ class arduinoread:
                     self.ser = serial.Serial(self.comport,115200,timeout=0.04)
                     rospy.loginfo("Connected to serial")
 
-                handle_serial_data(self.ser.read())
+                self.handle_serial_data(self.ser.read())
                 self.ser.reset_input_buffer()
             except serial.serialutil.SerialException:
                 if(not(self.ser == None)):
