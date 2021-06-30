@@ -41,7 +41,7 @@ class Uwb_reader:
         ser_bytes = self.ser.readline()
         while not 'dwm>' in ser_bytes:
             rospy.loginfo('waiting for dwm>')
-            #rospy.loginfo(ser_bytes)
+            rospy.loginfo(ser_bytes)
             self.ser.write('\r\r')
             ser_bytes = self.ser.readline()
             time.sleep(0.1)
