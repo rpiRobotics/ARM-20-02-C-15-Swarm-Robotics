@@ -37,6 +37,10 @@ class Uwb_reader:
        # Reset UWB tag so that we're in a known state
         self.ser.write('reset\r')
         self.ser.write('reset\r')
+
+        time.sleep(0.1)
+        self.ser.reset_input_buffer()
+        self.ser.reset_output_buffer()
         
         ser_bytes = self.ser.readline()
         while not 'dwm>' in ser_bytes:
