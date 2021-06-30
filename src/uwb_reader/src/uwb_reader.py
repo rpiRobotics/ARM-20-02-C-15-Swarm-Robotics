@@ -15,76 +15,71 @@ Parameters:
 	topic_name:  e.g. 'uwb_serial_front'
 '''
 
-def turn_off_lec(ser):
-	
-	# # Turn off lec
-	# ser.write('\r')
-	# # This turns the terminal mode off
-	# ser.write('quit\r')
-	# ser_bytes = ser.readline() 
-	# print(ser_bytes)
-	# ser_bytes = ser.readline() 
-	# print(ser_bytes)
-	# ser_bytes = ser.readline() 
-	# print(ser_bytes)
-	# ser_bytes = ser.readline() 
-	# print(ser_bytes)
 
-	ser.close()
-
-if __name__ == '__main__':
-	try:
-		print("Starting uwb_reader ROS node")	
+class Uwb_reader:
+	def __init__(self):
 		rospy.init_node('uwb_reader', anonymous=True, disable_signals=True)
-		serial_port = rospy.get_param('~serial_port')
+		self.serial_port = rospy.get_param('~serial_port')
 		topic_name = rospy.get_param('~topic_name')
 
-		print("Starting serial port")
-		ser = serial.Serial(serial_port, 115200, timeout=1, xonxoff=True)
+		self.ser = None
 
-		pub = rospy.Publisher(topic_name, String, queue_size=1)
+		self.pub = rospy.Publisher(topic_name, String, queue_size=1)
 		
-		#rospy.on_shutdown(turn_off_lec)
 		rospy.on_shutdown(ser.close)
 
-		#ser.flush()
-		
-		print("Reading first line:")
-		ser_bytes = ser.readline()
-		ser_bytes2 = ser.readline()
-		print("First read after flush:")
-		print(ser_bytes)
+	def start_lec_mode(self):
+		#print("Reading first line:")
+		ser_bytes = self.ser.readline()
+		ser_bytes2 = self.ser.readline()
+		#print("First read after flush:")
+		#print(ser_bytes)
 		if "," in ser_bytes or "," in ser_bytes2: # already in terminal mode
-			#pass
-			print("passing")
+			pass
 		else: # need to start terminal mode
 			# Two enter presses puts us into terminal mode
-			ser.write('\r')
-			ser.write('\r')
+			self.ser.write('\r')
+			self.ser.write('\r')
 			
 			# Wait until all the startup stuff is done
 			for i in range(15):
-				ser_bytes = ser.readline()
-				print(ser_bytes)
+				ser_bytes = self.ser.readline()
+				#print(ser_bytes)
 				if "dwm> " in ser_bytes:
 					break
 
 			# Tell UWB tag to give us distance readings
 			if not "DIST" in ser_bytes:
-				ser.write("lec\r")
-			ser_bytes = ser.readline() 
-			print(ser_bytes)
+				self.ser.write("lec\r")
+			ser_bytes = self.ser.readline() 
+			#print(ser_bytes)
 
 			# Throw out first reading (has extra "dwm> ")
-			ser_bytes = ser.readline() 
-			print(ser_bytes)
+			ser_bytes = self.ser.readline() 
+			#print(ser_bytes)
 
-		while True:
-			ser_bytes = ser.readline()
-			if(ser_bytes):
-				#rospy.loginfo(ser_bytes)
-				pub.publish(ser_bytes)
+	def start_reading(self):
+		while not rospy.is_shutdown():
+			try:
+                if(self.ser == None):
+                    rospy.loginfo("Trying to reconnect to serial")
+                    self.ser = serial.Serial(self.serial_port, 115200, timeout=1, xonxoff=True)
+                    rospy.loginfo("Connected to serial")
+                    self.start_lec_mode()
 
-	except KeyboardInterrupt:
-		print('Interrupt!')
-		#turn_off_lec(ser)
+                ser_bytes = self.ser.readline()
+				if(ser_bytes):
+					self.pub.publish(ser_bytes)
+				else:
+					rospy.logwarn("Serial timeout occured")
+
+            except serial.serialutil.SerialException:
+                if(not(self.ser == None)):
+                    self.ser.close()
+                    self.ser = None
+                    rospy.logwarn("Disconnecting from serial")
+                rospy.logwarn("Serial disconnected")
+
+if __name__ == '__main__':
+	uwb_reader = Uwb_reader()
+	uwb_reader.start_reading()
