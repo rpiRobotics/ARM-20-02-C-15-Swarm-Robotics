@@ -34,42 +34,43 @@ class Uwb_reader:
             self.ser.close()
 
     def start_lec_mode(self):
-        #print("Reading first line:")
+       # Reset UWB tag so that we're in a known state
+        self.ser.write('reset\r')
+        self.ser.write('reset\r')
+
+        time.sleep(0.1)
+        self.ser.reset_input_buffer()
+        self.ser.reset_output_buffer()
+        
         ser_bytes = self.ser.readline()
-        ser_bytes2 = self.ser.readline()
-        #print("First read after flush:")
-        #print(ser_bytes)
-        if "," in ser_bytes or "," in ser_bytes2: # already in terminal mode
-            pass
-        else: # need to start terminal mode
-            # Two enter presses puts us into terminal mode
-            self.ser.write('\r')
-            self.ser.write('\r')
-            
-            # Wait until all the startup stuff is done
-            for i in range(15):
+        while not 'dwm>' in ser_bytes:
+            rospy.loginfo('waiting for dwm>')
+            rospy.loginfo(ser_bytes)
+            self.ser.write('\r\r')
+            ser_bytes = self.ser.readline()
+            time.sleep(0.1)
+            while(self.ser.in_waiting):
+                rospy.loginfo('waiting for dwm> (ser.in_waiting)')
                 ser_bytes = self.ser.readline()
-                #print(ser_bytes)
-                if "dwm> " in ser_bytes:
-                    break
+                time.sleep(0.1)
 
-            # Tell UWB tag to give us distance readings
-            if not "DIST" in ser_bytes:
-                self.ser.write("lec\r")
-            ser_bytes = self.ser.readline() 
-            #print(ser_bytes)
+        # Tell UWB tag to give us distance readings
+        self.ser.write("lec\r")
 
-            # Throw out first reading (has extra "dwm> ")
-            ser_bytes = self.ser.readline() 
-            #print(ser_bytes)
+        ser_bytes = self.ser.readline() 
+
+        # Throw out first reading (has extra "dwm> ")
+        ser_bytes = self.ser.readline() 
 
     def start_reading(self):
         while not rospy.is_shutdown():
             try:
                 if(self.ser == None):
                     rospy.loginfo("Trying to reconnect to serial")
-                    self.ser = serial.Serial(self.serial_port, 115200, timeout=0.5, xonxoff=True)
+                    self.ser = serial.Serial(self.serial_port, 115200, timeout=1, xonxoff=True)
                     rospy.loginfo("Connected to serial")
+                    # self.ser.reset_input_buffer()
+                    # self.ser.reset_output_buffer()
                     time.sleep(1)
                     self.start_lec_mode()
 
