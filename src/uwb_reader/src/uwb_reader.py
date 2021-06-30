@@ -28,7 +28,7 @@ class Uwb_reader:
         
         rospy.on_shutdown(self.close_serial_if_active)
 
-    def close_serial_if_active(self)
+    def close_serial_if_active(self):
         if(not(self.ser == None)):
             self.ser.close()
 
