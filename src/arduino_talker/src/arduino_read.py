@@ -14,7 +14,8 @@ class arduinoread:
 		
 		self.comport=rospy.get_param('~com_port')
 		
-		self.ser = serial.Serial(self.comport,115200,timeout=0.04)
+		#self.ser = serial.Serial(self.comport,115200,timeout=0.04)
+		self.ser = None
 		
 		self.deadman_switch_pub = rospy.Publisher(self.arduino_deadman_switch_topic, Bool, queue_size=1)
 		self.e_stop_pub = rospy.Publisher(self.arduino_e_stop_topic, Bool, queue_size=1)
@@ -24,44 +25,47 @@ class arduinoread:
 
 	def read_serial(self,event):
 		if not rospy.is_shutdown():
-			output=int(self.ser.read())
-			mes_deadman_switch = Bool()
-			mes_e_stop = Bool()
+			try:
+				if(self.ser == None):
+					rospy.log("Trying to reconnect to serial")
+					self.ser = serial.Serial(self.comport,115200,timeout=0.04)
+					rospy.log("Connected to serial")
 
-			if(output == 0):
-				mes_e_stop.data = 0
-				mes_deadman_switch.data = 0
-			if(output == 1):
-				mes_e_stop.data = 0
-				mes_deadman_switch.data = 1
-			if(output == 2):
-				mes_e_stop.data = 1
-				mes_deadman_switch.data = 0
-			if(output == 3):
-				mes_e_stop.data = 1
-				mes_deadman_switch.data = 1
-
-
-			self.deadman_switch_pub.publish(mes_deadman_switch)
-			self.e_stop_pub.publish(mes_e_stop)
-
-			self.ser.reset_input_buffer()
+				handle_serial_data(self.ser.read())
+				self.ser.reset_input_buffer()
+			except serial.serialutil.SerialException:
+				if(not(self.ser == None)):
+	                self.ser.close()
+	                self.ser = None
+	                rospy.log("Disconnecting from serial")
+                rospy.log("Serial disconnected")
 		else:
 			rospy.signal_shutdown("system shutdown")
 
+	def handle_serial_data(self, raw_serial_data):
+		output = int(raw_serial_data)
+
+		mes_deadman_switch = Bool()
+		mes_e_stop = Bool()
+
+		if(output == 0):
+			mes_e_stop.data = 0
+			mes_deadman_switch.data = 0
+		if(output == 1):
+			mes_e_stop.data = 0
+			mes_deadman_switch.data = 1
+		if(output == 2):
+			mes_e_stop.data = 1
+			mes_deadman_switch.data = 0
+		if(output == 3):
+			mes_e_stop.data = 1
+			mes_deadman_switch.data = 1
 
 
-
-
-
+		self.deadman_switch_pub.publish(mes_deadman_switch)
+		self.e_stop_pub.publish(mes_e_stop)
 
 
 if __name__ == '__main__':
 	arduinoreader=arduinoread()
-
-	# Subscribe to space mouse velocity commands
-	
-	# Publish command velocity
-	
-
 	rospy.spin()
