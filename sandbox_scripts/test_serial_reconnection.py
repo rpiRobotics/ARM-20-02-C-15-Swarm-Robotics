@@ -4,7 +4,8 @@ import serial
 import time
 
 def serialRead(serialPort):    
-    ser = serial.Serial(serialPort, 115200, timeout=0.04)
+    # ser = serial.Serial(serialPort, 115200, timeout=0.04)
+    ser = None
 
     while(True):
         try:
@@ -14,7 +15,13 @@ def serialRead(serialPort):
                 print("Reconnected")
 
             output = ser.read()
-            print(output)
+
+            print(output.decode('utf-8'))
+            try:
+                print(int(output.decode('utf-8')))
+            except:
+                print("garbage data")
+                pass
 
         except serial.serialutil.SerialException:
             if(not(ser == None)):
