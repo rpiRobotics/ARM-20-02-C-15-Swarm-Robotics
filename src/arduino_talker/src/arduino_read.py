@@ -27,9 +27,9 @@ class arduinoread:
         if not rospy.is_shutdown():
             try:
                 if(self.ser == None):
-                    rospy.log("Trying to reconnect to serial")
+                    rospy.loginfo("Trying to reconnect to serial")
                     self.ser = serial.Serial(self.comport,115200,timeout=0.04)
-                    rospy.log("Connected to serial")
+                    rospy.loginfo("Connected to serial")
 
                 handle_serial_data(self.ser.read())
                 self.ser.reset_input_buffer()
@@ -37,8 +37,8 @@ class arduinoread:
                 if(not(self.ser == None)):
                     self.ser.close()
                     self.ser = None
-                    rospy.log("Disconnecting from serial")
-                rospy.log("Serial disconnected")
+                    rospy.logwarn("Disconnecting from serial")
+                rospy.logwarn("Serial disconnected")
         else:
             rospy.signal_shutdown("system shutdown")
 
