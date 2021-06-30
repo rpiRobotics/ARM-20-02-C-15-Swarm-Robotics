@@ -30,7 +30,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <remap from="/diagnostics" to="diagnostics" />
     <remap from="/diagnostics_toplevel_state" to="diagnostics_toplevel_state" />
     <remap from="/diagnostics_agg" to="diagnostics_agg" />
-
+    <remap from="e_stop" to="/e_stop" />
 
     <arg name="port" default="$(optenv HUSKY_PORT /dev/prolific)" />
 
