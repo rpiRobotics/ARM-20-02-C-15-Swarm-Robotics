@@ -17,7 +17,7 @@ class arduinoread:
 		self.ser = serial.Serial(self.comport,115200,timeout=0.04)
 		#self.ser = serial.Serial('/dev/ttyACM0',115200,timeout=0.04)
 		self.deadman_switch_pub = rospy.Publisher(self.arduino_deadman_switch_topic, Bool, queue_size=1)
-		self.e_stop_pub = rospy.Publisher(self.arduino_deadman_switch_topic, Bool, queue_size=1)
+		self.e_stop_pub = rospy.Publisher(self.arduino_e_stop_topic, Bool, queue_size=1)
 		time.sleep(1)
 		rospy.Timer(rospy.Duration(0.04),self.read_serial)
 
