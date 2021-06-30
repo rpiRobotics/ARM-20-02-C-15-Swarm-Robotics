@@ -43,8 +43,11 @@ class arduinoread:
             rospy.signal_shutdown("system shutdown")
 
     def handle_serial_data(self, raw_serial_data):
-        output = int(raw_serial_data.decode('utf-8'))
-
+        try:
+            output = int(raw_serial_data.decode('utf-8'))
+        except:
+            rospy.logwarn("Garbage serial data")
+            return
         mes_deadman_switch = Bool()
         mes_e_stop = Bool()
 
