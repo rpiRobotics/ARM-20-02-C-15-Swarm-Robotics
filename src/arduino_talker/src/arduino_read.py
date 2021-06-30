@@ -11,11 +11,11 @@ class arduinoread:
 		rospy.init_node('arduino_talker', anonymous=True)
 		self.arduino_deadman_switch_topic=rospy.get_param('~arduino_deadman_switch_topic')
 		self.arduino_e_stop_topic=rospy.get_param('~arduino_e_stop_topic')
-		#self.arduino_deadman_switch_topic="arduino_pub"
+		
 		self.comport=rospy.get_param('~com_port')
-		#self.comfreq=rospy.get_param('baudrate')
+		
 		self.ser = serial.Serial(self.comport,115200,timeout=0.04)
-		#self.ser = serial.Serial('/dev/ttyACM0',115200,timeout=0.04)
+		
 		self.deadman_switch_pub = rospy.Publisher(self.arduino_deadman_switch_topic, Bool, queue_size=1)
 		self.e_stop_pub = rospy.Publisher(self.arduino_e_stop_topic, Bool, queue_size=1)
 		time.sleep(1)
@@ -29,17 +29,17 @@ class arduinoread:
 			mes_e_stop = Bool()
 
 			if(output == 0):
-				mes_deadman_switch.data = 0
 				mes_e_stop.data = 0
+				mes_deadman_switch.data = 0
 			if(output == 1):
-				mes_deadman_switch.data = 0
-				mes_e_stop.data = 1
-			if(output == 2):
-				mes_deadman_switch.data = 1
 				mes_e_stop.data = 0
-			if(output == 3):
 				mes_deadman_switch.data = 1
+			if(output == 2):
 				mes_e_stop.data = 1
+				mes_deadman_switch.data = 0
+			if(output == 3):
+				mes_e_stop.data = 1
+				mes_deadman_switch.data = 0
 
 
 			self.deadman_switch_pub.publish(mes_deadman_switch)
