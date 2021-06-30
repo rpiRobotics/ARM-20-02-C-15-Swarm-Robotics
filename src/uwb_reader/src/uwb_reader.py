@@ -51,13 +51,13 @@ class Uwb_reader:
                 time.sleep(0.1)
 
         # Tell UWB tag to give us distance readings
-        ser.write("lec\r")
+        self.ser.write("lec\r")
 
-        ser_bytes = ser.readline() 
+        ser_bytes = self.ser.readline() 
 
         # Throw out first reading (has extra "dwm> ")
-        ser_bytes = ser.readline() 
-        
+        ser_bytes = self.ser.readline() 
+
     def start_reading(self):
         while not rospy.is_shutdown():
             try:
