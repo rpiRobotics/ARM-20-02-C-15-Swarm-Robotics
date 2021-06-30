@@ -55,24 +55,24 @@
             <!-- <rosparam command="load" file="$(find husky_control)/config/twist_mux.yaml" /> -->
             <remap from="cmd_vel_out" to="husky_velocity_controller/cmd_vel"/>
             <rosparam>
-                topics:
-                - name    : joy
-                  topic   : joy_teleop/cmd_vel
-                  timeout : 0.5
-                  priority: 10
-                - name    : interactive_marker
-                  topic   : twist_marker_server/cmd_vel
-                  timeout : 0.5
-                  priority: 8
-                - name    : external
-                  topic   : cmd_vel
-                  timeout : 0.5
-                  priority: 1
-                  locks:
-                - name    : e_stop
-                  topic   : e_stop
-                  timeout : 0.1
-                  priority: 255
+            topics:
+            - name    : joy
+              topic   : joy_teleop/cmd_vel
+              timeout : 0.5
+              priority: 10
+            - name    : interactive_marker
+              topic   : twist_marker_server/cmd_vel
+              timeout : 0.5
+              priority: 8
+            - name    : external
+              topic   : cmd_vel
+              timeout : 0.5
+              priority: 1
+            locks:
+            - name    : e_stop
+              topic   : /e_stop
+              timeout : 0.1
+              priority: 255
             </rosparam>
 
         </node>
