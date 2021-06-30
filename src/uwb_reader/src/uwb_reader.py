@@ -26,7 +26,7 @@ class Uwb_reader:
 
         self.pub = rospy.Publisher(topic_name, String, queue_size=1)
         
-        rospy.on_shutdown(ser.close)
+        rospy.on_shutdown(self.ser.close)
 
     def start_lec_mode(self):
         #print("Reading first line:")
