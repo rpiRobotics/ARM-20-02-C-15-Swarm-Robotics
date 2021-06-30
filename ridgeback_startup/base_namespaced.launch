@@ -27,7 +27,7 @@
   </node>
 
   <!-- Mecanum controller and basic localization -->
-  <include file="$(find ridgeback_control)/launch/control.launch" />
+  <!-- <include file="$(find ridgeback_control)/launch/control.launch" /> -->
 
   <!-- Teleoperation via joystick and rviz interactive markers -->
   <!-- include file="$(find ridgeback_control)/launch/teleop.launch" /-->
