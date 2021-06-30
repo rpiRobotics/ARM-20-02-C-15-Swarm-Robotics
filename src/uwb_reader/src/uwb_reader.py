@@ -84,7 +84,7 @@ class Uwb_reader:
                     self.ser = None
                     rospy.logwarn("Disconnecting from serial")
                 rospy.logwarn("Serial disconnected")
-                time.sleep(0.02)
+                time.sleep(0.25)
 
 
 if __name__ == '__main__':
