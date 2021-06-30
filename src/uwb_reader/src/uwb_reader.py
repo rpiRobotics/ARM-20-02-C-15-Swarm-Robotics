@@ -34,39 +34,30 @@ class Uwb_reader:
             self.ser.close()
 
     def start_lec_mode(self):
-        rospy.loginfo("start_lec_mode start")
-        rospy.loginfo("Reading first line:")
-        ser_bytes = self.ser.readline()
-        rospy.loginfo(ser_bytes)
-        ser_bytes2 = self.ser.readline()
-        rospy.loginfo(ser_bytes2)
+       # Reset UWB tag so that we're in a known state
+        self.ser.write('reset\r')
+        self.ser.write('reset\r')
         
-        if "," in ser_bytes or "," in ser_bytes2: # already in terminal mode
-            pass
-        else: # need to start terminal mode
-            # Two enter presses puts us into terminal mode
-            self.ser.write('\r')
-            self.ser.write('\r')
-            
-            # Wait until all the startup stuff is done
-            for i in range(15):
+        ser_bytes = self.ser.readline()
+        while not 'dwm>' in ser_bytes:
+            rospy.loginfo('waiting for dwm>')
+            #rospy.loginfo(ser_bytes)
+            self.ser.write('\r\r')
+            ser_bytes = self.ser.readline()
+            time.sleep(0.1)
+            while(self.ser.in_waiting):
+                rospy.loginfo('waiting for dwm> (ser.in_waiting)')
                 ser_bytes = self.ser.readline()
-                rospy.loginfo(ser_bytes)
-                if "dwm> " in ser_bytes:
-                    break
+                time.sleep(0.1)
 
-            # Tell UWB tag to give us distance readings
-            if not "DIST" in ser_bytes:
-                self.ser.write("lec\r")
-            ser_bytes = self.ser.readline() 
-            rospy.loginfo(ser_bytes)
+        # Tell UWB tag to give us distance readings
+        ser.write("lec\r")
 
-            # Throw out first reading (has extra "dwm> ")
-            ser_bytes = self.ser.readline() 
-            rospy.loginfo(ser_bytes)
+        ser_bytes = ser.readline() 
 
-            rospy.loginfo("start_lec_mode complete")
-
+        # Throw out first reading (has extra "dwm> ")
+        ser_bytes = ser.readline() 
+        
     def start_reading(self):
         while not rospy.is_shutdown():
             try:
