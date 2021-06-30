@@ -3,6 +3,7 @@ import rospy
 from std_msgs.msg import String
 
 import serial
+import time
 
 '''
 uwb_reader.py
@@ -83,6 +84,8 @@ class Uwb_reader:
                     self.ser = None
                     rospy.logwarn("Disconnecting from serial")
                 rospy.logwarn("Serial disconnected")
+                time.sleep(0.02)
+
 
 if __name__ == '__main__':
     uwb_reader = Uwb_reader()
