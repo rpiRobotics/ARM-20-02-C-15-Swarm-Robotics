@@ -1,18 +1,14 @@
-
+#define DEADMAN_PIN 3
+#define E_STOP_PIN 4 
 
 void setup() {
-  // put your setup code here, to run once:
-   pinMode(3, INPUT_PULLUP);
+   pinMode(DEADMAN_PIN, INPUT_PULLUP);
+   pinMode(E_STOP_PIN, INPUT_PULLUP);
    Serial.begin(115200);
 
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   delay(20);
-  if (digitalRead(3) == LOW) {
-    Serial.print(1);
-  }else{
-    Serial.print(0);
-  }
+  Serial.print( 2*digitalRead(E_STOP_PIN) + 1*digitalRead(DEADMAN_PIN));
 }
