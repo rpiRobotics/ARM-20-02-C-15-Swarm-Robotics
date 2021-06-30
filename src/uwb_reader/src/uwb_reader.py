@@ -65,8 +65,8 @@ class Uwb_reader:
                     rospy.loginfo("Trying to reconnect to serial")
                     self.ser = serial.Serial(self.serial_port, 115200, timeout=1, xonxoff=True)
                     rospy.loginfo("Connected to serial")
-                    self.ser.reset_input_buffer()
-                    self.ser.reset_output_buffer()
+                    # self.ser.reset_input_buffer()
+                    # self.ser.reset_output_buffer()
                     time.sleep(1)
                     self.start_lec_mode()
 
