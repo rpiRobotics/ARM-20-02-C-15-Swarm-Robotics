@@ -34,11 +34,13 @@ class Uwb_reader:
             self.ser.close()
 
     def start_lec_mode(self):
-        #print("Reading first line:")
+        rospy.logdebug("start_lec_mode start")
+        rospy.logdebug("Reading first line:")
         ser_bytes = self.ser.readline()
+        rospy.logdebug(ser_bytes)
         ser_bytes2 = self.ser.readline()
-        #print("First read after flush:")
-        #print(ser_bytes)
+        rospy.logdebug(ser_bytes2)
+        
         if "," in ser_bytes or "," in ser_bytes2: # already in terminal mode
             pass
         else: # need to start terminal mode
@@ -49,7 +51,7 @@ class Uwb_reader:
             # Wait until all the startup stuff is done
             for i in range(15):
                 ser_bytes = self.ser.readline()
-                #print(ser_bytes)
+                rospy.logdebug(ser_bytes)
                 if "dwm> " in ser_bytes:
                     break
 
@@ -57,11 +59,13 @@ class Uwb_reader:
             if not "DIST" in ser_bytes:
                 self.ser.write("lec\r")
             ser_bytes = self.ser.readline() 
-            #print(ser_bytes)
+            rospy.logdebug(ser_bytes)
 
             # Throw out first reading (has extra "dwm> ")
             ser_bytes = self.ser.readline() 
-            #print(ser_bytes)
+            rospy.logdebug(ser_bytes)
+
+            rospy.logdebug("start_lec_mode complete")
 
     def start_reading(self):
         while not rospy.is_shutdown():
