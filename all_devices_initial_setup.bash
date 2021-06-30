@@ -16,6 +16,7 @@ SCRIPTS=(
     source ~/catkin_ws/devel/setup.bash;
     echo 1234 | sudo -S apt install -y spacenavd;
     echo 1234 | sudo -S apt install -y ros-noetic-spacenav-node;
+    echo 1234 | sudo -S usermod -a -G dialout tablet
     "
 
     "cd; 
@@ -32,6 +33,7 @@ SCRIPTS=(
     source ~/catkin_ws/devel/setup.bash;
     echo rockie | sudo -S apt install -y spacenavd;
     echo rockie | sudo -S apt install -y ros-kinetic-spacenav-node;
+    echo rockie | sudo -S usermod -a -G dialout rockie
     "
 
     "cd; 
@@ -44,6 +46,7 @@ SCRIPTS=(
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
     source ~/catkin_ws/devel/setup.bash;
+    echo 1234 | sudo -S usermod -a -G dialout oarbot_silver
     "
     
     "cd; 
@@ -56,6 +59,7 @@ SCRIPTS=(
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
     source ~/catkin_ws/devel/setup.bash;
+    echo 1234 | sudo -S usermod -a -G dialout oarbot_blue
     "
     
     "cd; 
@@ -68,6 +72,7 @@ SCRIPTS=(
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
     source ~/catkin_ws/devel/setup.bash;
+    echo clearpath | sudo -S usermod -a -G dialout administrator
     "
     
     "cd; 
@@ -80,6 +85,7 @@ SCRIPTS=(
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
     source ~/catkin_ws/devel/setup.bash;
+    echo 1234 | sudo -S usermod -a -G dialout husky_blue
     "
     
     "cd; 
@@ -92,6 +98,7 @@ SCRIPTS=(
     grep -qxF 'source ~/catkin_ws/devel/setup.bash' ~/.bashrc || echo 'source ~/catkin_ws/devel/setup.bash' >> ~/.bashrc;
     source ~/.bashrc;
     source ~/catkin_ws/devel/setup.bash;
+    echo 1234 | sudo -S usermod -a -G dialout husky_black
     ")
 
 echo ${SCRIPTS}
