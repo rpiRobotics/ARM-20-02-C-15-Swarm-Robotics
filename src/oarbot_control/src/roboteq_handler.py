@@ -43,7 +43,7 @@ class RoboteqHandler:
                     self.ser = None
                     rospy.logwarn("Disconnecting from serial")
                 rospy.logwarn("Serial disconnected")
-                time.sleep(0.25)
+                time.sleep(0.04)
             
 
     def request_handler(self, request= ""):
@@ -70,7 +70,7 @@ class RoboteqHandler:
                 self.ser = None
                 rospy.logwarn("Disconnecting from serial")
             rospy.logwarn("Serial disconnected")
-            time.sleep(0.25)
+            time.sleep(0.04)
             self.connect(self.port,self.baudrate)
             
     
