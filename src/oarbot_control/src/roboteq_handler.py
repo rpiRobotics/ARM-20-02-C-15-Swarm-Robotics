@@ -20,24 +20,30 @@ class RoboteqHandler:
         self.port = port
         self.baudrate = baudrate
         
-        try: # attempt to create a serial object and check its status
-            self.ser = serial.Serial(
-                port = self.port,
-                baudrate = self.baudrate,
-                parity = serial.PARITY_NONE,
-                stopbits = serial.STOPBITS_ONE,
-                bytesize = serial.EIGHTBITS,
-                timeout = 0.04
-            )
-            # if self.ser.isOpen():
-            #     self.ser.close()
-            # self.ser.open()
-
-        except Exception as e:
-            # TODO
-            # pass
-            rospy.logwarn("CONNECTION ERROR")
-            raise e
+        while True:
+            try: # attempt to create a serial object and check its status
+                if(self.ser == None):
+                    rospy.loginfo("Trying to reconnect to serial")
+                    self.ser = serial.Serial(
+                        port = self.port,
+                        baudrate = self.baudrate,
+                        parity = serial.PARITY_NONE,
+                        stopbits = serial.STOPBITS_ONE,
+                        bytesize = serial.EIGHTBITS,
+                        timeout = 0.04
+                    )
+                    rospy.loginfo("Connected to serial")
+                    return
+                else:
+                    return
+                    
+            except serial.serialutil.SerialException:
+                if(not(self.ser == None)):
+                    self.ser.close()
+                    self.ser = None
+                    rospy.logwarn("Disconnecting from serial")
+                rospy.logwarn("Serial disconnected")
+                time.sleep(0.25)
             
 
     def request_handler(self, request= ""):
@@ -45,24 +51,27 @@ class RoboteqHandler:
         Sends a command and a parameter, 
         """
         try:
+            self.connect(self.port,self.baudrate)
+
             raw_command = "%s\r"%(request)
             self.ser.write(raw_command.encode())
             rospy.loginfo("sending: " + raw_command)
 
             char_echo = self.ser.read_until('\r') # This is the char echo
             rospy.loginfo("recieve char_echo: " + char_echo)
-            rospy.loginfo("recieve char_echo (decoded): " + char_echo.decode())
 
             result = self.ser.read_until('\r') # Actual response
             rospy.loginfo("recieve result: " + result)
-            rospy.loginfo("recieve result(decoded): " + result.decode())
             # result = result.split("\r")
             return result
-        except Exception as e:
-            #TODO
-            print("Exception at request_handler function")
-            rospy.logwarn("WARNING")
-            raise e
+        except serial.serialutil.SerialException:
+            if(not(self.ser == None)):
+                self.ser.close()
+                self.ser = None
+                rospy.logwarn("Disconnecting from serial")
+            rospy.logwarn("Serial disconnected")
+            time.sleep(0.25)
+            self.connect(self.port,self.baudrate)
             
     
     def send_command(self, command, first_parameter = "", second_parameter = ""):
