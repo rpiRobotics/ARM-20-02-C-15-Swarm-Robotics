@@ -36,6 +36,7 @@ class RoboteqHandler:
         except Exception as e:
             # TODO
             # pass
+            rospy.logwarn("CONNECTION ERROR")
             raise e
             
 
@@ -44,7 +45,7 @@ class RoboteqHandler:
         Sends a command and a parameter, 
         """
         try:
-            raw_command = "%s+\r"%(request)
+            raw_command = "%s\r"%(request)
             self.ser.write(raw_command.encode())
             rospy.loginfo("sending: " + raw_command)
 
@@ -80,6 +81,6 @@ class RoboteqHandler:
         param: parameter (str/int)
         returns: answer from the controller, data from request commands, or echo from action commands.
         """
-        request = "%s [%s]"%(command,parameter)
+        request = "%s %s"%(command,parameter)
         response = self.request_handler(request)
         return response
