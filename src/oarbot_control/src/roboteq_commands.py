@@ -60,6 +60,7 @@ READ_LOCKED = "?LK" # read lock status
 READ_MOTCMD = "?M" # Read motor command applied
 READ_TEMP = "?T" # Read controller temperature
 READ_VOLTS = "?V" # Read voltage measured
+READ_SPEED = "?S" # Read encoder motor speed in RPM
 
 
 # Maintenance commands
