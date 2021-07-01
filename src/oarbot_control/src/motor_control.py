@@ -17,9 +17,14 @@ class OarbotControl_Motor():
         self.serial_back = rospy.get_param('~serial_back')
         self.motor_command_topic_name = rospy.get_param('~motor_command_topic_name')
         self.motor_feedback_name = rospy.get_param('~motor_feedback_topic_name')
+        self.battery_voltage_f_name = rospy.get_param('~battery_voltage_f_topic_name')
+        self.battery_voltage_b_name = rospy.get_param('~battery_voltage_b_topic_name')
 
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
         self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
+        
+        self.voltage_f_pub = rospy.Publisher(self.battery_voltage_f_name, Float32, queue_size=1)
+        self.voltage_b_pub = rospy.Publisher(self.battery_voltage_b_name, Float32, queue_size=1)
 
         # connection to Roboteq motor controller
         self.connect_Roboteq_controller()
@@ -84,7 +89,8 @@ class OarbotControl_Motor():
             battery_voltage_b = Float32()
             battery_voltage_f.data = self.format_voltage(self.controller_f.read_value(cmds.READ_VOLTS, 2))
             battery_voltage_b.data = self.format_voltage(self.controller_b.read_value(cmds.READ_VOLTS, 2))
-
+            self.voltage_f_pub.publish(battery_voltage_f)
+            self.voltage_b_pub.publish(battery_voltage_b)
 
 
         
