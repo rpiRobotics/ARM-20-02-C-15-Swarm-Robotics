@@ -11,46 +11,38 @@ class OarbotControl_Motor():
         self.motor_lock = threading.Lock()
         rospy.init_node('oarbot_ctrl_motor', anonymous=True)
 
-        serial_front = rospy.get_param('~serial_front')
-        serial_back = rospy.get_param('~serial_back')
+        self.serial_front = rospy.get_param('~serial_front')
+        self.serial_back = rospy.get_param('~serial_back')
+        self.motor_command_topic_name = rospy.get_param('~motor_command_topic_name')
+        self.motor_feedback_name = rospy.get_param('~motor_feedback_topic_name')
 
-        self.motor_command_topic_name=rospy.get_param('~motor_command_topic_name')
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
-
-        self.motor_feedback_name=rospy.get_param('~motor_feedback_topic_name')
         self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
 
-        # connection to Roboteq robot controller
-        self.controller_f = RoboteqHandler(debug_mode=False, exit_on_interrupt=False)
-        self.controller_b = RoboteqHandler(debug_mode=False, exit_on_interrupt=False) 
-        self.connected_f = self.controller_f.connect(serial_front)
-        self.connected_b = self.controller_b.connect(serial_back)
-        self.u1 = 0
-        self.u2 = 0
-        self.u3 = 0
-        self.u4 = 0
+        self.roboteq_debug_mode = False
+        self.roboteq_exit_on_interrupt = False
 
-        self.is_locked = False
-        rospy.Timer(rospy.Duration(0.04),self.forward_kin)
+        # connection to Roboteq motor controller
+        self.connect_Roboteq_controller()
+        
+        rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
+
+    def connect_Roboteq_controller(self):
+        self.controller_f = RoboteqHandler(debug_mode=self.roboteq_debug_mode, exit_on_interrupt=self.roboteq_exit_on_interrupt)
+        self.controller_b = RoboteqHandler(debug_mode=self.roboteq_debug_mode, exit_on_interrupt=self.roboteq_exit_on_interrupt) 
+        self.connected_f = self.controller_f.connect(self.serial_front)
+        self.connected_b = self.controller_b.connect(self.serial_back)
 
     def motor_cmd_callback(self, msg):
-        self.inverse_kin(msg)
-
-    def inverse_kin(self, msg):
-    	self.u1 = msg.v_fl
-    	self.u2 = msg.v_fr
-    	self.u3 = msg.v_rl
-    	self.u4 = msg.v_rr
-
-        self.motor_lock.acquire()
-        self.controller_f.send_command(cmds.DUAL_DRIVE, self.u1, self.u2)
-        self.controller_b.send_command(cmds.DUAL_DRIVE, self.u3, self.u4)
-        self.motor_lock.release()     
+        with self.motor_lock:
+            self.controller_f.send_command(cmds.DUAL_DRIVE, msg.v_fl, msg.v_fr)
+            self.controller_b.send_command(cmds.DUAL_DRIVE, msg.v_rl, msg.v_rr)
+          
         
     def read_speed(self, controller, motor_number):
         succeeded = False
         while not succeeded:
-            message = controller.read_value("?S", motor_number)
+            message = controller.read_value(cmds.READ_SPEED, motor_number)
             # print(message)
             a = message.split('=')
             if (len(a) > 1):
@@ -64,20 +56,14 @@ class OarbotControl_Motor():
         return float(a[1])
 
 
-    def forward_kin(self,event):
-        self.motor_lock.acquire()
-        u1a = self.read_speed(self.controller_f, 1)
-        u2a = self.read_speed(self.controller_f, 2)
-        u3a = self.read_speed(self.controller_b, 1)
-        u4a = self.read_speed(self.controller_b, 2)
-    
-        self.motor_lock.release()
-
+    def motor_feedback(self,event):
         motor_feedback_msg = MotorCmd()
-        motor_feedback_msg.v_fl = u1a
-        motor_feedback_msg.v_fr = u2a
-        motor_feedback_msg.v_rl = u3a
-        motor_feedback_msg.v_rr = u4a
+
+        with self.motor_lock:
+            motor_feedback_msg.v_fl = self.read_speed(self.controller_f, 1)
+            motor_feedback_msg.v_fr = self.read_speed(self.controller_f, 2)
+            motor_feedback_msg.v_rl = self.read_speed(self.controller_b, 1)
+            motor_feedback_msg.v_rr = self.read_speed(self.controller_b, 2)
 
         self.motor_feedback_pub.publish(motor_feedback_msg)
 
