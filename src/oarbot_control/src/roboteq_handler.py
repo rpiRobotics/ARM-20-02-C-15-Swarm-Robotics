@@ -49,11 +49,13 @@ class RoboteqHandler:
             self.ser.write(raw_command.encode())
             rospy.loginfo("sending: " + raw_command)
 
-            char_echo = self.ser.readline() # This is the char echo
+            char_echo = self.ser.read_until('\r') # This is the char echo
             rospy.loginfo("recieve char_echo: " + char_echo)
+            rospy.loginfo("recieve char_echo (decoded): " + char_echo.decode())
 
-            result = self.ser.readline() # Actual response
+            result = self.ser.read_until('\r') # Actual response
             rospy.loginfo("recieve result: " + result)
+            rospy.loginfo("recieve result(decoded): " + result.decode())
             # result = result.split("\r")
             return result
         except Exception as e:
