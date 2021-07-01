@@ -1,5 +1,6 @@
 import serial
 import time
+import rospy
 # message
 class RoboteqHandler:
     """
@@ -45,14 +46,19 @@ class RoboteqHandler:
         try:
             raw_command = "%s+\r"%(request)
             self.ser.write(raw_command.encode())
+            rospy.loginfo("sending: " + raw_command)
 
             char_echo = self.ser.readline() # This is the char echo
+            rospy.loginfo("recieve char_echo: " + char_echo)
+
             result = self.ser.readline() # Actual response
+            rospy.loginfo("recieve result: " + result)
             # result = result.split("\r")
             return result
         except Exception as e:
             #TODO
             print("Exception at request_handler function")
+            rospy.logwarn("WARNING")
             raise e
             
     
