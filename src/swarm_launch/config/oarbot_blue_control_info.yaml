@@ -12,3 +12,5 @@ total_gear_ratio: 9.72 # 1/((Chain Driver Ratio)*(gear_ratio)) = 1/((10.0/15.0)*
 
 battery_voltage_f_topic_name: volts_f
 battery_voltage_b_topic_name: volts_b
+
+stat_flag_topic_name: stat_flags

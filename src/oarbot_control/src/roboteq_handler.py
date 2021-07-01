@@ -55,11 +55,11 @@ class RoboteqHandler:
 
             raw_command = "%s\r"%(request)
             self.ser.write(raw_command.encode())
-            rospy.loginfo("sending: " + raw_command)
+            # rospy.loginfo("sending: " + raw_command)
             char_echo = self.ser.read_until('\r') # This is the char echo
-            rospy.loginfo("recieve char_echo: " + char_echo)
+            # rospy.loginfo("recieve char_echo: " + char_echo)
             result = self.ser.read_until('\r') # Actual response
-            rospy.loginfo("recieve result: " + result)
+            # rospy.loginfo("recieve result: " + result)
             return result
         except serial.serialutil.SerialException:
             if(not(self.ser == None)):
