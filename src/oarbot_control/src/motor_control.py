@@ -104,10 +104,10 @@ class OarbotControl_Motor():
 
         # Read runtime status flags
         stat_flag_msg = MotorStatus() 
-        stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_VOLTS, 1))
-        stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_VOLTS, 2))
-        stat_flag_msg.s_rl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_VOLTS, 1))
-        stat_flag_msg.s_rr = self.format_stat_flag(self.controller_b.read_value(cmds.READ_VOLTS, 2))
+        stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1))
+        stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2))
+        stat_flag_msg.s_rl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1))
+        stat_flag_msg.s_rr = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2))
         self.stat_flag_pub.publish(stat_flag_msg)
 
 

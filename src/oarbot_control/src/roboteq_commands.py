@@ -61,6 +61,7 @@ READ_MOTCMD = "?M" # Read motor command applied
 READ_TEMP = "?T" # Read controller temperature
 READ_VOLTS = "?V" # Read voltage measured
 READ_SPEED = "?S" # Read encoder motor speed in RPM
+READ_RUNTIME_STATUS_FLAG = "?FM" # Read runtime status of each motor as uint16, read data sheet for how to interpret the values
 
 
 # Maintenance commands
