@@ -22,7 +22,7 @@ class OarbotControl_Motor():
         # connection to Roboteq motor controller
         self.connect_Roboteq_controller()
         
-        # rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
+        rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
 
     def connect_Roboteq_controller(self):
         self.controller_f = RoboteqHandler()
