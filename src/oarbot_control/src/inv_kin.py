@@ -11,13 +11,11 @@ class OarbotControl_InvKin():
         self.motor_command_name=rospy.get_param('~motor_command_topic_name')
         self.teleop_command_name=rospy.get_param('~republished_spacemouse')
 
-        # Set local variable by reading parameters
         self.l_x        = rospy.get_param("~l_x") # meter
         self.l_y        = rospy.get_param("~l_y") # meter
         self.r          = rospy.get_param("~radius_wheel") # meter
         self.total_gear_ratio  = rospy.get_param("~total_gear_ratio") # rad/s
  
-
         self.motor_cmd_pub = rospy.Publisher(self.motor_command_name, MotorCmd, queue_size=1)
         rospy.Subscriber(self.teleop_command_name, Twist, self.callback, queue_size=1)
 
