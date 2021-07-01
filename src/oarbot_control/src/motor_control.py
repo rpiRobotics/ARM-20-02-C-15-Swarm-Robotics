@@ -50,6 +50,8 @@ class OarbotControl_Motor():
                     print("ValueError! message recieved: ")
                     print(message)
                     #pass
+            else:
+                rospy.logwarn("Improper motor speed message:" + message)
         return float(a[1])
 
 
