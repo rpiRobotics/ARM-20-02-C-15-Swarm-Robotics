@@ -32,7 +32,7 @@ class OarbotControl_FwdKin():
         vel_feedback = Twist()
         vel_feedback.linear.x = (-self.r/4 * (v_fl + v_fr + v_rl + v_rr)) / self.total_gear_ratio
         vel_feedback.linear.y = (self.r/4 * (-v_fl + v_fr - v_rl + v_rr)) / self.total_gear_ratio
-        vel_feedback.angular.z = (self.r/(4*(self.oarbot.l + self.oarbot.w)) * (-v_fl + v_fr + v_rl - v_rr)) / self.total_gear_ratio
+        vel_feedback.angular.z = (self.r/(4*(self.l_x + self.l_y)) * (-v_fl + v_fr + v_rl - v_rr)) / self.total_gear_ratio
         
         self.vel_pub.publish(vel_feedback)
 
