@@ -42,7 +42,7 @@ class OarbotControl_Motor():
         # Formats the speed message (RPM) obtained from roboteq driver into float
         try:
             rpm = speed_message.split('=')
-            assert rpm[0] == 'S'or rpm[0] == 's' # To make sure that is a speed reading
+            assert rpm[0] == '?S'or rpm[0] == '?s' # To make sure that is a speed reading
             return float(rpm[1])
         except:
             rospy.logwarn("Improper motor speed message:" + speed_message)
