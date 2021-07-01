@@ -34,7 +34,8 @@ class RoboteqHandler:
 
         except Exception as e:
             # TODO
-            pass
+            # pass
+            raise e
             
 
     def request_handler(self, request= ""):
@@ -52,6 +53,7 @@ class RoboteqHandler:
         except Exception as e:
             #TODO
             print("Exception at request_handler function")
+            raise e
             
     
     def send_command(self, command, first_parameter = "", second_parameter = ""):
