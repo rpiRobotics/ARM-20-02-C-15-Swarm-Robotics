@@ -9,7 +9,6 @@ import threading
 
 class OarbotControl_Motor():
     def __init__(self):
-        self.motor_lock = threading.Lock()
         self.last_vel_lock = threading.Lock()
         rospy.init_node('oarbot_ctrl_motor', anonymous=True)
 
@@ -20,11 +19,15 @@ class OarbotControl_Motor():
         self.battery_voltage_f_name = rospy.get_param('~battery_voltage_f_topic_name')
         self.battery_voltage_b_name = rospy.get_param('~battery_voltage_b_topic_name')
 
+        self.stat_flag_name = rospy.get_param('~stat_flag_topic_name')
+
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
         self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
-        
+
         self.voltage_f_pub = rospy.Publisher(self.battery_voltage_f_name, Float32, queue_size=1)
         self.voltage_b_pub = rospy.Publisher(self.battery_voltage_b_name, Float32, queue_size=1)
+
+        self.stat_flag_pub = rospy.Publisher(self.stat_flag_name, MotorStatus, queue_size=1)
 
         # connection to Roboteq motor controller
         self.connect_Roboteq_controller()
@@ -58,39 +61,56 @@ class OarbotControl_Motor():
         # Formats the speed message (RPM) obtained from roboteq driver into float
         try:
             V = voltage_message.split('=')
-            assert V[0] == 'V'# or rpm[0] == '?s' # To make sure that is a speed reading
+            assert V[0] == 'V'
             return float(V[1])/10.0
         except:
             rospy.logwarn("Improper  battery voltage message:" + voltage_message)
 
+    def format_stat_flag(self, stat_flag_message):
+        # Formats the speed message (RPM) obtained from roboteq driver into float
+        try:
+            fm = stat_flag_message.split('=')
+            assert fm[0] == 'FM'
+            return int(fm[1])
+        except:
+            rospy.logwarn("Improper status flag message:" + stat_flag_message)
 
     def motor_feedback(self,event):    
-        with self.motor_lock:
-            # Execute the motor velocities 
-            with self.last_vel_lock:
-                if self.velocity_command_sent:
-                    self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
-                    self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
-                else:
-                    self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
-                    self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
-                    self.velocity_command_sent = True
+        # Execute the motor velocities 
+        with self.last_vel_lock:
+            if self.velocity_command_sent:
+                self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+                self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+            else:
+                self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
+                self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
+                self.velocity_command_sent = True
 
-            # Read the executed motor velocities
-            motor_feedback_msg = MotorCmd()
-            motor_feedback_msg.v_fl = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
-            motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
-            motor_feedback_msg.v_rl = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
-            motor_feedback_msg.v_rr = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
-            self.motor_feedback_pub.publish(motor_feedback_msg)
+        # Read the executed motor velocities
+        motor_feedback_msg = MotorCmd()
+        motor_feedback_msg.v_fl = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
+        motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
+        motor_feedback_msg.v_rl = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
+        motor_feedback_msg.v_rr = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
+        self.motor_feedback_pub.publish(motor_feedback_msg)
 
-            # Read voltages of the batterties (Just in case we read from both of the drivers, they are expected to be the same)
-            battery_voltage_f = Float32() 
-            battery_voltage_b = Float32()
-            battery_voltage_f.data = self.format_voltage(self.controller_f.read_value(cmds.READ_VOLTS, 2))
-            battery_voltage_b.data = self.format_voltage(self.controller_b.read_value(cmds.READ_VOLTS, 2))
-            self.voltage_f_pub.publish(battery_voltage_f)
-            self.voltage_b_pub.publish(battery_voltage_b)
+        # Read voltages of the batterties (Just in case we read from both of the drivers, they are expected to be the same)
+        battery_voltage_f = Float32() 
+        battery_voltage_b = Float32()
+        battery_voltage_f.data = self.format_voltage(self.controller_f.read_value(cmds.READ_VOLTS, 2))
+        battery_voltage_b.data = self.format_voltage(self.controller_b.read_value(cmds.READ_VOLTS, 2))
+        self.voltage_f_pub.publish(battery_voltage_f)
+        self.voltage_b_pub.publish(battery_voltage_b)
+
+        # Read runtime status flags
+        stat_flag_msg = MotorStatus() 
+        stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_VOLTS, 1))
+        stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_VOLTS, 2))
+        stat_flag_msg.s_rl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_VOLTS, 1))
+        stat_flag_msg.s_rr = self.format_stat_flag(self.controller_b.read_value(cmds.READ_VOLTS, 2))
+        self.stat_flag_pub.publish(stat_flag_msg)
+
+
 
 
         
