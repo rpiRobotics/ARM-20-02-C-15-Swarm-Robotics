@@ -9,6 +9,7 @@ import threading
 class OarbotControl_Motor():
     def __init__(self):
         self.motor_lock = threading.Lock()
+        self.last_vel_lock = threading.Lock()
         rospy.init_node('oarbot_ctrl_motor', anonymous=True)
 
         self.serial_front = rospy.get_param('~serial_front')
@@ -17,6 +18,7 @@ class OarbotControl_Motor():
         self.motor_feedback_name = rospy.get_param('~motor_feedback_topic_name')
 
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
+        self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
         self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
 
         # connection to Roboteq motor controller
@@ -31,38 +33,41 @@ class OarbotControl_Motor():
         self.connected_b = self.controller_b.connect(self.serial_back)
 
     def motor_cmd_callback(self, msg):
-        with self.motor_lock:
-            self.controller_f.send_command(cmds.DUAL_DRIVE, msg.v_fl, msg.v_fr)
-            self.controller_b.send_command(cmds.DUAL_DRIVE, msg.v_rl, msg.v_rr)
-          
+        with self.last_vel_lock:
+            self.motor_cmd_msg = msg
+            self.velocity_command_sent = False
+
         
-    def read_speed(self, controller, motor_number):
-        succeeded = False
-        while not succeeded:
-            message = controller.read_value(cmds.READ_SPEED, motor_number)
-            # print(message)
-            a = message.split('=')
-            if (len(a) > 1):
-                try:
-                    float(a[1])
-                    succeeded = True
-                except ValueError:
-                    print("ValueError! message recieved: ")
-                    print(message)
-                    #pass
-            else:
-                rospy.logwarn("Improper motor speed message:" + message)
-        return float(a[1])
+    def format_speed(self, speed_message):
+        # Formats the speed message (RPM) obtained from roboteq driver into float
+        try:
+            rpm = speed_message.split('=')
+            assert rpm[0] == 'S'or rpm[0] == 's' # To make sure that is a speed reading
+            return float(rpm[1])
+        except:
+            rospy.logwarn("Improper motor speed message:" + speed_message)
 
 
     def motor_feedback(self,event):
         motor_feedback_msg = MotorCmd()
 
         with self.motor_lock:
-            motor_feedback_msg.v_fl = self.read_speed(self.controller_f, 1)
-            motor_feedback_msg.v_fr = self.read_speed(self.controller_f, 2)
-            motor_feedback_msg.v_rl = self.read_speed(self.controller_b, 1)
-            motor_feedback_msg.v_rr = self.read_speed(self.controller_b, 2)
+            # Execute the motor velocities 
+            with self.last_vel_lock:
+                if self.velocity_command_sent:
+                    self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+                    self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+                else:
+                    self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
+                    self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
+                    self.velocity_command_sent = True
+
+            # Read the executed motor velocities
+            motor_feedback_msg.v_fl = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
+            motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
+            motor_feedback_msg.v_rl = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
+            motor_feedback_msg.v_rr = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
+
 
         self.motor_feedback_pub.publish(motor_feedback_msg)
 
