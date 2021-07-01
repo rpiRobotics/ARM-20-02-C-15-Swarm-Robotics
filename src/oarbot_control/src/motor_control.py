@@ -23,6 +23,8 @@ class OarbotControl_Motor():
 
         # connection to Roboteq motor controller
         self.connect_Roboteq_controller()
+
+        self.velocity_command_sent = True
         
         rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
 
