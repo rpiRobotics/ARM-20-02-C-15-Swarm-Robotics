@@ -19,17 +19,14 @@ class OarbotControl_Motor():
         rospy.Subscriber(self.motor_command_topic_name, MotorCmd, self.motor_cmd_callback, queue_size=1)
         self.motor_feedback_pub = rospy.Publisher(self.motor_feedback_name, MotorCmd, queue_size=1)
 
-        self.roboteq_debug_mode = False
-        self.roboteq_exit_on_interrupt = False
-
         # connection to Roboteq motor controller
         self.connect_Roboteq_controller()
         
         rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
 
     def connect_Roboteq_controller(self):
-        self.controller_f = RoboteqHandler(debug_mode=self.roboteq_debug_mode, exit_on_interrupt=self.roboteq_exit_on_interrupt)
-        self.controller_b = RoboteqHandler(debug_mode=self.roboteq_debug_mode, exit_on_interrupt=self.roboteq_exit_on_interrupt) 
+        self.controller_f = RoboteqHandler()
+        self.controller_b = RoboteqHandler() 
         self.connected_f = self.controller_f.connect(self.serial_front)
         self.connected_b = self.controller_b.connect(self.serial_back)
 
