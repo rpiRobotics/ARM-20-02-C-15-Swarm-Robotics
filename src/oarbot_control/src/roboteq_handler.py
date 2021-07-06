@@ -1,6 +1,7 @@
 import serial
 import time
 import rospy
+from rospy.core import logwarn
 # message
 class RoboteqHandler:
     """
@@ -64,6 +65,10 @@ class RoboteqHandler:
             
             result = self.ser.read_until('\r') # Actual response
             # rospy.loginfo("recieve result: " + result)
+
+            if char_echo != raw_command:
+                rospy.logwarn("char_echo: '" + str(char_echo)  + "' is not the same as the raw command: '" + str(raw_command) + "'" )
+
             return result
         except serial.serialutil.SerialException:
             if(not(self.ser == None)):
@@ -84,6 +89,10 @@ class RoboteqHandler:
             message = "%s "%(command)
         
         response = self.request_handler(message)
+
+        if response != "+":
+            rospy.logwarn("Motor command is not Acknowledged. The response was:" + str(response))
+
         return response
 
     def read_value(self, command= "", parameter = ""):
