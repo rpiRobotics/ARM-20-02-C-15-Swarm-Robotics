@@ -54,8 +54,9 @@ class OarbotControl_Motor():
             rpm = speed_message.split('=')
             assert rpm[0] == 'S'# or rpm[0] == '?s' # To make sure that is a speed reading
             return float(rpm[1])
-        except:
+        except Exception as e:
             rospy.logwarn("Improper motor speed message:" + speed_message)
+            raise e
 
     def format_voltage(self, voltage_message):
         # Formats the speed message (RPM) obtained from roboteq driver into float
@@ -63,17 +64,22 @@ class OarbotControl_Motor():
             V = voltage_message.split('=')
             assert V[0] == 'V'
             return float(V[1])/10.0
-        except:
+        except Exception as e:
             rospy.logwarn("Improper  battery voltage message:" + voltage_message)
+            raise e
+            
 
-    def format_stat_flag(self, stat_flag_message):
+    def format_stat_flag(self, stat_flag_message, motor_name):
         # Formats the speed message (RPM) obtained from roboteq driver into float
         try:
             fm = stat_flag_message.split('=')
             assert fm[0] == 'FM'
+            if int(fm[1]) != 0:
+                rospy.logwarn("Status flag is non zero, it is:" + str(int(fm[1])) + ", on motor: " + motor_name )
             return int(fm[1])
-        except:
+        except Exception as e:
             rospy.logwarn("Improper status flag message:" + stat_flag_message)
+            raise e
 
     def motor_feedback(self,event):    
         # Execute the motor velocities 
@@ -87,29 +93,43 @@ class OarbotControl_Motor():
                 self.velocity_command_sent = True
 
         # Read the executed motor velocities
-        motor_feedback_msg = MotorCmd()
-        motor_feedback_msg.v_fl = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
-        motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
-        motor_feedback_msg.v_rl = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
-        motor_feedback_msg.v_rr = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
-        self.motor_feedback_pub.publish(motor_feedback_msg)
+        try:
+            motor_feedback_msg = MotorCmd()
+            motor_feedback_msg.v_fl = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
+            motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
+            motor_feedback_msg.v_rl = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
+            motor_feedback_msg.v_rr = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
+            self.motor_feedback_pub.publish(motor_feedback_msg)
+        except Exception as ex:
+            template = "An exception of type {0} occurred while reading the executed motor velocities. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            rospy.logwarn(message)
 
         # Read voltages of the batterties (Just in case we read from both of the drivers, they are expected to be the same)
-        battery_voltage_f = Float32() 
-        battery_voltage_b = Float32()
-        battery_voltage_f.data = self.format_voltage(self.controller_f.read_value(cmds.READ_VOLTS, 2))
-        battery_voltage_b.data = self.format_voltage(self.controller_b.read_value(cmds.READ_VOLTS, 2))
-        self.voltage_f_pub.publish(battery_voltage_f)
-        self.voltage_b_pub.publish(battery_voltage_b)
+        try:
+            battery_voltage_f = Float32() 
+            battery_voltage_b = Float32()
+            battery_voltage_f.data = self.format_voltage(self.controller_f.read_value(cmds.READ_VOLTS, 2))
+            battery_voltage_b.data = self.format_voltage(self.controller_b.read_value(cmds.READ_VOLTS, 2))
+            self.voltage_f_pub.publish(battery_voltage_f)
+            self.voltage_b_pub.publish(battery_voltage_b)
+        except Exception as ex:
+            template = "An exception of type {0} occurred while reading voltages of the batterties. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            rospy.logwarn(message)
 
         # Read runtime status flags
-        stat_flag_msg = MotorStatus() 
-        stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1))
-        stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2))
-        stat_flag_msg.s_rl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1))
-        stat_flag_msg.s_rr = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2))
-        self.stat_flag_pub.publish(stat_flag_msg)
-
+        try:
+            stat_flag_msg = MotorStatus() 
+            stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1),"FL")
+            stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2),"FR")
+            stat_flag_msg.s_rl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1),"RL")
+            stat_flag_msg.s_rr = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2),"RR")
+            self.stat_flag_pub.publish(stat_flag_msg)
+        except Exception as ex:
+            template = "An exception of type {0} occurred while reading runtime status flags. Arguments:\n{1!r}"
+            message = template.format(type(ex).__name__, ex.args)
+            rospy.logwarn(message)
 
 
 
