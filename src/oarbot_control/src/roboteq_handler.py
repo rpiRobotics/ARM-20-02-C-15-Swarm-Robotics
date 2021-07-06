@@ -90,7 +90,7 @@ class RoboteqHandler:
         
         response = self.request_handler(message)
 
-        if str(response) != "+":
+        if str(response) != "+\r":
             rospy.logwarn("Motor command is not Acknowledged. The response was: '" + str(response) + "'")
 
         return response
