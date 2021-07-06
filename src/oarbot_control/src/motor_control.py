@@ -29,6 +29,8 @@ class OarbotControl_Motor():
 
         self.stat_flag_pub = rospy.Publisher(self.stat_flag_name, MotorStatus, queue_size=1)
 
+        self.is_zero_cmd_vel_sent_ever = False
+
         # connection to Roboteq motor controller
         self.connect_Roboteq_controller()
 
@@ -87,10 +89,16 @@ class OarbotControl_Motor():
             if self.velocity_command_sent:
                 self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
                 self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+                
+                if self.is_zero_cmd_vel_sent_ever == False:
+                    rospy.logwarn("Zero velocities to the motors are sent for the first time")
+                    self.is_zero_cmd_vel_sent_ever = True
             else:
                 self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
                 self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
                 self.velocity_command_sent = True
+                
+                self.is_zero_cmd_vel_sent_ever = False
 
         # Read the executed motor velocities
         try:
