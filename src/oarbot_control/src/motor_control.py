@@ -9,7 +9,7 @@ import threading
 
 class OarbotControl_Motor():
     def __init__(self):
-        self.last_vel_lock = threading.Lock()
+        # self.last_vel_lock = threading.Lock()
         rospy.init_node('oarbot_ctrl_motor', anonymous=True)
 
         self.serial_front = rospy.get_param('~serial_front')
@@ -45,9 +45,9 @@ class OarbotControl_Motor():
         self.connected_b = self.controller_b.connect(self.serial_back)
 
     def motor_cmd_callback(self, msg):
-        with self.last_vel_lock:
-            self.motor_cmd_msg = msg
-            self.velocity_command_sent = False
+        # with self.last_vel_lock:
+        self.motor_cmd_msg = msg
+        self.velocity_command_sent = False
 
         
     def format_speed(self, speed_message):
@@ -85,20 +85,20 @@ class OarbotControl_Motor():
 
     def motor_feedback(self,event):    
         # Execute the motor velocities 
-        with self.last_vel_lock:
-            if self.velocity_command_sent:
-                self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
-                self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
-                
-                if self.is_zero_cmd_vel_sent_ever == False:
-                    rospy.logwarn("Zero velocities to the motors are sent for the first time")
-                    self.is_zero_cmd_vel_sent_ever = True
-            else:
-                self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
-                self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
-                self.velocity_command_sent = True
-                
-                self.is_zero_cmd_vel_sent_ever = False
+        # with self.last_vel_lock:
+        if self.velocity_command_sent:
+            self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+            self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
+            
+            if self.is_zero_cmd_vel_sent_ever == False:
+                rospy.logwarn("Zero velocities to the motors are sent for the first time")
+                self.is_zero_cmd_vel_sent_ever = True
+        else:
+            self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
+            self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
+            self.velocity_command_sent = True
+            
+            self.is_zero_cmd_vel_sent_ever = False
 
         # Read the executed motor velocities
         try:
