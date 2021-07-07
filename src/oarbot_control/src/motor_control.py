@@ -43,7 +43,7 @@ class OarbotControl_Motor():
 
 
         ########## for debug
-        self.last_sub_time = rospy.Time.now().to_sec()
+        # self.last_sub_time = rospy.Time.now().to_sec()
 
     def connect_Roboteq_controller(self):
         self.controller_f = RoboteqHandler()
@@ -58,9 +58,9 @@ class OarbotControl_Motor():
 
             self.time_last_motor_cmd = rospy.Time.now().to_sec()
         
-        sub_time = rospy.Time.now().to_sec()
-        rospy.loginfo(str(sub_time - self.last_sub_time) + " motor_cmd period")
-        self.last_sub_time = sub_time
+        # sub_time = rospy.Time.now().to_sec()
+        # rospy.loginfo(str(sub_time - self.last_sub_time) + " motor_cmd period")
+        # self.last_sub_time = sub_time
 
         
     def format_speed(self, speed_message):

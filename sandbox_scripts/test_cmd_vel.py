@@ -14,7 +14,7 @@ class WallTimer():
     def run(self):
         while not rospy.is_shutdown():
             start_time = time.time()
-            rospy.loginfo(start_time - self.last_start_time)
+            # rospy.loginfo(start_time - self.last_start_time)
             self.last_start_time = start_time
 
             self.callback()
@@ -62,7 +62,7 @@ class CmdVelTalker():
 
     def switch(self):
         self.direction *= -1
-        rospy.logwarn("Direction changed" )
+        # rospy.logwarn("Direction changed" )
 
 
 if __name__ == "__main__":
