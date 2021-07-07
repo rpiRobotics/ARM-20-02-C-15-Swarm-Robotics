@@ -28,32 +28,32 @@ class OarbotControl_FwdKin():
     def forward_kin(self,msg):    
         rospy.loginfo("I am in omni directional mode")
         # Convert from RPM to rad/s
-        v_fl = -msg.v_fl/60*2*math.pi
-        v_fr =  msg.v_fr/60*2*math.pi
-        v_rl =  msg.v_rl/60*2*math.pi
-        v_rr = -msg.v_rr/60*2*math.pi
+        v_fl = msg.v_fl/60*2*math.pi
+        v_fr = msg.v_fr/60*2*math.pi
+        v_bl = msg.v_bl/60*2*math.pi
+        v_br = msg.v_br/60*2*math.pi
 
         # Generate and publish the Twist message
         vel_feedback = Twist()
-        vel_feedback.linear.x = (-self.r/4 * (v_fl + v_fr + v_rl + v_rr)) / self.total_gear_ratio
-        vel_feedback.linear.y = (self.r/4 * (-v_fl + v_fr - v_rl + v_rr)) / self.total_gear_ratio
-        vel_feedback.angular.z = (self.r/(4*(self.l_x + self.l_y)) * (-v_fl + v_fr + v_rl - v_rr)) / self.total_gear_ratio
+        vel_feedback.linear.x = (self.r/4 * (v_fl + v_fr + v_bl + v_br)) / self.total_gear_ratio
+        vel_feedback.linear.y = (self.r/4 * (-v_fl + v_fr + v_bl - v_br)) / self.total_gear_ratio
+        vel_feedback.angular.z = ((self.r/(4*(self.l_x + self.l_y))) * (-v_fl + v_fr - v_bl + v_br)) / self.total_gear_ratio
         
         self.vel_pub.publish(vel_feedback)
 
     def forward_kin_skid_steer(self,msg):    
         rospy.loginfo("I am in skid steer")
         # Convert from RPM to rad/s
-        v_fl = -msg.v_fl/60*2*math.pi
-        v_fr =  msg.v_fr/60*2*math.pi
-        v_rl =  msg.v_rl/60*2*math.pi
-        v_rr = -msg.v_rr/60*2*math.pi
+        v_fl = msg.v_fl/60*2*math.pi
+        v_fr = msg.v_fr/60*2*math.pi
+        v_bl = msg.v_bl/60*2*math.pi
+        v_br = msg.v_br/60*2*math.pi
 
         # Generate and publish the Twist message
         vel_feedback = Twist()
-        vel_feedback.linear.x = (-self.r/4 * (v_fl + v_fr + v_rl + v_rr)) / self.total_gear_ratio
+        vel_feedback.linear.x = (self.r/4 * (v_fl + v_fr + v_bl + v_br)) / self.total_gear_ratio
         vel_feedback.linear.y = 0.0
-        vel_feedback.angular.z = (-self.r/(4*self.l_y) * (-v_fl + v_fr - v_rl + v_rr)) / self.total_gear_ratio
+        vel_feedback.angular.z = (self.r/(4*self.l_y) * (-v_fl + v_fr - v_bl + v_br)) / self.total_gear_ratio
         
         self.vel_pub.publish(vel_feedback)
 

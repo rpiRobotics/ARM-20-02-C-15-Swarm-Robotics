@@ -26,32 +26,30 @@ class OarbotControl_InvKin():
     def inverse_kin(self, msg):
         if self.skid_steer_mode:
             msg.linear.y = 0
-            
+
         v_lin = msg.linear
         v_ang = msg.angular
-        v_lin.x = -v_lin.x
-        v_lin.y = -v_lin.y
         
-        v_fl = 1/self.r * (v_lin.x + v_lin.y - (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
+        v_fl = 1/self.r * (v_lin.x - v_lin.y - (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
         # angular velocity of front right motor
-        v_fr = 1/self.r * (v_lin.x - v_lin.y + (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
+        v_fr = 1/self.r * (v_lin.x + v_lin.y + (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
         # angular velocity of rear right motor
-        v_rl = 1/self.r * (v_lin.x + v_lin.y + (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
+        v_bl = 1/self.r * (v_lin.x + v_lin.y - (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
         # angular velocity of rear left motor
-        v_rr = 1/self.r * (v_lin.x - v_lin.y - (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
+        v_br = 1/self.r * (v_lin.x - v_lin.y + (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
         
         # Convert from rad/s to RPM
         v_fl = v_fl*60/(2*math.pi)
         v_fr = v_fr*60/(2*math.pi)
-        v_rl = v_rl*60/(2*math.pi)
-        v_rr = v_rr*60/(2*math.pi)
+        v_bl = v_bl*60/(2*math.pi)
+        v_br = v_br*60/(2*math.pi)
 
         # Generate and publish the MotorCmd message
         motor_cmd = MotorCmd()
-        motor_cmd.v_fl = -v_fl
+        motor_cmd.v_fl = v_fl
         motor_cmd.v_fr = v_fr
-        motor_cmd.v_rl = v_rl
-        motor_cmd.v_rr = -v_rr
+        motor_cmd.v_bl = v_bl
+        motor_cmd.v_br = v_br
 
         self.motor_cmd_pub.publish(motor_cmd)
         

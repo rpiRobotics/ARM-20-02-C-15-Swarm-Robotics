@@ -107,8 +107,8 @@ class OarbotControl_Motor():
                     rospy.logwarn("Zero velocities to the motors are sent for the first time")
                     self.is_zero_cmd_vel_sent_ever = True
             else:
-                self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fl, self.motor_cmd_msg.v_fr)
-                self.controller_b.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_rl, self.motor_cmd_msg.v_rr)
+                self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fr, -self.motor_cmd_msg.v_fl)
+                self.controller_b.send_command(cmds.DUAL_DRIVE, -self.motor_cmd_msg.v_bl, self.motor_cmd_msg.v_br)
                 self.velocity_command_sent = True
                 
                 self.is_zero_cmd_vel_sent_ever = False
@@ -116,10 +116,10 @@ class OarbotControl_Motor():
         # Read the executed motor velocities
         try:
             motor_feedback_msg = MotorCmd()
-            motor_feedback_msg.v_fl = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
-            motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
-            motor_feedback_msg.v_rl = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
-            motor_feedback_msg.v_rr = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
+            motor_feedback_msg.v_fl = -self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 2))
+            motor_feedback_msg.v_fr = self.format_speed(self.controller_f.read_value(cmds.READ_SPEED, 1))
+            motor_feedback_msg.v_bl = -self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 1))
+            motor_feedback_msg.v_br = self.format_speed(self.controller_b.read_value(cmds.READ_SPEED, 2))
             self.motor_feedback_pub.publish(motor_feedback_msg)
         except Exception as ex:
             template = "An exception of type {0} occurred while reading the executed motor velocities. Arguments:\n{1!r}"
@@ -142,10 +142,10 @@ class OarbotControl_Motor():
         # Read runtime status flags
         try:
             stat_flag_msg = MotorStatus() 
-            stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1),"FL")
-            stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2),"FR")
-            stat_flag_msg.s_rl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1),"RL")
-            stat_flag_msg.s_rr = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2),"RR")
+            stat_flag_msg.s_fl = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2),"FL")
+            stat_flag_msg.s_fr = self.format_stat_flag(self.controller_f.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1),"FR")
+            stat_flag_msg.s_bl = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 1),"BL")
+            stat_flag_msg.s_br = self.format_stat_flag(self.controller_b.read_value(cmds.READ_RUNTIME_STATUS_FLAG, 2),"BR")
             self.stat_flag_pub.publish(stat_flag_msg)
         except Exception as ex:
             template = "An exception of type {0} occurred while reading runtime status flags. Arguments:\n{1!r}"

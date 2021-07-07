@@ -9,7 +9,7 @@ class CmdMotorTalker():
     def __init__(self):
         rospy.init_node('cmd_motor_talker', anonymous=True)
 
-        self.cmd_vel_pub = rospy.Publisher("/oarbot_silver/motor_command", MotorCmd, queue_size=1)
+        self.cmd_vel_pub = rospy.Publisher("/oarbot_blue/motor_command", MotorCmd, queue_size=1)
         self.direction = 1
 
         rospy.Timer(rospy.Duration(0.01), self.talk)
@@ -17,14 +17,14 @@ class CmdMotorTalker():
 
     def talk(self,event):    
         motor_feedback_msg = MotorCmd()
-        motor_feedback_msg.v_fl = 0.0
+        motor_feedback_msg.v_fl = 1.0
         motor_feedback_msg.v_fr = 0.0
         motor_feedback_msg.v_rl = 0.0
         motor_feedback_msg.v_rr = 0.0
         self.cmd_vel_pub.publish(motor_feedback_msg)
 
     def switch(self,event):
-        self.direction *= -1 
+        self.direction *= 1 
 
 
 if __name__ == "__main__":
