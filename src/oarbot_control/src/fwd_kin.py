@@ -14,12 +14,16 @@ class OarbotControl_FwdKin():
         self.l_y        = rospy.get_param("~l_y") # meter
         self.r          = rospy.get_param("~radius_wheel") # meter
         self.total_gear_ratio  = rospy.get_param("~total_gear_ratio") # rad/s
-        
+        self.skid_steer_mode = rospy.get_param("~skid_steer_mode", False) # boolean
+
         self.vel_pub = rospy.Publisher(self.vel_feedback_name, Twist, queue_size=1)
         rospy.Subscriber(self.motor_feedback_topic_name, MotorCmd, self.motor_feedback_callback, queue_size=1)
 
     def motor_feedback_callback(self, msg):
-        self.forward_kin(msg)
+        if self.skid_steer_mode:
+            self.forward_kin_skid_steer(msg)
+        else:
+            self.forward_kin(msg)
 
     def forward_kin(self,msg):    
         # Convert from RPM to rad/s
@@ -33,6 +37,21 @@ class OarbotControl_FwdKin():
         vel_feedback.linear.x = (-self.r/4 * (v_fl + v_fr + v_rl + v_rr)) / self.total_gear_ratio
         vel_feedback.linear.y = (self.r/4 * (-v_fl + v_fr - v_rl + v_rr)) / self.total_gear_ratio
         vel_feedback.angular.z = (self.r/(4*(self.l_x + self.l_y)) * (-v_fl + v_fr + v_rl - v_rr)) / self.total_gear_ratio
+        
+        self.vel_pub.publish(vel_feedback)
+
+    def forward_kin_skid_steer(self,msg):    
+        # Convert from RPM to rad/s
+        v_fl = -msg.v_fl/60*2*math.pi
+        v_fr =  msg.v_fr/60*2*math.pi
+        v_rl =  msg.v_rl/60*2*math.pi
+        v_rr = -msg.v_rr/60*2*math.pi
+
+        # Generate and publish the Twist message
+        vel_feedback = Twist()
+        vel_feedback.linear.x = (-self.r/4 * (v_fl + v_fr + v_rl + v_rr)) / self.total_gear_ratio
+        vel_feedback.linear.y = 0.0
+        vel_feedback.angular.z = (-self.r/(4*self.l_y) * (-v_fl + v_fr - v_rl + v_rr)) / self.total_gear_ratio
         
         self.vel_pub.publish(vel_feedback)
 
