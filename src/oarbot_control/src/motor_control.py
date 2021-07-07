@@ -5,37 +5,8 @@ from std_msgs.msg import Float32 # For battery voltages
 from swarm_msgs.msg import MotorStatus, MotorCmd
 from roboteq_handler import RoboteqHandler
 import roboteq_commands as cmds
-
-import time
 import threading
-class WallTimer():
-    def __init__(self, duration, callback):
-        self.duration = duration
-        self.callback = callback
 
-        self.last_start_time = time.time()
-
-    def run(self):
-        while not rospy.is_shutdown():
-            start_time = time.time()
-            rospy.loginfo(start_time - self.last_start_time)
-
-            self.last_start_time = start_time
-
-            self.callback()
-
-            finish_time = time.time()
-            if (finish_time - start_time) < self.duration:
-                try:
-                    time.sleep(self.duration*1.00 - (finish_time - start_time))
-                except:
-                    pass
-            else:
-                rospy.logwarn("The loop takes more than defined duration time: " + str(self.duration) +" seconds." )
-        rospy.logwarn("ROS is shutdown" )
-
-    def start(self):
-        threading.Thread(target=self.run).start()
 
 class OarbotControl_Motor():
     def __init__(self):
@@ -66,12 +37,11 @@ class OarbotControl_Motor():
 
         self.velocity_command_sent = True
         
-        # rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
-        self.timer_motor_feedback = WallTimer(0.04,self.motor_feedback)
+        rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
 
 
         ########## for debug
-        self.last_sub_time = time.time()
+        self.last_sub_time = rospy.Time.now().to_sec()
 
     def connect_Roboteq_controller(self):
         self.controller_f = RoboteqHandler()
@@ -84,7 +54,7 @@ class OarbotControl_Motor():
             self.motor_cmd_msg = msg
             self.velocity_command_sent = False
         
-        sub_time = time.time()
+        sub_time = rospy.Time.now().to_sec()
         rospy.loginfo(str(sub_time - self.last_sub_time) + " motor_cmd period")
         self.last_sub_time = sub_time
 
@@ -122,7 +92,7 @@ class OarbotControl_Motor():
             rospy.logwarn("Improper status flag message:" + stat_flag_message)
             raise e
 
-    def motor_feedback(self):    
+    def motor_feedback(self,event):    
         # Execute the motor velocities 
         with self.last_vel_lock:
             if self.velocity_command_sent:
@@ -185,5 +155,4 @@ class OarbotControl_Motor():
 
 if __name__ == "__main__":
     oarbotControl_Motor = OarbotControl_Motor()
-    oarbotControl_Motor.timer_motor_feedback.start()
     rospy.spin()
