@@ -37,7 +37,7 @@ class OarbotControl_Motor():
 
         self.velocity_command_sent = True
         self.time_last_motor_cmd = 0.0
-        self.motor_cmd_wait_timeout = 0.3 #seconds
+        self.motor_cmd_wait_timeout = 0.4 #seconds
 
         rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
 
