@@ -36,7 +36,8 @@ class OarbotControl_Motor():
         self.connect_Roboteq_controller()
 
         self.velocity_command_sent = True
-        
+        self.motor_cmd_wait_timeout = 0.25 #seconds
+
         rospy.Timer(rospy.Duration(0.04), self.motor_feedback)
 
 
@@ -53,6 +54,8 @@ class OarbotControl_Motor():
         with self.last_vel_lock:
             self.motor_cmd_msg = msg
             self.velocity_command_sent = False
+
+            self.time_last_motor_cmd = rospy.Time.now().to_sec()
         
         sub_time = rospy.Time.now().to_sec()
         rospy.loginfo(str(sub_time - self.last_sub_time) + " motor_cmd period")
@@ -95,7 +98,7 @@ class OarbotControl_Motor():
     def motor_feedback(self,event):    
         # Execute the motor velocities 
         with self.last_vel_lock:
-            if self.velocity_command_sent:
+            if self.velocity_command_sent and (rospy.Time.now().to_sec() - self.time_last_motor_cmd > self.motor_cmd_wait_timeout):
                 self.controller_f.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
                 self.controller_b.send_command(cmds.DUAL_DRIVE, 0.0, 0.0)
                 
