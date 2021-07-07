@@ -26,6 +26,7 @@ class OarbotControl_FwdKin():
             self.forward_kin(msg)
 
     def forward_kin(self,msg):    
+        rospy.loginfo("I am in omni directional mode")
         # Convert from RPM to rad/s
         v_fl = -msg.v_fl/60*2*math.pi
         v_fr =  msg.v_fr/60*2*math.pi
@@ -41,6 +42,7 @@ class OarbotControl_FwdKin():
         self.vel_pub.publish(vel_feedback)
 
     def forward_kin_skid_steer(self,msg):    
+        rospy.loginfo("I am in skid steer")
         # Convert from RPM to rad/s
         v_fl = -msg.v_fl/60*2*math.pi
         v_fr =  msg.v_fr/60*2*math.pi
