@@ -27,7 +27,7 @@
       locks:
       - name    : e_stop
         topic   : /e_stop
-        timeout : 0.1
+        timeout : 1.0
         priority: 255
       </rosparam>
       <remap from="cmd_vel_out" to="ridgeback_velocity_controller/cmd_vel"/>
