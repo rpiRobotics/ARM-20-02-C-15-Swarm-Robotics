@@ -36,6 +36,7 @@ class WallTimer():
 
     def start(self):
         threading.Thread(target=self.run).start()
+
 class OarbotControl_Motor():
     def __init__(self):
         self.last_vel_lock = threading.Lock()
@@ -70,7 +71,7 @@ class OarbotControl_Motor():
 
 
         ########## for debug
-        # self.last_sub_time = rospy.Time.now().to_sec()
+        self.last_sub_time = time.time()
 
     def connect_Roboteq_controller(self):
         self.controller_f = RoboteqHandler()
@@ -83,9 +84,9 @@ class OarbotControl_Motor():
             self.motor_cmd_msg = msg
             self.velocity_command_sent = False
         
-        # sub_time = rospy.Time.now().to_sec()
-        # rospy.loginfo(str(sub_time - self.last_sub_time) + " motor_cmd period")
-        # self.last_sub_time = sub_time
+        sub_time = time.time()
+        rospy.loginfo(str(sub_time - self.last_sub_time) + " motor_cmd period")
+        self.last_sub_time = sub_time
 
         
     def format_speed(self, speed_message):
