@@ -37,12 +37,12 @@ class CmdVelTalker():
     def __init__(self):
         rospy.init_node('cmd_vel_talker', anonymous=True)
 
-        self.cmd_vel_pub = rospy.Publisher("/oarbot_silver/e_stop_cmd_vel", Twist, queue_size=1)
+        self.cmd_vel_pub = rospy.Publisher("/tablet/deadman_switch_spacenav_twist", Twist, queue_size=1)
         self.direction = 1
 
         # rospy.Timer(rospy.Duration(0.5), self.switch)
 
-        self.duration = 0.0333333 # loop duration
+        self.duration = 0.01 # loop duration
         self.duration2 = 1.0 # switch duration
 
         self.timer_talk = WallTimer(self.duration,self.talk)
