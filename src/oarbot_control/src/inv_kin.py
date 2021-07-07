@@ -15,6 +15,7 @@ class OarbotControl_InvKin():
         self.l_y        = rospy.get_param("~l_y") # meter
         self.r          = rospy.get_param("~radius_wheel") # meter
         self.total_gear_ratio  = rospy.get_param("~total_gear_ratio") # rad/s
+        self.skid_steer_mode = rospy.get_param("~skid_steer_mode", False) # boolean
  
         self.motor_cmd_pub = rospy.Publisher(self.motor_command_name, MotorCmd, queue_size=1)
         rospy.Subscriber(self.teleop_command_name, Twist, self.callback, queue_size=1)
@@ -23,6 +24,9 @@ class OarbotControl_InvKin():
         self.inverse_kin(msg)
 
     def inverse_kin(self, msg):
+        if self.skid_steer_mode:
+            msg.linear.y = 0
+            
         v_lin = msg.linear
         v_ang = msg.angular
         v_lin.x = -v_lin.x
