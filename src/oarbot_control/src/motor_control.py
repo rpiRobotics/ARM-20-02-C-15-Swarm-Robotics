@@ -19,7 +19,7 @@ class WallTimer():
         while not rospy.is_shutdown():
             start_time = time.time()
             rospy.loginfo(start_time - self.last_start_time)
-            
+
             self.last_start_time = start_time
 
             self.callback()
@@ -118,7 +118,7 @@ class OarbotControl_Motor():
             rospy.logwarn("Improper status flag message:" + stat_flag_message)
             raise e
 
-    def motor_feedback(self,event):    
+    def motor_feedback(self):    
         # Execute the motor velocities 
         with self.last_vel_lock:
             if self.velocity_command_sent:
