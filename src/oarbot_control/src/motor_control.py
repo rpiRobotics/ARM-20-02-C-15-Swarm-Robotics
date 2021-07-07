@@ -26,7 +26,10 @@ class WallTimer():
 
             finish_time = time.time()
             if (finish_time - start_time) < self.duration:
-                time.sleep(self.duration*1.00 - (finish_time - start_time))
+                try:
+                    time.sleep(self.duration*1.00 - (finish_time - start_time))
+                except:
+                    pass
             else:
                 rospy.logwarn("The loop takes more than defined duration time: " + str(self.duration) +" seconds." )
         rospy.logwarn("ROS is shutdown" )
@@ -182,4 +185,4 @@ class OarbotControl_Motor():
 if __name__ == "__main__":
     oarbotControl_Motor = OarbotControl_Motor()
     oarbotControl_Motor.timer_motor_feedback.start()
-    # rospy.spin()
+    rospy.spin()

@@ -21,7 +21,10 @@ class WallTimer():
 
             finish_time = time.time()
             if (finish_time - start_time) < self.duration:
-                time.sleep(self.duration*1.00 - (finish_time - start_time))
+                try:
+                    time.sleep(self.duration*1.00 - (finish_time - start_time))
+                except:
+                    pass
             else:
                 rospy.logwarn("The loop takes more than defined duration time: " + str(self.duration) +" seconds." )
         rospy.logwarn("ROS is shutdown" )
@@ -39,7 +42,7 @@ class CmdVelTalker():
 
         # rospy.Timer(rospy.Duration(0.5), self.switch)
 
-        self.duration = 0.03333 # loop duration
+        self.duration = 0.0333333 # loop duration
         self.duration2 = 1.0 # switch duration
 
         self.timer_talk = WallTimer(self.duration,self.talk)
@@ -66,4 +69,4 @@ if __name__ == "__main__":
     CmdVelTalker = CmdVelTalker()
     CmdVelTalker.timer_talk.start()
     CmdVelTalker.timer_switch.start()
-    # rospy.spin()
+    rospy.spin()
