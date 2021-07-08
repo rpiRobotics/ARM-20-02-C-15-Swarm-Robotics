@@ -15,4 +15,4 @@ battery_voltage_b_topic_name: volts_b
 
 stat_flag_topic_name: stat_flags
 
-skid_steer_mode: true
+skid_steer_mode: false
