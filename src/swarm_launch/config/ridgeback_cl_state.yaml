@@ -11,4 +11,4 @@ vel_lim_x: 1.0
 vel_lim_y: 1.0
 vel_lim_theta: 2.0
 
-space_mouse_topic_name: '/spacenav/joy'
+space_mouse_topic_name: '/tablet/spacenav/joy'
