@@ -62,7 +62,7 @@ class Controller:
 		self.vel_limit = np.array([[vel_lim_x],[vel_lim_y],[vel_lim_theta]])
 
 		self.vel_cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=10)
-		self.output_enable = False
+		self.output_enable = False 
 		self.state_pos = np.array([[0.0],[0.0],[0.0]])
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
@@ -132,7 +132,10 @@ class Controller:
 		
 
 	def space_mouse_button_callback(self, data):
-		self.output_enable = data.buttons[0]
+		if data.buttons[0]:
+			self.output_enable = True
+		elif data.buttons[1]:
+			self.output_enable = False
 
 	def state_feedback_callback(self, data):
 		self.state_pos[0][0] = data.x
