@@ -19,8 +19,8 @@ class CmdMotorTalker():
         motor_feedback_msg = MotorCmd()
         motor_feedback_msg.v_fl = 1.0
         motor_feedback_msg.v_fr = 0.0
-        motor_feedback_msg.v_rl = 0.0
-        motor_feedback_msg.v_rr = 0.0
+        motor_feedback_msg.v_bl = 0.0
+        motor_feedback_msg.v_br = 0.0
         self.cmd_vel_pub.publish(motor_feedback_msg)
 
     def switch(self,event):

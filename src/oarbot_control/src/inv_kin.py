@@ -21,12 +21,12 @@ class OarbotControl_InvKin():
         rospy.Subscriber(self.teleop_command_name, Twist, self.callback, queue_size=1)
 
     def callback(self, msg):
-        self.inverse_kin(msg)
+        if self.skid_steer_mode:
+            self.inverse_kin_skid_steer(msg)
+        else:
+            self.inverse_kin(msg)
 
     def inverse_kin(self, msg):
-        if self.skid_steer_mode:
-            msg.linear.y = 0
-
         v_lin = msg.linear
         v_ang = msg.angular
         
@@ -37,6 +37,34 @@ class OarbotControl_InvKin():
         v_bl = 1/self.r * (v_lin.x + v_lin.y - (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
         # angular velocity of rear left motor
         v_br = 1/self.r * (v_lin.x - v_lin.y + (self.l_x+self.l_y)*v_ang.z) * self.total_gear_ratio
+        
+        # Convert from rad/s to RPM
+        v_fl = v_fl*60/(2*math.pi)
+        v_fr = v_fr*60/(2*math.pi)
+        v_bl = v_bl*60/(2*math.pi)
+        v_br = v_br*60/(2*math.pi)
+
+        # Generate and publish the MotorCmd message
+        motor_cmd = MotorCmd()
+        motor_cmd.v_fl = v_fl
+        motor_cmd.v_fr = v_fr
+        motor_cmd.v_bl = v_bl
+        motor_cmd.v_br = v_br
+
+        self.motor_cmd_pub.publish(motor_cmd)
+
+
+    def inverse_kin_skid_steer(self, msg):
+        v_lin = msg.linear
+        v_ang = msg.angular
+        
+        v_fl = 1/self.r * (v_lin.x  - self.l_y * v_ang.z) * self.total_gear_ratio
+        # angular velocity of front right motor
+        v_fr = 1/self.r * (v_lin.x  + self.l_y * v_ang.z) * self.total_gear_ratio
+        # angular velocity of rear right motor
+        v_bl = 1/self.r * (v_lin.x  - self.l_y * v_ang.z) * self.total_gear_ratio
+        # angular velocity of rear left motor
+        v_br = 1/self.r * (v_lin.x  + self.l_y * v_ang.z) * self.total_gear_ratio
         
         # Convert from rad/s to RPM
         v_fl = v_fl*60/(2*math.pi)
