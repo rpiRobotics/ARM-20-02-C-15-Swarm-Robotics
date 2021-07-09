@@ -26,22 +26,43 @@ from swarm_msgs.msg import FrameTwist
 callback_lock=threading.Lock()
 
 #class robot_button(QtWidgets.QPushButton):
+class swarm_button:
+    def __init__(self,button,topic):
+        self.button=button
+        self.publisher=rospy.Publisher(topic, Twist, queue_size=0)
+        self.button.pressed.connect(self.button_pressed)
+        self.enabled=False
+
+    def button_pressed(self):
+        self.enabled=not(self.enabled)
+        
+        if(self.enabled):
+            
+            self.button.setStyleSheet('QPushButton {background-color: orange; color: white;}')
+            
+        else:
+            
+            self.button.setStyleSheet('QPushButton {background-color: white; color: black;}')
+
 class robot_button:
-    def __init__(self,number,topic,holonomic):
-        self.holonomic=holonomic
-        self.text="Robot "+str(number+1)+" Motion Enable"
-        self.text2="Robot Frame "+str(number+1)+" Motion Enable"
+    def __init__(self,number,topic,commandmode,sizex,sizey,text):
+        if(commandmode):
+            self.text=text+"\nMotion Enable"
+        else:
+            self.text=text+" Frame\nMotion Enable"
         self.enabled=False
         self.motion_frame="world"
         self.button=QPushButton()
+        self.button.setFixedSize(sizex,sizey)
         self.button.setFont(QFont('Ubuntu',13))
         self.button.setText(self.text)
         self.button.pressed.connect(self.button_pressed)
+        
         self.publisher=rospy.Publisher(topic, Twist, queue_size=0)
-        self.button2=QPushButton()
-        self.button2.setFont(QFont('Ubuntu',11))
-        self.button2.setText(self.text2)
-        self.button2.pressed.connect(self.button_pressed2)
+        #self.button2=QPushButton()
+        #self.button2.setFont(QFont('Ubuntu',11))
+        #self.button2.setText(self.text2)
+        #self.button2.pressed.connect(self.button_pressed2)
     def publish_out_message(self):
         message=FrameTwist()
         h=std_msgs.msg.Header()
@@ -93,9 +114,16 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.synced_control_enabled=False
         self.mainscreenui = os.path.join(rospkg.RosPack().get_path('swarm_gui'), 'resource', 'mainwindow.ui')
         uic.loadUi(self.mainscreenui, self)
+        desktop=QtWidgets.QDesktopWidget()
+        screengeometry=desktop.screenGeometry()
+        height=screengeometry.height()
+        width=screengeometry.width()
+        print(type(width))
+        widthnew=int(width/2)
+        self.setFixedSize(widthnew,height)
         
-        self.Syncmotions.pressed.connect(self.sync_robot_motion_pressed)
-        self.Moveswarmframe.pressed.connect(self.move_swarm_frame)
+        #self.Moveswarm.pressed.connect(self.sync_robot_motion_pressed)
+        #self.Moveswarmframe.pressed.connect(self.move_swarm_frame)
         #self.Robot1enable.pressed.connect(self.rob1enable)
         #self.Robot2enable.pressed.connect(self.rob2enable)
         #self.Robot3enable.pressed.connect(self.rob3enable)
@@ -117,25 +145,34 @@ class SWARMGUI(QtWidgets.QMainWindow):
         try:
             self.number_of_bots=rospy.get_param('number_of_robots')
             self.nodenames=rospy.get_param('robot_node_names')
-            self.command_topics=rospy.get_param('command_topics')
+            self.open_loop_command_topics=rospy.get_param('open_loop_command_topics')
+            self.close_loop_command_topics=rospy.get_param('closed_loop_command_topics')
             self.input_command_topic=rospy.get_param('input_command_topic')
             self.robot_types=rospy.get_param('robot_type_information')
+            self.closed_loop_swarm_command_topic=rospy.get_param('closed_loop_swarm_command_topic')
+            self.open_loop_swarm_command_topic=rospy.get_param('open_loop_swarm_command_topic')
         except:
             self.number_of_bots=3
             self.nodenames=[["/rosout"],["hello"],["hello"]]
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
         
+        self.buttons=[]
+        self.moveswarmbutton=swarm_button(self.Moveswarm,self.open_loop_swarm_command_topic)
+        self.moveswarmframebutton= swarm_button(self.Moveswarmframe,self.closed_loop_swarm_command_topic)
+        self.buttons.append(self.moveswarmbutton)
+        self.buttons.append(self.moveswarmframebutton)
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
         for i in range(self.number_of_bots):
             led=LEDIndicator()
             led.setDisabled(True)
-            self.Robotlayout.addWidget(led,2,i)
+            self.Robotlayout.addWidget(led,3,i)
             self.Leds.append(led)
 	
         self.status_manager=LEDManager(self.nodenames,self.Leds)
-        self.buttons=[]
+        
         self.labels=[]
+        buttonwidth=widthnew-100
         for x in range(self.number_of_bots):
             
             if(len(self.robot_types)!=self.number_of_bots):
@@ -143,6 +180,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 break
             
             robot_label=QLabel()
+            robot_label.setFixedSize(buttonwidth/self.number_of_bots,100)
             robot_label.setAlignment(Qt.AlignCenter)
             robot_label.setText(self.robot_types[x])
             robot_label.setFont(QFont('Ubuntu',13))
@@ -150,19 +188,20 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.labels.append(robot_label)
             
                 
-
+        
         #print(self.robot_types[1] is "Holonomic")
         for i in range(self.number_of_bots):
-            if(len(self.command_topics) != self.number_of_bots):
+            if(len(self.open_loop_command_topics) != self.number_of_bots and len(self.open_loop_command_topics)!=len(self.close_loop_command_topics)):
                 print("NOT ENOUGH COMMAND TOPICS GIVEN FOR NUMBER OF ROBOTS")
                 break
-            holonomic=False
-            if(self.robot_types[i]=="Holonomic"):
-                holonomic=True
-            button_class_object=robot_button(i,self.command_topics[i],holonomic)
+            
+            
+            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth/self.number_of_bots,height/8,self.robot_types[i])
+            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth/self.number_of_bots,height/8,self.robot_types[i])
             self.Robotlayout.addWidget(button_class_object.button,1,i)
-            self.Robotlayout.addWidget(button_class_object.button2,2,i)
+            self.Robotlayout.addWidget(button_class_object2.button,2,i)
             self.buttons.append(button_class_object)
+            self.buttons.append(button_class_object2)
 
         """
         self.robot1led=LEDIndicator()
@@ -188,6 +227,12 @@ class SWARMGUI(QtWidgets.QMainWindow):
         icon2.addPixmap(QPixmap(self.minus))
         self.minusbutton.setIcon(icon2)
         self.minusbutton.setIconSize(QSize(100,100))
+        #self.plusbutton.resize(width/3,height/5)
+        #self.minusbutton.resize(width/3,height/5)
+        
+        #self.Savestructure.resize(width/3,height/5)
+        #self.repubme=rospy.Publisher(self.input_command_topic, Twist, queue_size=0)
+        #rospy.Timer(rospy.Duration(0.1), self.move_swarm_frame)
     
     
    
@@ -201,8 +246,15 @@ class SWARMGUI(QtWidgets.QMainWindow):
         else:
             self.robot1led.led_change(False)
         """
-    def move_swarm_frame(self):
-        pass
+    def move_swarm_frame(self,evt):
+        message=Twist()
+        message.linear.x=0
+        message.linear.y=0
+        message.linear.z=0
+        message.angular.x=0
+        message.angular.y=0
+        message.angular.z=0
+        self.repubme.publish(message)
 
     def offset_callback(self,data):
         with(callback_lock):
@@ -246,6 +298,7 @@ def main():
     signal.signal(signal.SIGINT,signal.SIG_DFL)
     app = QtWidgets.QApplication(sys.argv) # Create an instance of QtWidgets.QApplication
     window = SWARMGUI() # Create an instance of our class
+    window.showMaximized()
     sys.exit(app.exec_()) # Start the application
 
 if __name__== '__main__':
