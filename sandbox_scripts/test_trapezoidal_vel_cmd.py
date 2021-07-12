@@ -52,6 +52,7 @@ class CmdVelTalker():
         self.a_lim = 0.6
         
         self.t_acc, self.t_cons, self.t_dec = self.trap(self.v_lim, self.a_lim, self.delta_x)
+        print(self.t_acc, self.t_cons, self.t_dec)
 
         self.t0 = None
 
