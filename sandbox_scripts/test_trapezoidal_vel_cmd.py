@@ -102,5 +102,5 @@ class CmdVelTalker():
 if __name__ == "__main__":
     CmdVelTalker = CmdVelTalker()
     CmdVelTalker.timer_talk.start()
-    CmdVelTalker.timer_switch.start()
+    # CmdVelTalker.timer_switch.start()
     rospy.spin()
