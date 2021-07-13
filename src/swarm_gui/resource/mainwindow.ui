@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -21,16 +21,19 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="sizePolicy">
-    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
+    </property>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="sizeConstraint">
-       <enum>QLayout::SetMaximumSize</enum>
+       <enum>QLayout::SetNoConstraint</enum>
       </property>
       <item>
        <layout class="QHBoxLayout" name="Frameresizinglayout"/>
