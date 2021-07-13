@@ -74,10 +74,10 @@ class OarbotControl_InvKin():
 
         # Generate and publish the MotorCmd message
         motor_cmd = MotorCmd()
-        motor_cmd.v_fl = v_fl
-        motor_cmd.v_fr = v_fr
-        motor_cmd.v_bl = v_bl
-        motor_cmd.v_br = v_br
+        motor_cmd.v_fl = v_fl*1000.0
+        motor_cmd.v_fr = v_fr*1000.0
+        motor_cmd.v_bl = v_bl*1000.0
+        motor_cmd.v_br = v_br*1000.0
 
         self.motor_cmd_pub.publish(motor_cmd)
         

@@ -28,10 +28,10 @@ class OarbotControl_FwdKin():
     def forward_kin(self,msg):    
         rospy.loginfo("I am in omni directional mode")
         # Convert from RPM to rad/s
-        v_fl = msg.v_fl/60*2*math.pi
-        v_fr = msg.v_fr/60*2*math.pi
-        v_bl = msg.v_bl/60*2*math.pi
-        v_br = msg.v_br/60*2*math.pi
+        v_fl = msg.v_fl/60*2*math.pi / 1000.0
+        v_fr = msg.v_fr/60*2*math.pi / 1000.0
+        v_bl = msg.v_bl/60*2*math.pi / 1000.0
+        v_br = msg.v_br/60*2*math.pi / 1000.0
 
         # Generate and publish the Twist message
         vel_feedback = Twist()
