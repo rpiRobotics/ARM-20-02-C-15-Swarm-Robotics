@@ -107,8 +107,14 @@ class OarbotControl_Motor():
                     rospy.logwarn("Zero velocities to the motors are sent for the first time")
                     self.is_zero_cmd_vel_sent_ever = True
             else:
-                self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fr, -self.motor_cmd_msg.v_fl)
-                self.controller_b.send_command(cmds.DUAL_DRIVE, -self.motor_cmd_msg.v_bl, self.motor_cmd_msg.v_br)
+                # self.controller_f.send_command(cmds.DUAL_DRIVE, self.motor_cmd_msg.v_fr, -self.motor_cmd_msg.v_fl)
+                # self.controller_b.send_command(cmds.DUAL_DRIVE, -self.motor_cmd_msg.v_bl, self.motor_cmd_msg.v_br)
+
+                self.controller_f.send_command(cmds.SET_SPEED, -self.motor_cmd_msg.v_fl ,2) # FL
+                self.controller_f.send_command(cmds.SET_SPEED, self.motor_cmd_msg.v_fr ,1) # FR
+                self.controller_b.send_command(cmds.SET_SPEED, -self.motor_cmd_msg.v_bl, 1) # BL
+                self.controller_b.send_command(cmds.SET_SPEED, self.motor_cmd_msg.v_br, 2) # BR
+                
                 self.velocity_command_sent = True
                 
                 self.is_zero_cmd_vel_sent_ever = False

@@ -37,7 +37,7 @@ class CmdVelTalker():
     def __init__(self):
         rospy.init_node('cmd_vel_talker', anonymous=True)
 
-        self.cmd_vel_pub = rospy.Publisher("/oarbot_blue_cmd_vel", Twist, queue_size=1)
+        self.cmd_vel_pub = rospy.Publisher("/oarbot_blue/cmd_vel", Twist, queue_size=1)
         self.direction = 1
 
         # rospy.Timer(rospy.Duration(0.5), self.switch)
@@ -49,7 +49,7 @@ class CmdVelTalker():
         self.delta_x = 5.0 # meters # Amount of displacement
         # OARBOTs Velocity/Acc limits (experimentally found)
         self.v_lim = 0.15
-        self.a_lim = 0.6
+        self.a_lim = 0.4 #0.6
         
         self.t_acc, self.t_cons, self.t_dec = self.trap(self.v_lim, self.a_lim, self.delta_x)
         print(self.t_acc, self.t_cons, self.t_dec)
