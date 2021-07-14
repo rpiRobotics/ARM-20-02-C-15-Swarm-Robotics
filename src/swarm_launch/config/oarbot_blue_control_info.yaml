@@ -8,7 +8,7 @@ serial_back: "/dev/serial/by-path/pci-0000:00:14.0-usb-0:4.2:1.0"
 radius_wheel: 0.1015 # wheel radius
 l_x: 0.2141 # meter
 l_y: 0.2159 # meter
-total_gear_ratio: 115.425 #121.5 # 108.2 # 6.075 # 108.2 # 10.82 # 1/((Chain Driver Ratio)*(gear_ratio)) = 1/((10.0/15.0)*(1.0/81.0*200/16))
+total_gear_ratio: 113.4 # FineTuningConstant * 1/((Chain Driver Ratio)*(gear_ratio)) = (56./60.) * 1/((10.0/15.0)*(1.0/81.0))
 
 battery_voltage_f_topic_name: volts_f
 battery_voltage_b_topic_name: volts_b
