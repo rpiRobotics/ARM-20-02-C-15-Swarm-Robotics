@@ -30,7 +30,14 @@
         timeout : 1.0
         priority: 255
       </rosparam>
-      <remap from="cmd_vel_out" to="ridgeback_velocity_controller/cmd_vel"/>
+      <remap from="cmd_vel_out" to="e_stop_cmd_vel"/>
+    </node>
+
+    <arg name="x_vel_scaling" value="0.99862688802896"/>
+    <arg name="y_vel_scaling" value="1.04411380840512"/>
+    <arg name="th_vel_scaling" value="0.998336106489185"/>
+
+    <node pkg="topic_tools" type="transform" name="inv_kin_scaling" args="e_stop_cmd_vel ridgeback_velocity_controller/cmd_vel geometry_msgs/Twist 'geometry_msgs.Twist(linear=geometry_msgs.Vector3(x=$(arg x_vel_scaling)*m.linear.x,y=$(arg y_vel_scaling)*m.linear.y,z=m.linear.z),angular=geometry_msgs.Vector3(x=m.angular.x,y=m.angular.y,z=$(arg th_vel_scaling)*m.angular.z))' --import geometry_msgs std_msgs">
     </node>
   </group>
 </launch>
