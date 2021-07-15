@@ -37,7 +37,7 @@ class CmdVelTalker():
     def __init__(self):
         rospy.init_node('cmd_vel_talker', anonymous=True)
 
-        self.cmd_vel_pub = rospy.Publisher("/ridgeback/cmd_vel", Twist, queue_size=1)
+        self.cmd_vel_pub = rospy.Publisher("/oarbot_blue/cmd_vel", Twist, queue_size=1)
         self.direction = 1
 
         # rospy.Timer(rospy.Duration(0.5), self.switch)
@@ -89,8 +89,10 @@ class CmdVelTalker():
 
                 
         msg = Twist()
+        fine_tuning_const = 1.089621357
+
         msg.linear.x = 0.
-        msg.linear.y = v
+        msg.linear.y = v * fine_tuning_const 
         msg.linear.z = 0.
         msg.angular.x = 0.
         msg.angular.y = 0.
