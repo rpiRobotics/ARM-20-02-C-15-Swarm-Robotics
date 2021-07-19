@@ -124,9 +124,9 @@ class SWARMGUI(QtWidgets.QMainWindow):
         
         #self.setMinimumSize(width-50,heightnew)
         #self.setMaximumSize(width-50,heightnew)
-        #self.setGeometry(0,0,width-50,heightnew)
-        self.resize(width,heightnew)
-        self.move(70,heightnew-30)
+        self.setGeometry(0,0,width,heightnew)
+        #self.resize(width,heightnew)
+        #self.move(70,heightnew-30)
         self.resized.connect(self.windowresized)
         #self.Moveswarm.pressed.connect(self.sync_robot_motion_pressed)
         #self.Moveswarmframe.pressed.connect(self.move_swarm_frame)
