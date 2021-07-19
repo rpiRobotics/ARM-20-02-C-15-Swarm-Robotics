@@ -23,7 +23,8 @@ Alex Elias
 Drives a mobile robot to a desired position/velocity
 
 Parameters:
-	feedback_gain: Proportional gain in (m/s) / m
+	feedback_gain_xy: Proportional gain in (m/s) / m
+	feedback_gain_theta: Proportional gain in (rad/s) / rad
 
 	cmd_input_type: 'Twist' or 'State2D'
 		Twist ==> Desired position is integrated (e.g. single robot control)
@@ -32,7 +33,7 @@ Parameters:
 		
 	position_feedback_topic_name: Topic for position estimation (e.g. from sensor fusion)
 	control_cmd_publish_topic_name: Topic for motor control input
-	frame_name: Name used to send tf_frame of desired position (only when cmd_input_type is 'Twist')
+	frame_name: Name used to send tf_frame of desired position
 
 	vel_lim_x: Velocity limit in X
 	vel_lim_y: Velocity limit in Y
@@ -46,7 +47,8 @@ class Controller:
 	def __init__(self):
 		rospy.init_node('closed_loop_velocity_controller', anonymous=True)
 
-		self.feedback_gain = rospy.get_param('~feedback_gain')
+		self.feedback_gain_xy = rospy.get_param('~feedback_gain_xy')
+		self.feedback_gain_theta = rospy.get_param('~feedback_gain_theta')
 	
 		input_is_State2D = ("State2D" == rospy.get_param('~cmd_input_type'))
 		position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
@@ -115,7 +117,8 @@ class Controller:
 		self.process_desired_state(desired_state)
 
 	def process_desired_state(self, desired_state):
-		cmd_vel = control_law(desired_state, self.state_pos, self.vel_limit, self.feedback_gain)
+		K = np.diag([self.feedback_gain_xy, self.feedback_gain_xy, self.feedback_gain_theta])
+		cmd_vel = control_law(desired_state, self.state_pos, self.vel_limit, K)
 
 		# Publish commanded velocity
 		cmd_vel_msg = Twist()
