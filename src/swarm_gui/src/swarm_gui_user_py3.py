@@ -106,10 +106,11 @@ class LEDManager:
             #time.sleep(0.01)
             
 class SWARMGUI(QtWidgets.QMainWindow):
-
+    resized = pyqtSignal()
     def __init__(self):
         super(SWARMGUI, self).__init__()
-        
+        self.buttons=[]
+        self.labels=[]
         self.setObjectName('MyPlugin')
         self.synced_control_enabled=False
         self.mainscreenui = os.path.join(rospkg.RosPack().get_path('swarm_gui'), 'resource', 'mainwindow.ui')
@@ -118,10 +119,15 @@ class SWARMGUI(QtWidgets.QMainWindow):
         screengeometry=desktop.screenGeometry()
         height=screengeometry.height()
         width=screengeometry.width()
-        print(type(width))
-        widthnew=int(width/2)
-        self.setFixedSize(widthnew,height)
+        #print(type(width))
+        heightnew=int(height/2)
         
+        #self.setMinimumSize(width-50,heightnew)
+        #self.setMaximumSize(width-50,heightnew)
+        #self.setGeometry(0,0,width-50,heightnew)
+        self.setFixedSize(width-70,heightnew)
+        self.move(70,heightnew-30)
+        self.resized.connect(self.windowresized)
         #self.Moveswarm.pressed.connect(self.sync_robot_motion_pressed)
         #self.Moveswarmframe.pressed.connect(self.move_swarm_frame)
         #self.Robot1enable.pressed.connect(self.rob1enable)
@@ -157,7 +163,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
         
-        self.buttons=[]
+        
         self.moveswarmbutton=swarm_button(self.Moveswarm,self.open_loop_swarm_command_topic)
         self.moveswarmframebutton= swarm_button(self.Moveswarmframe,self.closed_loop_swarm_command_topic)
         self.buttons.append(self.moveswarmbutton)
@@ -168,11 +174,11 @@ class SWARMGUI(QtWidgets.QMainWindow):
             led.setDisabled(True)
             self.Robotlayout.addWidget(led,3,i)
             self.Leds.append(led)
-	
+    
         self.status_manager=LEDManager(self.nodenames,self.Leds)
         
-        self.labels=[]
-        buttonwidth=widthnew-100
+        
+        buttonwidth=width-100
         for x in range(self.number_of_bots):
             
             if(len(self.robot_types)!=self.number_of_bots):
@@ -196,8 +202,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 break
             
             
-            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth/self.number_of_bots,height/8,self.robot_types[i])
-            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth/self.number_of_bots,height/8,self.robot_types[i])
+            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth/self.number_of_bots,heightnew/8,self.robot_types[i])
+            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth/self.number_of_bots,heightnew/8,self.robot_types[i])
             self.Robotlayout.addWidget(button_class_object.button,1,i)
             self.Robotlayout.addWidget(button_class_object2.button,2,i)
             self.buttons.append(button_class_object)
@@ -233,7 +239,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         #self.Savestructure.resize(width/3,height/5)
         #self.repubme=rospy.Publisher(self.input_command_topic, Twist, queue_size=0)
         #rospy.Timer(rospy.Duration(0.1), self.move_swarm_frame)
-    
+        self.windowresized()
     
    
     def callback_gui(self,evt):
@@ -290,6 +296,24 @@ class SWARMGUI(QtWidgets.QMainWindow):
             
             
     #def motion_callback(self):
+    
+
+    def resizeEvent(self, event):
+        self.resized.emit()
+        
+    def windowresized(self):
+        windowwidth=self.rect().width()
+        windowheight=self.rect().height()
+        f=QFont('',windowwidth/110)
+        for i in range(len(self.buttons)):
+            self.buttons[i].button.setFont(f)
+        for i in range(len(self.labels)):
+            self.labels[i].setFont(f)
+        self.label.setFont(f)
+        self.Savestructure.setFont(f)
+        self.Loadstructure.setFont(f)
+        self.Assumestructure.setFont(f)
+
         
     
 
