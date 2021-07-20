@@ -9,8 +9,8 @@ position_feedback_topic_name: 'position'
 control_cmd_publish_topic_name: 'cmd_vel'
 frame_name: 'oarbot_blue_qd'
 
-vel_lim_x: 1.0
-vel_lim_y: 1.0
-vel_lim_theta: 2.0
+vel_lim_x: 0.1134
+vel_lim_y: 0.1134
+vel_lim_theta: 0.1514
 
 space_mouse_topic_name: '/tablet/spacenav/joy'

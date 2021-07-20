@@ -2,6 +2,7 @@
 import numpy as np
 import rospy
 import threading
+import time
 
 import tf2_ros
 import tf2_msgs.msg
@@ -74,9 +75,9 @@ class Fusion:
 
 
 		# Kalman filter state, covariance, and time
-		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])
+		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]]) # x,y,theta,x_dot,y_dot,theta_dot
 		self.cov   = 100.0**2 * np.eye(6)
-		self.kalman_time = rospy.Time.now().to_sec()
+		self.kalman_time = time.time()
 
 		self.kalman_lock = threading.Lock()
 
@@ -93,7 +94,7 @@ class Fusion:
 		self.back_dists = 0.
 		
 		# Publish position
-		self.pos_pub = rospy.Publisher(self.position_feedback_topic_name, Pose2D, queue_size=0)
+		self.pos_pub = rospy.Publisher(self.position_feedback_topic_name, Pose2D, queue_size=1)
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
 		self.rmse_pub = rospy.Publisher(self.position_feedback_topic_name + '_UWB_RMSE', Float32, queue_size=10)
@@ -119,7 +120,7 @@ class Fusion:
 			rospy.logwarn(str(data))
 			return
 
-		self.front_t = rospy.Time.now().to_sec()
+		self.front_t = time.time()
 		self.front_anchors = anchor_mat
 		self.front_dists = dists
 
@@ -138,7 +139,7 @@ class Fusion:
 			rospy.logwarn(str(data))
 			return
 
-		self.back_t = rospy.Time.now().to_sec();
+		self.back_t = time.time();
 		self.back_anchors = anchor_mat
 		self.back_dists = dists
 
@@ -152,24 +153,22 @@ class Fusion:
 		if DEBUG_UWB:
 			rospy.logwarn("Combining UWB readings!")
 		# Kalman filter
-		self.kalman_lock.acquire()
-		dt = max(self.front_t, self.back_t) - self.kalman_time;
-		if dt < 0:	
-			self.kalman_lock.release()
-			rospy.logwarn("Dropping UWB reading | dt = " + str(dt))
-			return
-		if dt > 1:
-			rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
-			dt = 1
-		self.kalman_time =  max(self.front_t, self.back_t);
+		with self.kalman_lock as lock:
+			dt = max(self.front_t, self.back_t) - self.kalman_time
+			if dt < 0:	
+				lock.release()
+				rospy.logwarn("Dropping UWB reading | dt = " + str(dt))
+				return
+			if dt > 1:
+				rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
+				dt = 1
+			self.kalman_time =  max(self.front_t, self.back_t);
 
-		# Multilateration
-		uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
-		self.front_dists, self.back_dists, self.tag_loc_front, self.tag_loc_back)
+			# Multilateration
+			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
+			self.front_dists, self.back_dists, self.tag_loc_front, self.tag_loc_back)
 
-
-		self.state, self.cov, self.kalman_pos = EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
-		self.kalman_lock.release()
+			self.state, self.cov, self.kalman_pos = EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
 
 		# Publish
 		tf_kalman = xyt2TF(self.kalman_pos, "map", self.tf_frame_name_fused)
@@ -193,21 +192,19 @@ class Fusion:
 		meas = np.array([[x_d],[y_d],[theta_d]])
 
 		# Kalman filter
-		self.kalman_lock.acquire()
-
-		t = rospy.Time.now().to_sec()
-		dt = t - self.kalman_time
-		if dt < 0:	
-			self.kalman_lock.release()
-			rospy.logwarn("Dropping odom reading | dt = " + str(dt))
-			return
-		if dt > 1:
-			rospy.logwarn("Limiting odom timestep to 1 | dt = " + str(dt))
-			dt = 1
-		
-		self.kalman_time = t
-		self.state, self.cov, self.kalman_pos = EKF_odom(self.state, self.cov, dt, meas)
-		self.kalman_lock.release()
+		with self.kalman_lock as lock:
+			t = time.time()
+			dt = t - self.kalman_time
+			if dt < 0:	
+				lock.release()
+				rospy.logwarn("Dropping odom reading | dt = " + str(dt))
+				return
+			if dt > 1:
+				rospy.logwarn("Limiting odom timestep to 1 | dt = " + str(dt))
+				dt = 1
+			
+			self.kalman_time = t
+			self.state, self.cov, self.kalman_pos = EKF_odom(self.state, self.cov, dt, meas)
 
 		# Publish
 		tf_kalman = xyt2TF(self.kalman_pos, "map", self.tf_frame_name_fused);
@@ -232,7 +229,6 @@ def xyzt2TF(xyzt, header_frame_id, child_frame_id):
 	t = geometry_msgs.msg.TransformStamped()
 
 	t.header.frame_id = header_frame_id
-	#t.header.stamp = ros_time #rospy.Time.now()
 	t.header.stamp = rospy.Time.now()
 	t.child_frame_id = child_frame_id
 	t.transform.translation.x = xyzt[0]
@@ -256,7 +252,6 @@ def xyt2TF(xyt, header_frame_id, child_frame_id):
 	t = geometry_msgs.msg.TransformStamped()
 
 	t.header.frame_id = header_frame_id
-	#t.header.stamp = ros_time #rospy.Time.now()
 	t.header.stamp = rospy.Time.now()
 	t.child_frame_id = child_frame_id
 	t.transform.translation.x = xyt[0]

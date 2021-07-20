@@ -34,7 +34,7 @@ def EKF_UWB(state, cov, dt, meas, rmse):
 	def dh_dw_fcn(x):
 		return np.eye(3)
 
-	meas_cov = np.diag(rmse*np.array([1., 1., 1.]))**2
+	meas_cov = np.diag(rmse*np.array([1., 1., 1.]))**2 # TODO
 
 	meas_angle_ind = 2;
 	state_angle_ind = 2;
@@ -42,7 +42,7 @@ def EKF_UWB(state, cov, dt, meas, rmse):
 	state_p, cov_p, meas_p = EKF_constant_vel_predict(
 		state, cov, measurementfcn, meas_angle_ind, dt)
 
-	state_c, cov_c, meas_c = EKF_correct(measurementfcn, dh_dx_fcn,dh_dw_fcn,
+	state_c, cov_c, meas_c = EKF_correct(measurementfcn, dh_dx_fcn, dh_dw_fcn,
 	state_p, cov_p, meas_p, meas, meas_cov,
 	state_angle_ind, meas_angle_ind)
 
@@ -86,7 +86,7 @@ def EKF_odom(state, cov, dt, meas):
 	def dh_dw_fcn(x):
 		return np.eye(3)
 
-	meas_cov = np.diag(np.array([0.01, 0.01, 0.01])**2)
+	meas_cov = np.diag(np.array([0.001, 0.001, 0.005])**2)
 
 	meas_angle_ind = [];
 	state_angle_ind = 2;
@@ -135,7 +135,8 @@ def EKF_constant_vel_predict(state, cov, measurementfcn, meas_angle_ind, dt):
 	def df_dw_fcn(x):
 		return np.eye(6)
 
-	process_cov = dt * np.diag([0.01, 0.01, 0.01, 0.5, 0.5, 0.5])**2
+	# process_cov = dt * np.diag([0.01, 0.01, 0.01, 0.5, 0.5, 0.5])**2
+	process_cov = dt**2 * np.diag([0.6, 0.6, 0.8, 0., 0., 0.])**2 + dt * np.diag([0., 0., 0., 0.6, 0.6, 0.8])**2
 
 	state_angle_ind = 2;
 
@@ -181,7 +182,7 @@ def EKF_predict(transitionfcn, measurementfcn,
 	meas_p = measurementfcn(state_p)
 	meas_p[meas_angle_ind] = wrapToPi(meas_p[meas_angle_ind])
 
-	cov_p = 0.5 * (cov_p + cov_p.T)
+	cov_p = 0.5 * (cov_p + cov_p.T) # to make sure the covariance matrix is symmetric 
 
 	return state_p, cov_p, meas_p
 
