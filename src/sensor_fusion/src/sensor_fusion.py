@@ -181,13 +181,17 @@ class Fusion:
 
 		###
 		import csv
-
-		with open('uwb_multilateration_data.csv', mode='w') as data_file:
+		import os 
+		current_dir = os.path.expanduser("~")
+		location = os.path.join(current_dir,'uwb_multilateration_data.csv')
+		
+		with open(location, mode='a') as data_file:
 			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 			data_writer.writerow(uwb_pos.flatten().tolist())
 
-		with open('rmse_data.csv', mode='w') as data_file:
+		location = os.path.join(current_dir,'rmse_data.csv')
+		with open(location, mode='a') as data_file:
 			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 			data_writer.writerow(rmse)
