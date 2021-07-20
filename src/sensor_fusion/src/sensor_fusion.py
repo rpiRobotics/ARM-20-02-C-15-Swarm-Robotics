@@ -194,7 +194,7 @@ class Fusion:
 		with open(location, mode='a') as data_file:
 			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-			data_writer.writerow(rmse)
+			data_writer.writerow([rmse])
 
 
 
