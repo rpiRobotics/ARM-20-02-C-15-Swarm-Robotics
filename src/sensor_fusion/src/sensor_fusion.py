@@ -179,6 +179,21 @@ class Fusion:
 		self.tf_broadcaster.sendTransform(tf_uwb)
 		self.publish_position()
 
+		###
+		import csv
+
+		with open('uwb_multilateration_data.csv', mode='w') as data_file:
+			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+			data_writer.writerow(uwb_pos.flatten().tolist())
+
+		with open('rmse_data.csv', mode='w') as data_file:
+			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+			data_writer.writerow(rmse)
+
+
+
 	def odom_callback(self, data):
 		# Assemble the measurement vector
 		if self.feedback_is_Odometry:
