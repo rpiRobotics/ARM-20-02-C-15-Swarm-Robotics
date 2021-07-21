@@ -156,7 +156,7 @@ class Fusion:
 		with self.kalman_lock as lock:
 			dt = max(self.front_t, self.back_t) - self.kalman_time
 			if dt < 0:	
-				lock.release()
+				# # lock.release()
 				rospy.logwarn("Dropping UWB reading | dt = " + str(dt))
 				return
 			if dt > 1:
@@ -166,7 +166,7 @@ class Fusion:
 
 			# Ignore reading if there are less than 8 readings
 			if self.front_dists.size + self.back_dists.size < 8:
-				lock.release()
+				# # # lock.release()
 				rospy.logwarn("Dropping UWB reading | number of readings = " + str(self.front_dists.size + self.back_dists.size) + " which is less than 8" )
 				return
 
@@ -227,7 +227,7 @@ class Fusion:
 			t = time.time()
 			dt = t - self.kalman_time
 			if dt < 0:	
-				lock.release()
+				# # lock.release()
 				rospy.logwarn("Dropping odom reading | dt = " + str(dt))
 				return
 			if dt > 1:
