@@ -167,7 +167,7 @@ class Fusion:
 			# Ignore reading if there are less than 8 readings
 			if self.front_dists.size + self.back_dists.size < 8:
 				lock.release()
-				rospy.logwarn("Dropping UWB reading | number of readings = " + str(self.front_dists.size + self.back_dists.size)  " which is less than 8" )
+				rospy.logwarn("Dropping UWB reading | number of readings = " + str(self.front_dists.size + self.back_dists.size) + " which is less than 8" )
 				return
 
 			# Multilateration
