@@ -87,7 +87,7 @@ def EKF_odom(state, cov, dt, meas):
 	def dh_dw_fcn(x):
 		return np.eye(3)
 
-	meas_cov = np.diag(np.array([0.0001, 0.0001, 0.0005])**2)
+	meas_cov = np.diag(np.array([0.0001, 0.0001, 0.00005])**2)
 
 	meas_angle_ind = [];
 	state_angle_ind = 2;
@@ -137,7 +137,7 @@ def EKF_constant_vel_predict(state, cov, measurementfcn, meas_angle_ind, dt):
 		return np.eye(6)
 
 	# process_cov = dt * np.diag([0.01, 0.01, 0.01, 0.5, 0.5, 0.5])**2
-	process_cov = dt**2 * np.diag([0.6, 0.6, 0.8, 0., 0., 0.])**2 + dt * np.diag([0., 0., 0., 0.6, 0.6, 0.8])**2
+	process_cov = dt**2 * np.diag([0.3, 0.3, 0.4, 0., 0., 0.])**2 + dt * np.diag([0., 0., 0., 0.3, 0.3, 0.4])**2
 
 	state_angle_ind = 2;
 
