@@ -87,7 +87,7 @@ def EKF_odom(state, cov, dt, meas):
 	def dh_dw_fcn(x):
 		return np.eye(3)
 
-	meas_cov = np.diag(np.array([0.0001, 0.0001, 0.00005])**2)
+	meas_cov = np.diag(np.array([0.00001, 0.00001, 0.000005])**2)
 
 	meas_angle_ind = [];
 	state_angle_ind = 2;
