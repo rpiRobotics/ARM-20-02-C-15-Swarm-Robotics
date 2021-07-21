@@ -64,7 +64,12 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 		p_i_world_frame = rot_mat(xyt_swarm[2][0]).dot(p_i_mat[:,[i]])
 		theta_i_world_frame = xyt_swarm[2][0]+theta_vec[0][i]
 		J = robot_jacobian(p_i_world_frame, theta_i_world_frame)
-		v_i[:,[i]] = J.dot(v)
+		v_i_robot = J.dot(v)
+
+		v_i_world = v_i_robot
+		v_i_world[1:2+1] = rot_mat(theta_i_world_frame).dot(v_i_robot)
+
+		v_i[:,[i]] = v_i_world	
 
 	# Find the position of the swarm and each robot
 	# Careful to find robot postion with forward kinematics, NOT integration
