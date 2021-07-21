@@ -174,6 +174,12 @@ class Fusion:
 			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
 			self.front_dists, self.back_dists, self.tag_loc_front, self.tag_loc_back)
 
+			# Ignore reading if rmse is high than ... meters
+			if rmse > 0.15:
+				# # # lock.release()
+				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
+				return
+
 			self.state, self.cov, self.kalman_pos = EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
 
 		# Publish
