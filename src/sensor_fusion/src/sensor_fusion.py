@@ -180,21 +180,21 @@ class Fusion:
 		self.publish_position()
 
 		###
-		# import csv
-		# import os 
-		# current_dir = os.path.expanduser("~")
-		# location = os.path.join(current_dir,'uwb_multilateration_data.csv')
+		import csv
+		import os 
+		current_dir = os.path.expanduser("~")
+		location = os.path.join(current_dir,'uwb_multilateration_data.csv')
 		
-		# with open(location, mode='a') as data_file:
-		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		with open(location, mode='a') as data_file:
+			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-		# 	data_writer.writerow(uwb_pos.flatten().tolist())
+			data_writer.writerow(uwb_pos.flatten().tolist())
 
-		# location = os.path.join(current_dir,'rmse_data.csv')
-		# with open(location, mode='a') as data_file:
-		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		location = os.path.join(current_dir,'rmse_data.csv')
+		with open(location, mode='a') as data_file:
+			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-		# 	data_writer.writerow([rmse])
+			data_writer.writerow([rmse])
 
 
 
