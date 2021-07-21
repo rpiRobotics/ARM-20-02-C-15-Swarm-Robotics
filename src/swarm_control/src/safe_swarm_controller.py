@@ -59,7 +59,8 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 	v = lsqlin(lsq_param_C, lsq_param_d, lsq_param_A, lsq_param_b)
 
 	# Find the velocity of each robot
-	v_i = np.zeros((3,N))
+	v_i_world = np.zeros((3,N))
+	v_i_rob= np.zeros((3,N))
 	for i in range(N):
 		p_i_world_frame = rot_mat(xyt_swarm[2][0]).dot(p_i_mat[:,[i]])
 		theta_i_world_frame = xyt_swarm[2][0]+theta_vec[0][i]
