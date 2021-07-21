@@ -67,7 +67,7 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 		v_i_robot = J.dot(v)
 
 		v_i_world = v_i_robot
-		v_i_world[1:2+1] = rot_mat(theta_i_world_frame).dot(v_i_robot)
+		v_i_world[1:2+1] = rot_mat(theta_i_world_frame).dot(v_i_robot[1:2+1])
 
 		v_i[:,[i]] = v_i_world	
 
