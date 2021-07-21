@@ -1,5 +1,5 @@
 feedback_gain_xy: 3.0
-feedback_gain_theta: 3.0
+feedback_gain_theta: 1.5
 
 cmd_input_type: 'State2D'
 cmd_input_topic_name: 'desired_state'
