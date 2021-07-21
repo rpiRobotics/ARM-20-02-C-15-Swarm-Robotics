@@ -1,5 +1,5 @@
-feedback_gain_xy: 3.0
-feedback_gain_theta: 1.5
+feedback_gain_xy: 0.5
+feedback_gain_theta: 0.25
 
 cmd_input_type: 'State2D'
 #cmd_input_type: 'Twist'
