@@ -35,7 +35,7 @@ def EKF_UWB(state, cov, dt, meas, rmse):
 		return np.eye(3)
 
 	# meas_cov = np.diag(rmse*np.array([1., 1., 1.]))**2 # TODO
-	meas_cov = np.diag(np.array([0.5, 0.5, 0.2])**2) 
+	meas_cov = np.diag(((rmse/0.1)*np.array([0.5, 0.5, 0.2]))**2) 
 
 	meas_angle_ind = 2;
 	state_angle_ind = 2;
@@ -87,7 +87,7 @@ def EKF_odom(state, cov, dt, meas):
 	def dh_dw_fcn(x):
 		return np.eye(3)
 
-	meas_cov = np.diag(np.array([0.00001, 0.00001, 0.000005])**2)
+	meas_cov = np.diag(np.array([0.0001, 0.0001, 0.00005])**2)
 
 	meas_angle_ind = [];
 	state_angle_ind = 2;
