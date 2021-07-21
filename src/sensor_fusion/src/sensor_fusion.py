@@ -190,11 +190,17 @@ class Fusion:
 
 			data_writer.writerow(uwb_pos.flatten().tolist())
 
-		location = os.path.join(current_dir,'rmse_data.csv')
+		location = os.path.join(current_dir,'uwb_rmse_data.csv')
 		with open(location, mode='a') as data_file:
 			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 			data_writer.writerow([rmse])
+
+		location = os.path.join(current_dir,'uwb_num_dist_readings.csv')
+		with open(location, mode='a') as data_file:
+			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+			data_writer.writerow([self.front_dists.size + self.back_dists.size])
 
 
 
