@@ -21,7 +21,7 @@ def control_law(desired_state, position, vel_limit, K):
 	error = position - desired_state[0:2+1]
 	error[2] = wrapToPi(error[2])
 
-	u_world = desired_state[3:5+1] - (K*np.eye(3)) @ error
+	u_world = desired_state[3:5+1] - (K*np.eye(3)).dot(error)
 
 	vel_cmd = rot_mat(-position[2][0]).dot(u_world)
 
