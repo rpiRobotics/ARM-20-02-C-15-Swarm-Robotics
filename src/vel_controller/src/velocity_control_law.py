@@ -23,7 +23,7 @@ def control_law(desired_state, position, vel_limit, K):
 
 	u_world = desired_state[3:5+1] - (K*np.eye(3)).dot(error)
 
-	vel_cmd = rot_mat(-position[2][0]).dot(u_world)
+	vel_cmd = rot_mat(position[2][0]).dot(u_world)
 
 
 	vel_cmd[vel_cmd >  vel_limit] =  vel_limit[vel_cmd >  vel_limit]
