@@ -162,7 +162,13 @@ class Fusion:
 			if dt > 1:
 				rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
 				dt = 1
-			self.kalman_time =  max(self.front_t, self.back_t);
+			self.kalman_time =  max(self.front_t, self.back_t)
+
+			# Ignore reading if there are less than 8 readings
+			if self.front_dists.size + self.back_dists.size < 8:
+				lock.release()
+				rospy.logwarn("Dropping UWB reading | number of readings = " + str(self.front_dists.size + self.back_dists.size)  " which is less than 8" )
+				return
 
 			# Multilateration
 			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
