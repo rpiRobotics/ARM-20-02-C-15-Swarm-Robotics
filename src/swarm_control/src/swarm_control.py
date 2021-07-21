@@ -118,12 +118,12 @@ class Swarm_Control:
 		theta_vec = self.robots_xyt[[2],:]
 		#print(p_i_mat)
 		#print(theta_vec)
-		v_i, xyt_i, v, xyt_swarm_next = safe_motion_controller(
+		v_i_world, v_i_rob, xyt_i, v, xyt_swarm_next = safe_motion_controller(
 			v_desired, self.theta_scale, p_i_mat, theta_vec,
 			self.v_max, self.a_max, dt, self.N_robots, self.v_robots_prev, self.swarm_xyt)
 
 		# Don't update self.robots_xyt, since that's in the swarm frame
-		self.v_robots_prev = v_i;
+		self.v_robots_prev = v_i_rob;
 		self.swarm_xyt = xyt_swarm_next;
 
 		# Send desired state to each robot
@@ -132,9 +132,9 @@ class Swarm_Control:
 			s.pose.x = xyt_i[0,i]
 			s.pose.y = xyt_i[1,i]
 			s.pose.theta = xyt_i[2,i]
-			s.twist.linear.x = v_i[0,i]
-			s.twist.linear.y = v_i[1,i]
-			s.twist.angular.z = v_i[2,i]
+			s.twist.linear.x = v_i_world[0,i]
+			s.twist.linear.y = v_i_world[1,i]
+			s.twist.angular.z = v_i_world[2,i]
 			self.vel_pubs[i].publish(s)
 
 	def just_swarm_frame_velocity_callback(self, data):
