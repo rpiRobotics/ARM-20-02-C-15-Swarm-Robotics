@@ -7,8 +7,8 @@ tf_frame_name_uwb: "oarbot_blue_uwb"
 tf_frame_name_fused: "oarbot_blue_fusion"
 position_feedback_topic_name: "position"
 
-tag_loc_front_x: 0.3060
-tag_loc_front_y: -0.1976
+tag_loc_front_x:  0.326176 #0.3060
+tag_loc_front_y: -0.198747 #-0.1976
 
-tag_loc_back_x: 0.0391
-tag_loc_back_y: 0.2110
+tag_loc_back_x: -0.060612 # 0.0391
+tag_loc_back_y:  0.188040 # 0.2110
