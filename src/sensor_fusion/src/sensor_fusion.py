@@ -73,6 +73,10 @@ class Fusion:
 		tag_loc_back_y = rospy.get_param('~tag_loc_back_y')
 		self.tag_loc_back = np.array([[tag_loc_back_x],[tag_loc_back_y]])
 
+		uwb_meas_std = rospy.get_param('~uwb_meas_std')
+		odom_meas_std = rospy.get_param('~odom_meas_std')
+		process_pos_std = rospy.get_param('~process_pos_std')
+		process_vel_std = rospy.get_param('~process_vel_std')
 
 		# Kalman filter state, covariance, and time
 		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]]) # x,y,theta,x_dot,y_dot,theta_dot
@@ -92,7 +96,10 @@ class Fusion:
 		# Vector of distances to each anchor
 		self.front_dists = 0.
 		self.back_dists = 0.
-		
+
+		# Initialize Extended Kalman Filter Object
+		self.ekf = EKF(uwb_meas_std, odom_meas_std, process_pos_std, process_vel_std)
+
 		# Publish position
 		self.pos_pub = rospy.Publisher(self.position_feedback_topic_name, Pose2D, queue_size=1)
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
@@ -180,7 +187,7 @@ class Fusion:
 				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
 				return
 
-			self.state, self.cov, self.kalman_pos = EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
+			self.state, self.cov, self.kalman_pos = self.ekf.EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
 
 		# Publish
 		tf_kalman = xyt2TF(self.kalman_pos, "map", self.tf_frame_name_fused)
@@ -241,7 +248,7 @@ class Fusion:
 				dt = 1
 			
 			self.kalman_time = t
-			self.state, self.cov, self.kalman_pos = EKF_odom(self.state, self.cov, dt, meas)
+			self.state, self.cov, self.kalman_pos = self.ekf.EKF_odom(self.state, self.cov, dt, meas)
 
 		# Publish
 		tf_kalman = xyt2TF(self.kalman_pos, "map", self.tf_frame_name_fused);
