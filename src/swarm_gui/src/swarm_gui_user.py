@@ -15,6 +15,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5 import QtWidgets, uic
+from std_msgs.msg import Bool
 import threading
 from geometry_msgs.msg import Pose2D, Twist
 from led_indicator import LEDIndicator
@@ -54,6 +55,7 @@ class robot_button:
         self.motion_frame="world"
         self.button=QPushButton()
         self.button.setFixedSize(sizex,sizey)
+        self.button.setSizePolicy(QSizePolicy.Preferred,QSizePolicy.Expanding)
         self.button.setFont(QFont('Ubuntu',13))
         self.button.setText(self.text)
         self.button.pressed.connect(self.button_pressed)
@@ -125,7 +127,12 @@ class SWARMGUI(QtWidgets.QMainWindow):
         #self.setMinimumSize(width-50,heightnew)
         #self.setMaximumSize(width-50,heightnew)
         #self.setGeometry(0,0,width-50,heightnew)
-        self.setFixedSize(width-70,heightnew)
+        layout=self.layout()
+        self.setMaximumSize(width-70,heightnew)
+        self.setWindowState(Qt.WindowMinimized)
+        self.setWindowState(Qt.WindowActive)
+        #self.showMinimized()
+        #layout.setSizeConstraint(QLayout.SetDefaultConstraint)
         self.move(70,heightnew-30)
         self.resized.connect(self.windowresized)
         #self.Moveswarm.pressed.connect(self.sync_robot_motion_pressed)
@@ -140,7 +147,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         #self.pub1=rospy.Publisher('/spacenav/twist/repub', Twist, queue_size=10)
         #self.pub3=rospy.Publisher('/spacenav/twist/repub3', Twist, queue_size=10)
         #self.pub2=rospy.Publisher('/spacenav/twist/repub2', Twist, queue_size=10)
-        self.show()
+        
         
         #rospy.Subscriber("/OARBOT1/pose", Pose2D, callback) 
         
@@ -157,13 +164,15 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.robot_types=rospy.get_param('robot_type_information')
             self.closed_loop_swarm_command_topic=rospy.get_param('closed_loop_swarm_command_topic')
             self.open_loop_swarm_command_topic=rospy.get_param('open_loop_swarm_command_topic')
+            self.sync_topic=rospy.get_param('sync_frames_topic')
         except:
             self.number_of_bots=3
             self.nodenames=[["/rosout"],["hello"],["hello"]]
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
         
-        
+        self.syncpub=rospy.Publisher(self.sync_topic,Bool,queue_size=10)
+        self.syncFrames.pressed.connect(self.sync_frames)
         self.moveswarmbutton=swarm_button(self.Moveswarm,self.open_loop_swarm_command_topic)
         self.moveswarmframebutton= swarm_button(self.Moveswarmframe,self.closed_loop_swarm_command_topic)
         self.buttons.append(self.moveswarmbutton)
@@ -187,6 +196,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             
             robot_label=QLabel()
             robot_label.setFixedSize(buttonwidth/self.number_of_bots,100)
+            
             robot_label.setAlignment(Qt.AlignCenter)
             robot_label.setText(self.robot_types[x])
             robot_label.setFont(QFont('Ubuntu',13))
@@ -240,6 +250,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         #self.repubme=rospy.Publisher(self.input_command_topic, Twist, queue_size=0)
         #rospy.Timer(rospy.Duration(0.1), self.move_swarm_frame)
         self.windowresized()
+        self.show()
     
    
     def callback_gui(self,evt):
@@ -271,7 +282,10 @@ class SWARMGUI(QtWidgets.QMainWindow):
            
     
             
-
+    def sync_frames(self):
+        syncmessage=Bool()
+        syncmessage.data=True
+        self.syncpub.publish(syncmessage)
 
     def sync_robot_motion_pressed(self):
         for i in range(len(self.buttons)):
@@ -313,6 +327,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.Savestructure.setFont(f)
         self.Loadstructure.setFont(f)
         self.Assumestructure.setFont(f)
+        self.syncFrames.setFont(f)
 
         
     
@@ -322,7 +337,7 @@ def main():
     signal.signal(signal.SIGINT,signal.SIG_DFL)
     app = QtWidgets.QApplication(sys.argv) # Create an instance of QtWidgets.QApplication
     window = SWARMGUI() # Create an instance of our class
-    window.showMaximized()
+    window.show()
     sys.exit(app.exec_()) # Start the application
 
 if __name__== '__main__':

@@ -8,7 +8,7 @@ import geometry_msgs.msg
 
 import tf2_ros
 import tf2_msgs.msg
-
+from std_msgs.msg import Bool
 import tf_conversions # quaternion stuff
 
 from safe_swarm_controller import *
@@ -83,6 +83,7 @@ class Swarm_Control:
 		# Subscribe
 		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback)
 		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback)
+        rospy.Subscriber('/sync_frames',Bool,self.sync_frames)
 		for i in range(self.N_robots):
 			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i)
 
@@ -183,6 +184,9 @@ class Swarm_Control:
 			dt = 0
 		return dt
 	
+    def sync_frames(self):
+        
+
 	def publish_tf_frames(self):
 		tf_swarm_frame = xyt2TF(self.swarm_xyt, "map", "swarm_frame")
 		self.tf_broadcaster.sendTransform(tf_swarm_frame)

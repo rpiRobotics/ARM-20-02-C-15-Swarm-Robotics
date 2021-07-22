@@ -36,3 +36,5 @@ robot_type_information:
 
 
 input_command_topic: 'deadman_switch_spacenav_twist'
+
+sync_frames_topic:  'move_desired_to_current'
