@@ -166,10 +166,10 @@ class Fusion:
 				# # lock.release()
 				rospy.logwarn("Dropping UWB reading | dt = " + str(dt))
 				return
-			if dt > 1:
-				rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
-				dt = 1
-			self.kalman_time =  max(self.front_t, self.back_t)
+			if dt > 0.25:
+				# rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
+				rospy.logwarn("UWB timestep is greater than 0.25 s | dt = " + str(dt))
+				dt = 0.
 
 			# Ignore reading if there are less than 8 readings
 			if self.front_dists.size + self.back_dists.size < 8:
@@ -186,6 +186,8 @@ class Fusion:
 				# # # lock.release()
 				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
 				return
+
+			self.kalman_time =  max(self.front_t, self.back_t)
 
 			self.state, self.cov, self.kalman_pos = self.ekf.EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
 
@@ -243,9 +245,12 @@ class Fusion:
 				# # lock.release()
 				rospy.logwarn("Dropping odom reading | dt = " + str(dt))
 				return
-			if dt > 1:
-				rospy.logwarn("Limiting odom timestep to 1 | dt = " + str(dt))
-				dt = 1
+			if dt > 0.25:
+				# rospy.logwarn("Limiting odom timestep to 1 | dt = " + str(dt))
+				rospy.logwarn("Odom timestep is greater than 0.25 s | dt = " + str(dt))
+				dt = 0.
+				# self.kalman_time = t
+				# return
 			
 			self.kalman_time = t
 			self.state, self.cov, self.kalman_pos = self.ekf.EKF_odom(self.state, self.cov, dt, meas)
