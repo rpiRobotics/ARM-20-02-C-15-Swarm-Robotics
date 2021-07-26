@@ -1,10 +1,30 @@
 desired_swarm_vel_topic_name: desired_swarm_vel
 just_swarm_frame_vel_input_topic_name: just_swarm_vel
-N_robots: 3
+N_robots: 2
 theta_scale: 50.0 # (m/s)/(rad/s)
 
+# just_robot_vel_input_topic_name_0: just_robot_vel_0
+# state_publish_topic_name_0: oarbot_silver/desired_state
+# tf_frame_name_0: tf_robot_0
+# vel_lim_x_0: 0.1
+# vel_lim_y_0: 0.1
+# vel_lim_theta_0: 0.13635
+# acc_lim_x_0: 0.6
+# acc_lim_y_0: 0.6
+# acc_lim_theta_0: 1.0  
+
+# just_robot_vel_input_topic_name_1: just_robot_vel_1
+# state_publish_topic_name_1: oarbot_blue/desired_state
+# tf_frame_name_1: tf_robot_1
+# vel_lim_x_1: 0.1
+# vel_lim_y_1: 0.1
+# vel_lim_theta_1: 0.13635
+# acc_lim_x_1: 0.6
+# acc_lim_y_1: 0.6
+# acc_lim_theta_1: 1.0  
+
 just_robot_vel_input_topic_name_0: just_robot_vel_0
-state_publish_topic_name_0: oarbot_silver/desired_state
+state_publish_topic_name_0: oarbot_blue/desired_state
 tf_frame_name_0: tf_robot_0
 vel_lim_x_0: 0.1
 vel_lim_y_0: 0.1
@@ -13,22 +33,22 @@ acc_lim_x_0: 0.6
 acc_lim_y_0: 0.6
 acc_lim_theta_0: 1.0  
 
-just_robot_vel_input_topic_name_1: just_robot_vel_1
-state_publish_topic_name_1: oarbot_blue/desired_state
-tf_frame_name_1: tf_robot_1
-vel_lim_x_1: 0.1
-vel_lim_y_1: 0.1
-vel_lim_theta_1: 0.13635
-acc_lim_x_1: 0.6
-acc_lim_y_1: 0.6
-acc_lim_theta_1: 1.0  
+# just_robot_vel_input_topic_name_2: just_robot_vel_2
+# state_publish_topic_name_2:  ridgeback/desired_state
+# tf_frame_name_2: tf_robot_2
+# vel_lim_x_2: 0.9
+# vel_lim_y_2: 0.9
+# vel_lim_theta_2: 1.8
+# acc_lim_x_2: 2.0
+# acc_lim_y_2: 2.0
+# acc_lim_theta_2: 0.8 
 
-just_robot_vel_input_topic_name_2: just_robot_vel_2
-state_publish_topic_name_2:  ridgeback/desired_state
-tf_frame_name_2: tf_robot_2
-vel_lim_x_2: 0.9
-vel_lim_y_2: 0.9
-vel_lim_theta_2: 1.8
-acc_lim_x_2: 2.0
-acc_lim_y_2: 2.0
-acc_lim_theta_2: 0.8 
+just_robot_vel_input_topic_name_1: just_robot_vel_1
+state_publish_topic_name_1:  ridgeback/desired_state
+tf_frame_name_1: tf_robot_1
+vel_lim_x_1: 0.9
+vel_lim_y_1: 0.9
+vel_lim_theta_1: 1.8
+acc_lim_x_1: 2.0
+acc_lim_y_1: 2.0
+acc_lim_theta_1: 0.8 
