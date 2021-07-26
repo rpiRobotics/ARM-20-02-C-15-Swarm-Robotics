@@ -37,7 +37,7 @@ class robot_button:
         self.button.setFont(QFont('Ubuntu',13))
         self.button.setText(self.text)
         self.button.pressed.connect(self.button_pressed)
-        self.publisher=rospy.Publisher(topic, Twist, queue_size=0)
+        self.publisher=rospy.Publisher(topic, Twist, queue_size=1)
         self.button2=QPushButton()
         self.button2.setFont(QFont('Ubuntu',11))
         self.button2.setText(self.text2)
@@ -126,7 +126,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
         
-        rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
+        rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback, queue_size=1)
         for i in range(self.number_of_bots):
             led=LEDIndicator()
             led.setDisabled(True)
@@ -205,7 +205,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         pass
 
     def offset_callback(self,data):
-        with(callback_lock):
+        with callback_lock:
             data.angular.z = data.angular.z*4.0
             for i in range(len(self.buttons)):
                 if(self.buttons[i].enabled):

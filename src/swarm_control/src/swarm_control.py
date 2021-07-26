@@ -81,15 +81,15 @@ class Swarm_Control:
 			self.a_max[2, i] = rospy.get_param('~acc_lim_theta_' + str(i))
 
 		# Subscribe
-		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback)
-		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback)
+		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback, queue_size=1)
+		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback, queue_size=1)
 		for i in range(self.N_robots):
-			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i)
+			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i, queue_size=1)
 
 		# Publish
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 		for i in range(self.N_robots):
-			self.vel_pubs[i] = rospy.Publisher(state_publish_topic_names[i], State2D, queue_size=10)
+			self.vel_pubs[i] = rospy.Publisher(state_publish_topic_names[i], State2D, queue_size=1)
 
 		# Initialize local variables to keep track of swarm/robot frames
 		self.swarm_xyt = np.zeros((3,1))

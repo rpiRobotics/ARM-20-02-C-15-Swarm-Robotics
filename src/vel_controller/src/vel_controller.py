@@ -63,25 +63,25 @@ class Controller:
 		vel_lim_theta = rospy.get_param('~vel_lim_theta')
 		self.vel_limit = np.array([[vel_lim_x],[vel_lim_y],[vel_lim_theta]])
 
-		self.vel_cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=10)
+		self.vel_cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=1)
 		self.output_enable = False 
 		self.state_pos = np.array([[0.0],[0.0],[0.0]])
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
 		
 		if input_is_State2D:
-			rospy.Subscriber(cmd_input_topic_name, State2D, self.desired_state_callback)
+			rospy.Subscriber(cmd_input_topic_name, State2D, self.desired_state_callback, queue_size=1)
 		else:
-			rospy.Subscriber(cmd_input_topic_name, Twist, self.desired_vel_callback)
+			rospy.Subscriber(cmd_input_topic_name, Twist, self.desired_vel_callback, queue_size=1)
 			# Integrated desired position
 			self.q_desired = np.array([[0.0],[0.0],[0.0]])
 			self.prev_integration_time = rospy.Time.now().to_sec()
 
 		# Subscribe to space mouse buttons
-		rospy.Subscriber(space_mouse_topic_name, Joy, self.space_mouse_button_callback)
+		rospy.Subscriber(space_mouse_topic_name, Joy, self.space_mouse_button_callback, queue_size=1)
 
 		# Subscribe to Kalman Filter position
-		rospy.Subscriber(position_feedback_topic_name, Pose2D, self.state_feedback_callback)
+		rospy.Subscriber(position_feedback_topic_name, Pose2D, self.state_feedback_callback, queue_size=1)
 
 	def desired_vel_callback(self, data):
 		current_time = rospy.Time.now().to_sec()

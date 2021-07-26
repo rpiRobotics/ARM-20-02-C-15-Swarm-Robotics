@@ -107,16 +107,16 @@ class Fusion:
 		self.rmse_pub = rospy.Publisher(self.position_feedback_topic_name + '_UWB_RMSE', Float32, queue_size=10)
 
 		# Subscribe to UWB tags
-		rospy.Subscriber(self.uwb_front_topic_name, String, self.uwb_serial_front_callback)
-		rospy.Subscriber(self.uwb_back_topic_name, String, self.uwb_serial_back_callback)
+		rospy.Subscriber(self.uwb_front_topic_name, String, self.uwb_serial_front_callback, queue_size=1)
+		rospy.Subscriber(self.uwb_back_topic_name, String, self.uwb_serial_back_callback, queue_size=1)
 
 		# Subscribe to velocity / odometry
 		if self.feedback_is_Odometry:
 			rospy.Subscriber(
-				self.velocity_feedback_topic_name, Odometry, self.odom_callback)
+				self.velocity_feedback_topic_name, Odometry, self.odom_callback, queue_size=1)
 		else: # Feedback is Velocity
 			rospy.Subscriber(
-				self.velocity_feedback_topic_name, Twist, self.odom_callback)
+				self.velocity_feedback_topic_name, Twist, self.odom_callback, queue_size=1)
 
 	def uwb_serial_front_callback(self, data):
 		if DEBUG_UWB:
