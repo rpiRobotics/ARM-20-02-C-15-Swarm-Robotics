@@ -17,12 +17,13 @@ from PyQt5.QtGui import *
 from PyQt5 import QtWidgets, uic
 from std_msgs.msg import Bool
 import threading
-from geometry_msgs.msg import Pose2D, Twist
+from geometry_msgs.msg import Pose2D, Twist, PoseStamped
 from led_indicator import LEDIndicator
 import rosnode
 import signal
 import std_msgs.msg
 from swarm_msgs.msg import FrameTwist
+from tf import TransformListener
 
 callback_lock=threading.Lock()
 
@@ -121,6 +122,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         screengeometry=desktop.screenGeometry()
         height=screengeometry.height()
         width=screengeometry.width()
+        self.tf = TransformListener()
+
         #print(type(width))
         heightnew=int(height/2)
         
@@ -165,6 +168,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.closed_loop_swarm_command_topic=rospy.get_param('closed_loop_swarm_command_topic')
             self.open_loop_swarm_command_topic=rospy.get_param('open_loop_swarm_command_topic')
             self.sync_topic=rospy.get_param('sync_frames_topic')
+            self.swarm_tf=rospy.get_param('swarm_tf_frame')
+            self.robot_tfs=rospy.get_param('robot_tf_frames')
         except:
             self.number_of_bots=3
             self.nodenames=[["/rosout"],["hello"],["hello"]]
@@ -243,12 +248,19 @@ class SWARMGUI(QtWidgets.QMainWindow):
         icon2.addPixmap(QPixmap(self.minus))
         self.minusbutton.setIcon(icon2)
         self.minusbutton.setIconSize(QSize(100,100))
+        
+        rp = rospkg.RosPack()
+        self.package_path = rp.get_path('swarm_gui')
         #self.plusbutton.resize(width/3,height/5)
         #self.minusbutton.resize(width/3,height/5)
         
         #self.Savestructure.resize(width/3,height/5)
         #self.repubme=rospy.Publisher(self.input_command_topic, Twist, queue_size=0)
         #rospy.Timer(rospy.Duration(0.1), self.move_swarm_frame)
+        self.Savestructure.pressed.connect(self.save_structure)
+        self.Loadstructure.pressed.connect(self.load_structure)
+        self.Assumestructure.pressed.connect(self.assume_structure)
+        self.tf_changer=rospy.Publisher("tf_changer",PoseStamped,queue_size=10)
         self.windowresized()
         self.show()
     
@@ -329,11 +341,62 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.Assumestructure.setFont(f)
         self.syncFrames.setFont(f)
 
-        
+    def save_structure(self):
+        name, done1 = QtWidgets.QInputDialog.getText(
+             self, 'Save Structure', 'Enter desired save name:')
+        if(done1):
+            name=self.package_path+'/resource/'+name+'.txt'
+            f = open(name, "w")
+            
+            for i in range(len(self.robot_tfs)):
+                if(self.tf.frameExists(self.robot_tfs[i])):
+                    t = self.tf.getLatestCommonTime(self.robot_tfs[i], self.swarm_tf)
+                    position, quaternion = self.tf.lookupTransform(self.robot_tfs[i], self.swarm_tf, t)
+                    
+                    print position, quaternion
+                    f.write("robot_name: %s\n"%self.robot_tfs[i])
+                    f.write(str(position)+"\n")
+                    f.write(str(quaternion)+"\n")
+            f.close()
+
+    def load_structure(self):
+        name, done1 = QtWidgets.QInputDialog.getText(
+             self, 'Load Structure', 'Enter desired file name:')
+        if(done1):
+            name=self.package_path+'/resource/'+name+'.txt'
+            f = open(name, "r+")
+            lines=f.readlines()
+            length=len(lines)/3
+            for i in range(length):
+                index=3*i
+                frame_name=lines[index][12:].strip()
+                position_line=lines[index+1][1:-2]
+                quaternion_line=lines[index+2][1:-2]
+                rospy.loginfo(frame_name)
+                if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(frame_name):
+                    rospy.loginfo(str(i))
+                    t = self.tf.getLatestCommonTime(self.swarm_tf, frame_name)
+                    p1 = PoseStamped()
+                    p1.header.frame_id = frame_name
+                    positions=position_line.split(', ')
+                    quaternions=quaternion_line.split(', ')
+                    p1.pose.position.x = float(positions[0])
+                    p1.pose.position.y = float(positions[1])
+                    p1.pose.position.z = float(positions[2])
+                    p1.pose.orientation.w = float(quaternions[3])
+                    p1.pose.orientation.x = float(quaternions[0])
+                    p1.pose.orientation.y = float(quaternions[1])
+                    p1.pose.orientation.z = float(quaternions[2])
+                    #p_in_base = self.tf.transformPose("/base_link", p1)
+                    self.tf_changer.publish(p1)
+
+    def assume_structure(self):
+        pass
+                
     
 
 def main():
-    rospy.init_node('SWARM_gui')
+    rospy.init_node('SWARM_gui',log_level=rospy.DEBUG)
     signal.signal(signal.SIGINT,signal.SIG_DFL)
     app = QtWidgets.QApplication(sys.argv) # Create an instance of QtWidgets.QApplication
     window = SWARMGUI() # Create an instance of our class

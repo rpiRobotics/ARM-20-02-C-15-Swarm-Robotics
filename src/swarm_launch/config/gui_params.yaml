@@ -38,3 +38,12 @@ robot_type_information:
 input_command_topic: 'deadman_switch_spacenav_twist'
 
 sync_frames_topic:  'move_desired_to_current'
+
+swarm_tf_frame: "swarm_frame"
+
+robot_tf_frames:
+  - "tf_robot_0"
+  - "tf_robot_1"
+  - "tf_robot_2"
+  - "tf_robot_3"
+  - "tf_robot_4"
