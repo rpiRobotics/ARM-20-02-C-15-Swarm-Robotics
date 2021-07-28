@@ -201,11 +201,11 @@ class Fusion:
 			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
 			corrected_front_dists, corrected_back_dists, self.tag_loc_front, self.tag_loc_back)
 
-			# # Ignore reading if rmse is high than ... meters
-			# if rmse > 0.15:
-			# 	# # # lock.release()
-			# 	rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
-			# 	return
+			# Ignore reading if rmse is high than ... meters
+			if rmse > 0.15:
+				# # # lock.release()
+				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
+				return
 
 			self.kalman_time =  max(self.front_t, self.back_t)
 
@@ -220,28 +220,28 @@ class Fusion:
 		self.tf_broadcaster.sendTransform(tf_uwb)
 		self.publish_position()
 
-		###
-		import csv
-		import os 
-		current_dir = os.path.expanduser("~")
-		location = os.path.join(current_dir,'uwb_multilateration_data.csv')
+		# ###
+		# import csv
+		# import os 
+		# current_dir = os.path.expanduser("~")
+		# location = os.path.join(current_dir,'uwb_multilateration_data.csv')
 		
-		with open(location, mode='a') as data_file:
-			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		# with open(location, mode='a') as data_file:
+		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-			data_writer.writerow(uwb_pos.flatten().tolist())
+		# 	data_writer.writerow(uwb_pos.flatten().tolist())
 
-		location = os.path.join(current_dir,'uwb_rmse_data.csv')
-		with open(location, mode='a') as data_file:
-			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		# location = os.path.join(current_dir,'uwb_rmse_data.csv')
+		# with open(location, mode='a') as data_file:
+		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-			data_writer.writerow([rmse])
+		# 	data_writer.writerow([rmse])
 
-		location = os.path.join(current_dir,'uwb_num_dist_readings.csv')
-		with open(location, mode='a') as data_file:
-			data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+		# location = os.path.join(current_dir,'uwb_num_dist_readings.csv')
+		# with open(location, mode='a') as data_file:
+		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-			data_writer.writerow([self.front_dists.size + self.back_dists.size])
+		# 	data_writer.writerow([self.front_dists.size + self.back_dists.size])
 
 
 
