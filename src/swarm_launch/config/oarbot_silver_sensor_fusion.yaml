@@ -3,6 +3,9 @@ velocity_feedback_topic_name: "vel_feedback"
 uwb_front_topic_name: "uwb_serial_front"
 uwb_back_topic_name: "uwb_serial_back"
 
+uwb_front_id: '156D'
+uwb_back_id: '1511'
+
 tf_frame_name_uwb: "oarbot_silver_uwb"
 tf_frame_name_fused: "oarbot_silver_fusion"
 position_feedback_topic_name: "position"

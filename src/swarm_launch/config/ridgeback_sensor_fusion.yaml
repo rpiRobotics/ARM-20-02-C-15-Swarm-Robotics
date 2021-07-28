@@ -3,6 +3,9 @@ velocity_feedback_topic_name: "vel_feedback" # "ridgeback_velocity_controller/od
 uwb_front_topic_name: "uwb_serial_front"
 uwb_back_topic_name: "uwb_serial_back"
 
+uwb_front_id: '0CAD'
+uwb_back_id: '0D8F'
+
 tf_frame_name_uwb: "ridgeback_uwb"
 tf_frame_name_fused: "ridgeback_fusion"
 position_feedback_topic_name: "position"

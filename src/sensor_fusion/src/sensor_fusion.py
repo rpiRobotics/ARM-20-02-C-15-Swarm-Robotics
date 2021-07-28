@@ -61,6 +61,9 @@ class Fusion:
 		self.uwb_front_topic_name = rospy.get_param('~uwb_front_topic_name')
 		self.uwb_back_topic_name = rospy.get_param('~uwb_back_topic_name')
 
+		uwb_front_id = rospy.get_param('~uwb_front_id')
+		uwb_back_id = rospy.get_param('~uwb_back_id')
+
 		self.tf_frame_name_uwb = rospy.get_param('~tf_frame_name_uwb')
 		self.tf_frame_name_fused = rospy.get_param('~tf_frame_name_fused')
 		self.position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
@@ -77,6 +80,10 @@ class Fusion:
 		odom_meas_std = rospy.get_param('~odom_meas_std')
 		process_pos_std = rospy.get_param('~process_pos_std')
 		process_vel_std = rospy.get_param('~process_vel_std')
+
+		self.antenna_offsets = rospy.get_param('~antenna_offsets')
+		self.front_offset = self.antenna_offsets[uwb_front_id]
+		self.back_offset = self.antenna_offsets[uwb_back_id]
 
 		# Kalman filter state, covariance, and time
 		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]]) # x,y,theta,x_dot,y_dot,theta_dot
@@ -96,6 +103,10 @@ class Fusion:
 		# Vector of distances to each anchor
 		self.front_dists = 0.
 		self.back_dists = 0.
+
+		# IDs corresponding to anchors
+		self.front_ids = 0.
+		self.back_ids = 0.
 
 		# Initialize Extended Kalman Filter Object
 		self.ekf = EKF(uwb_meas_std, odom_meas_std, process_pos_std, process_vel_std)
@@ -121,7 +132,7 @@ class Fusion:
 	def uwb_serial_front_callback(self, data):
 		if DEBUG_UWB:
 			rospy.logwarn("uwb_serial_front_callback")
-		valid, anchor_mat, dists = parse_lec_line(data.data)
+		valid, anchor_mat, dists, ids = parse_lec_line(data.data)
 		if not valid:
 			rospy.logwarn("NOT VALID")
 			rospy.logwarn(str(data))
@@ -129,7 +140,8 @@ class Fusion:
 
 		self.front_t = time.time()
 		self.front_anchors = anchor_mat
-		self.front_dists = dists
+		self.front_dists = dists 
+		self.front_ids = ids
 
 		if DEBUG_UWB:
 			rospy.logwarn("self.front_t - self.back_t")
@@ -140,7 +152,7 @@ class Fusion:
 	def uwb_serial_back_callback(self, data):
 		if DEBUG_UWB:
 			rospy.logwarn("uwb_serial_back_callback")
-		valid, anchor_mat, dists = parse_lec_line(data.data)
+		valid, anchor_mat, dists, ids = parse_lec_line(data.data)
 		if not valid:
 			rospy.logwarn("NOT VALID")
 			rospy.logwarn(str(data))
@@ -149,6 +161,7 @@ class Fusion:
 		self.back_t = time.time();
 		self.back_anchors = anchor_mat
 		self.back_dists = dists
+		self.back_ids = ids
 
 		if DEBUG_UWB:
 			rospy.logwarn("self.back_t - self.front_t")
@@ -177,15 +190,22 @@ class Fusion:
 				rospy.logwarn("Dropping UWB reading | number of readings = " + str(self.front_dists.size + self.back_dists.size) + " which is less than 8" )
 				return
 
+			# Correct the readings with the offsets
+			front_anchor_offsets = np.array([[self.antenna_offsets[i] for i in self.front_ids]]).T
+			back_anchor_offsets  = np.array([[self.antenna_offsets[i] for i in self.back_ids]]).T
+			
+			corrected_front_dists = self.front_dists + self.front_offset + front_anchor_offsets
+			corrected_back_dists = self.back_dists + self.back_offset + back_anchor_offsets
+
 			# Multilateration
 			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
-			self.front_dists, self.back_dists, self.tag_loc_front, self.tag_loc_back)
+			corrected_front_dists, corrected_back_dists, self.tag_loc_front, self.tag_loc_back)
 
-			# Ignore reading if rmse is high than ... meters
-			if rmse > 0.15:
-				# # # lock.release()
-				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
-				return
+			# # Ignore reading if rmse is high than ... meters
+			# if rmse > 0.15:
+			# 	# # # lock.release()
+			# 	rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
+			# 	return
 
 			self.kalman_time =  max(self.front_t, self.back_t)
 

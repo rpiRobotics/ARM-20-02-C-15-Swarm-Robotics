@@ -3,6 +3,9 @@ velocity_feedback_topic_name: "husky_velocity_controller/odom"
 uwb_front_topic_name: "uwb_serial_front"
 uwb_back_topic_name: "uwb_serial_back"
 
+uwb_front_id: '48D3'
+uwb_back_id: '43A9'
+
 tf_frame_name_uwb: "husky_black_uwb"
 tf_frame_name_fused: "husky_black_fusion"
 position_feedback_topic_name: "position"
