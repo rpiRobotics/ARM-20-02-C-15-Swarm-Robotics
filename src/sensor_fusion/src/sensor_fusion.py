@@ -85,6 +85,8 @@ class Fusion:
 		self.front_offset = self.antenna_offsets[uwb_front_id]
 		self.back_offset = self.antenna_offsets[uwb_back_id]
 
+		self.tag_z_height = rospy.get_param('~tag_z_height',None)
+
 		# Kalman filter state, covariance, and time
 		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]]) # x,y,theta,x_dot,y_dot,theta_dot
 		self.cov   = 100.0**2 * np.eye(6)
@@ -199,7 +201,7 @@ class Fusion:
 
 			# Multilateration
 			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
-			corrected_front_dists, corrected_back_dists, self.tag_loc_front, self.tag_loc_back)
+			corrected_front_dists, corrected_back_dists, self.tag_loc_front, self.tag_loc_back, self.tag_z_height)
 
 			# Ignore reading if rmse is high than ... meters
 			if rmse > 0.15:

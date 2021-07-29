@@ -15,3 +15,5 @@ tag_loc_front_y: 0.255
 
 tag_loc_back_x: -0.268
 tag_loc_back_y: -0.255
+
+tag_z_height: None

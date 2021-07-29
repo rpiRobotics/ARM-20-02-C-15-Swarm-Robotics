@@ -1,8 +1,8 @@
 antenna_offsets: # in m
-  '2A32': 0.065 # Mobile Anchor 1 LL
-  '29EF': 0.042 # Mobile Anchor 2 LR
-  '0D40': 0.094 # Mobile Anchor 3 TR
-  '2ED1': 0.062 # Mobile Anchor 4 TL
+  '2A32': 0.065 # Mobile Anchor 1 LL # ON THE FINAL DEMO AREA
+  '29EF': 0.042 # Mobile Anchor 2 LR # ON THE FINAL DEMO AREA
+  '0D40': 0.094 # Mobile Anchor 3 TR # ON THE FINAL DEMO AREA
+  '2ED1': 0.062 # Mobile Anchor 4 TL # ON THE FINAL DEMO AREA
   '2FEB': 0.048 # Husky Blue Front
   '152F': 0.036 # Husky Blue Back
   '48D3': 0.029 # Husky Black Front
@@ -11,13 +11,13 @@ antenna_offsets: # in m
   # '2F2F': BAD? # OARbot Silver Back
   # '0DA3': BAD? # OARbot Blue Front
   # '2C9D': BAD? # OARbot Blue Back
-  '15ED': 0.039 # Cage 1
+  '15ED': 0.039 # Cage 1 # Mobile Anchor 
   '156D': 0.048 # Cage 2 # OARbot Silver Front
-  '43E6': 0.054 # Cage 3
+  '43E6': 0.054 # Cage 3 # Mobile Anchor
   '1511': 0.033 # Cage 4 # OARbot Silver Back
-  '2FFD': 0.047 # Cage 5
+  '2FFD': 0.047 # Cage 5 # Mobile Anchor
   '43AA': 0.051 # Cage 6 # OARbot Blue Front
-  '48C4': 0.097 # Cage 7
+  '48C4': 0.097 # Cage 7 # Mobile Anchor
   '1563': 0.048 # Cage 8 # OARbot Blue Back
   '0CAD': 0.125 # Ridgeback Back
   '0D8F': 0.077 # Ridgeback Front

@@ -3,7 +3,7 @@ import numpy as np
 from scipy.optimize import least_squares # nonlinear least-squares
 
 def tag_pair_min_z(anchor_mat_front, anchor_mat_back,
-	dists_meas_front, dists_meas_back, tag_loc_front, tag_loc_back):
+	dists_meas_front, dists_meas_back, tag_loc_front, tag_loc_back, z=None):
 	# Find the position of the robot given distance readings from 2 UWB tags
 
 	# The two tags can have different numbers of readings
@@ -21,6 +21,7 @@ def tag_pair_min_z(anchor_mat_front, anchor_mat_back,
 	#	dists_meas_back: vector of measured distances from tag 2
 	#	tag_loc_front: XY position of the 1st anchor in the robot frame
 	#	tag_loc_back: XY position of the 2nd anchor in the robot frame
+	#	z: Height of the tags on the robot from floor (optional, if not specified z will be estimated as well)
 
 	# Outputs: 
 	# 	robot_pos: X;Y;Z;theta position of the robot (in world frame)
@@ -66,15 +67,29 @@ def tag_pair_min_z(anchor_mat_front, anchor_mat_back,
 	# Go from the mean frame back to the robot frame
 	xyz_guess = xyz_mean_guess - np.block([[tag_loc_mean],[0.]])
 	xyzt_guess = np.block([[xyz_guess],[angle_guess]])
+	xyt_guess = xyzt_guess[[0,1,3]]
 
 	# Using this close first guess, apply nonlinear minimization
-	opt_result = least_squares(tag_pair_err_fun, xyzt_guess.flatten(),
-		args=(anchor_mat_front, anchor_mat_back,
-		dists_meas_front, dists_meas_back, tag_loc_front, tag_loc_back))
+	if z is None:
+		opt_result = least_squares(tag_pair_err_fun, xyzt_guess.flatten(),
+			args=(anchor_mat_front, anchor_mat_back,
+			dists_meas_front, dists_meas_back, tag_loc_front, tag_loc_back))
+	else: # z (robot tags' height) is given
+		opt_result = least_squares(tag_pair_err_z_given_fun, xyt_guess.flatten(),
+			args=(anchor_mat_front, anchor_mat_back,
+			dists_meas_front, dists_meas_back, tag_loc_front, tag_loc_back,z))
 
 	robot_pos = opt_result.x
 	rmse = np.sqrt(np.mean(opt_result.fun**2.))
 	return robot_pos, rmse
+
+
+def tag_pair_err_z_given_fun(
+	robot_pos, anchor_mat_1, anchor_mat_2,
+	dists_meas_1, dists_meas_2, p_1, p_2, z):
+
+	robot_pos = np.insert(robot_pos,2,z,axis=0)
+	return tag_pair_err_fun(robot_pos, anchor_mat_1, anchor_mat_2, dists_meas_1, dists_meas_2, p_1, p_2)
 
 def tag_pair_err_fun(
 	robot_pos, anchor_mat_1, anchor_mat_2,
