@@ -203,11 +203,11 @@ class Fusion:
 			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
 			corrected_front_dists, corrected_back_dists, self.tag_loc_front, self.tag_loc_back, self.tag_z_height)
 
-			# # Ignore reading if rmse is high than ... meters
-			# if rmse > 0.15:
-			# 	# # # lock.release()
-			# 	rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
-			# 	return
+			# Ignore reading if rmse is high than ... meters
+			if rmse > 0.15:
+				# # # lock.release()
+				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
+				return
 
 			self.kalman_time =  max(self.front_t, self.back_t)
 
