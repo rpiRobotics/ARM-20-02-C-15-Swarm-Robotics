@@ -353,7 +353,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
                     t = self.tf.getLatestCommonTime(self.robot_tfs[i], self.swarm_tf)
                     position, quaternion = self.tf.lookupTransform(self.robot_tfs[i], self.swarm_tf, t)
                     
-                    print position, quaternion
+                    print(position, quaternion)
                     f.write("robot_name: %s\n"%self.robot_tfs[i])
                     f.write(str(position)+"\n")
                     f.write(str(quaternion)+"\n")
