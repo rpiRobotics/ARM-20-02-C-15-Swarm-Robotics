@@ -8,18 +8,18 @@ closed_loop_swarm_command_topic: "/desired_swarm_vel"
 open_loop_swarm_command_topic: "/just_swarm_vel"
 
 closed_loop_command_topics:
-  - "/oarbot_silver/cmd_vel"
-  - "/oarbot_blue/cmd_vel"
-  - "/ridgeback/cmd_vel"
-  - "/husky_black/cmd_vel"
-  - "/husky_blue/cmd_vel"
-
-open_loop_command_topics:
   - "/just_robot_vel_0"
   - "/just_robot_vel_1"
   - "/just_robot_vel_2"
   - "/just_robot_vel_3"
   - "/just_robot_vel_4"
+
+open_loop_command_topics:
+  - "/oarbot_silver/cmd_vel"
+  - "/oarbot_blue/cmd_vel"
+  - "/ridgeback/cmd_vel"
+  - "/husky_black/cmd_vel"
+  - "/husky_blue/cmd_vel"
   
 robot_node_names:
   - ["/uwb_front_oarbot_silver","/uwb_back_oarbot_silver","/sensor_fusion_oarbot_silver","/oarbot_silver_ctrl"]
