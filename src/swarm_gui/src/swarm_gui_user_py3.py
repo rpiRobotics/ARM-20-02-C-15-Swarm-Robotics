@@ -178,8 +178,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         
         self.syncpub=rospy.Publisher(self.sync_topic,Bool,queue_size=10)
         self.syncFrames.pressed.connect(self.sync_frames)
-        self.moveswarmbutton=swarm_button(self.Moveswarm,self.open_loop_swarm_command_topic)
-        self.moveswarmframebutton= swarm_button(self.Moveswarmframe,self.closed_loop_swarm_command_topic)
+        self.moveswarmbutton = swarm_button(self.Moveswarm,self.closed_loop_swarm_command_topic)
+        self.moveswarmframebutton = swarm_button(self.Moveswarmframe,self.open_loop_swarm_command_topic)
         self.buttons.append(self.moveswarmbutton)
         self.buttons.append(self.moveswarmframebutton)
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
