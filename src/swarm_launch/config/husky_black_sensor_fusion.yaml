@@ -16,4 +16,10 @@ tag_loc_front_y: 0.255
 tag_loc_back_x: -0.268
 tag_loc_back_y: -0.255
 
-tag_z_height: None
+tag_z_height: 0.75
+
+uwb_meas_std: [0.5, 0.5, 0.2] # comes from uwb sensor readings data  # TODO
+odom_meas_std: [0.0001, 0.0001, 0.00005] # comes from encoder readings experiments # TODO
+process_pos_std: [0.3, 0.3, 0.4] # these are half of the max accelerations of the desired state # TODO
+process_vel_std: [0.3, 0.3, 0.4] # these are half of the max accelerations of the desired state # TODO
+
