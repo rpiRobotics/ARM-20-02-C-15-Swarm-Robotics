@@ -16,7 +16,7 @@ tag_loc_front_y: 0.255
 tag_loc_back_x: -0.268
 tag_loc_back_y: -0.255
 
-tag_z_height: 0.75
+tag_z_height: 0.5
 
 uwb_meas_std: [0.5, 0.5, 0.2] # comes from uwb sensor readings data  # TODO
 odom_meas_std: [0.0001, 0.0001, 0.00005] # comes from encoder readings experiments # TODO
