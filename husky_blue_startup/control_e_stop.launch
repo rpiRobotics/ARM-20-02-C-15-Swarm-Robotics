@@ -80,7 +80,7 @@
 
         <arg name="x_vel_scaling" value="1.00012501562695"/>
         <arg name="y_vel_scaling" value="1.0"/> <!-- Note that there is no Y direction movement -->
-        <arg name="th_vel_scaling" value="1.052"/>
+        <arg name="th_vel_scaling" value="1.05"/>
 
         <node pkg="topic_tools" type="transform" name="inv_kin_scaling" args="/$(arg namespace)/e_stop_cmd_vel husky_velocity_controller/cmd_vel geometry_msgs/Twist 'geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=$(arg x_vel_scaling)*m.linear.x,y=$(arg y_vel_scaling)*m.linear.y,z=m.linear.z),angular=geometry_msgs.msg.Vector3(x=m.angular.x,y=m.angular.y,z=$(arg th_vel_scaling)*m.angular.z))' --import geometry_msgs std_msgs">
         </node>
