@@ -11,6 +11,7 @@ COMMAND="gnome-terminal"
 
 for i in ${!HOSTS[*]} ; do
     echo "------------"
+    echo ${i}
     # echo ${HOSTS[i]}
     echo ${USERNAMES[i]}
     # echo ${PASSWORDS[i]}
