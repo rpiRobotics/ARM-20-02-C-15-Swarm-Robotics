@@ -1,6 +1,5 @@
-
-velocity_feedback_type: "Odometry"
-velocity_feedback_topic_name: "husky_velocity_controller/odom"
+velocity_feedback_type: "Twist"
+velocity_feedback_topic_name: "vel_feedback"
 uwb_front_topic_name: "uwb_serial_front"
 uwb_back_topic_name: "uwb_serial_back"
 
