@@ -26,6 +26,9 @@ Parameters:
 	position_feedback_topic_name: Topic for position estimation (e.g. from sensor fusion) to subscribe
 	control_cmd_publish_topic_name: Twist command to robot
 	turntable_cmd_vel_topic_name: Desired command for the turntable velocities (x_dot y_dot)
+
+	vel_lim_x: Robot linear velocity limit
+	vel_lim_theta: Robot angular velocity limit
 '''
 
 class TurntableInvKin:
@@ -40,6 +43,9 @@ class TurntableInvKin:
 		position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
 		control_cmd_publish_topic_name = rospy.get_param('~control_cmd_publish_topic_name')
 		turntable_cmd_vel_topic_name =  rospy.get_param('~turntable_cmd_vel_topic_name')
+
+		self.v_lim =  rospy.get_param('~vel_lim_x')
+		self.w_lim =  rospy.get_param('~vel_lim_theta')
 
 		# Publisher
 		self.cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=1)
@@ -63,11 +69,14 @@ class TurntableInvKin:
 			w = ( x_dot * (-s)  +  y_dot*(c) ) / self.p_x
 
 			msg = Twist()
-			msg.linear.x = v
-			msg.angular.z = w
+			msg.linear.x = constrain(v,-self.v_lim,self.v_lim)
+			msg.angular.z = constrain(w,-self.w_lim,self.w_lim)
 			self.cmd_pub.publish(msg)
 		else:
 			rospy.logwarn("Don't know theta yet")
+
+def constrain(val,min_val,max_val):
+	return min(max_val,max(min_val,val))
 
 if __name__ == '__main__':
 	TurntableInvKin()

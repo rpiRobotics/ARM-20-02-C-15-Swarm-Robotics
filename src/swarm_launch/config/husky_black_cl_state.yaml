@@ -10,7 +10,7 @@ control_cmd_publish_topic_name: 'cmd_vel'
 frame_name: 'husky_black_tt_d' # desired
 
 vel_lim_x: 1.0
-vel_lim_y: 1.0
+# vel_lim_y: 1.0 # There is no y direction vel for huskies
 vel_lim_theta: 2.0
 
 space_mouse_topic_name: '/tablet/spacenav/joy'
