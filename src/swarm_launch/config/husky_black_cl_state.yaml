@@ -1,11 +1,13 @@
 feedback_gain_xy: 3.0
 # feedback_gain_theta: 1.0
-is_offset_mode: True
+is_skid_steer_mode: True
 
-cmd_input_type: 'State2D'
-#cmd_input_type: 'Twist'
-cmd_input_topic_name: 'desired_state'
-position_feedback_topic_name: 'position'
+# cmd_input_type: 'State2D'
+cmd_input_type: 'Twist' # Just to test with spacemouse
+# cmd_input_topic_name: 'desired_state' 
+cmd_input_topic_name: 'desired_turntable_vel' # Just to test with spacemouse
+
+position_feedback_topic_name: 'turntable_position'
 control_cmd_publish_topic_name: 'cmd_vel'
 frame_name: 'husky_black_tt_d' # desired
 
