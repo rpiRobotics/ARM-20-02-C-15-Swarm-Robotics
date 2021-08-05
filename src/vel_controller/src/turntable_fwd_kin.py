@@ -64,7 +64,7 @@ class TurntableFwdKin:
 		self.pos_pub.publish(pos_msg)
 
 		# Publish for TF (frame)
-		tf_turntable = xyt2TF(np.array([self.p_x,self.p_y,0.0]), self.tf_robot_frame_name, self.tf_turntable_frame_name)
+		tf_turntable = xyt2TF(np.array([self.p_x,self.p_y,-data.theta]), self.tf_robot_frame_name, self.tf_turntable_frame_name)
 		self.tf_broadcaster.sendTransform(tf_turntable)
 
 
