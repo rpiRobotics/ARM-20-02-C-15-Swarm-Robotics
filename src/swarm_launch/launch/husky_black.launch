@@ -18,5 +18,9 @@
     <!-- <node name="cl_state" pkg="vel_controller" type="vel_controller.py">
         <rosparam file="$(find swarm_launch)/config/husky_black_cl_state.yaml"/>
     </node> -->
+
+    <node name="turntable_fwd_kin" pkg="vel_controller" type="turntable_fwd_kin.py">
+        <rosparam file="$(find swarm_launch)/config/husky_black_cl_state.yaml"/>
+    </node>
 </group>
 </launch>
