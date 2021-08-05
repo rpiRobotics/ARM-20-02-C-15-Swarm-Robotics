@@ -164,6 +164,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   src/vel_controller.py
   src/turntable_fwd_kin.py
+  src/turntable_inv_kin.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

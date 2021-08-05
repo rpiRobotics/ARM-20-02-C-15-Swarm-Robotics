@@ -19,6 +19,10 @@
         <rosparam file="$(find swarm_launch)/config/husky_blue_cl_state.yaml"/>
     </node> -->
 
+    <node name="turntable_inv_kin" pkg="vel_controller" type="turntable_inv_kin.py">
+        <rosparam file="$(find swarm_launch)/config/husky_blue_cl_state.yaml"/>
+    </node>
+
     <node name="turntable_fwd_kin" pkg="vel_controller" type="turntable_fwd_kin.py">
         <rosparam file="$(find swarm_launch)/config/husky_blue_cl_state.yaml"/>
     </node>

@@ -14,10 +14,9 @@ import tf_conversions # quaternion stuff
 from velocity_control_law import *
 
 '''
-closed_loop_velocity_controller.py
+turntable_fwd_kin.py
 Alex Elias, Burak Aksoy
 
-Drives a mobile robot to a desired position/velocity
 Adds constant offset from robot frame to turntable center
 Publishes to TF and Pose2D
 
