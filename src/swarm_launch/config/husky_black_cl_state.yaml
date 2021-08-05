@@ -7,7 +7,7 @@ cmd_input_type: 'Twist' # Just to test with spacemouse
 # cmd_input_topic_name: 'desired_state' 
 cmd_input_topic_name: 'desired_turntable_vel' # Just to test with spacemouse
 
-position_feedback_topic_name: 'turntable_position'
+position_feedback_topic_name: 'position'
 control_cmd_publish_topic_name: 'cmd_vel'
 frame_name: 'husky_black_tt_d' # desired
 

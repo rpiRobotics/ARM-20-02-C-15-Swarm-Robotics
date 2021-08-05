@@ -49,12 +49,18 @@ class Controller:
 		rospy.init_node('closed_loop_velocity_controller', anonymous=True)
 
 		input_is_State2D = ("State2D" == rospy.get_param('~cmd_input_type'))
-		position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
+		
 		cmd_input_topic_name = rospy.get_param('~cmd_input_topic_name')
 		control_cmd_publish_topic_name = rospy.get_param('~control_cmd_publish_topic_name')
 		space_mouse_topic_name = rospy.get_param('~space_mouse_topic_name')
+		
 		self.is_skid_steer_mode = rospy.get_param('~is_skid_steer_mode', False)
 		
+		if self.is_skid_steer_mode:
+			position_feedback_topic_name = rospy.get_param('~turntable_position_topic_name')
+		else:
+			position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
+
 		self.frame_name = rospy.get_param('~frame_name')
 
 		if self.is_skid_steer_mode is False:
