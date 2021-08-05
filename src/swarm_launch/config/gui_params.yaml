@@ -14,8 +14,8 @@ command_topics:
   - "/ridgeback/cmd_vel"
   - "/husky_black/cmd_vel"
   - "/husky_blue/cmd_vel"
-  - "/husky_black/turntable_cmd_vel"
-  - "/husky_blue/turntable_cmd_vel"
+  - "/husky_black/desired_turntable_vel"
+  - "/husky_blue/desired_turntable_vel"
 robot_node_names:
   - []
   - []
