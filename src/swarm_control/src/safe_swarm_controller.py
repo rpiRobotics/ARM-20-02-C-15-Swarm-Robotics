@@ -59,12 +59,21 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 	v = lsqlin(lsq_param_C, lsq_param_d, lsq_param_A, lsq_param_b)
 
 	# Find the velocity of each robot
-	v_i = np.zeros((3,N))
+	v_i_world = np.zeros((3,N))
+	v_i_rob= np.zeros((3,N))
 	for i in range(N):
 		p_i_world_frame = rot_mat(xyt_swarm[2][0]).dot(p_i_mat[:,[i]])
 		theta_i_world_frame = xyt_swarm[2][0]+theta_vec[0][i]
-		J = robot_jacobian(p_i_world_frame, theta_i_world_frame)
-		v_i[:,[i]] = J.dot(v)
+		J_rob = robot_jacobian(p_i_world_frame, theta_i_world_frame)
+		J_world = robot_jacobian(p_i_world_frame, 0)
+		#v_i_robot = J.dot(v)
+
+		#v_i_world = v_i_robot
+		#v_i_world[1:2+1] = rot_mat(theta_i_world_frame).dot(v_i_robot[1:2+1])
+
+		#v_i[:,[i]] = #v_i_world	
+		v_i_world[:,[i]] = J_world.dot(v)
+		v_i_rob[:,[i]] = J_rob.dot(v)
 
 	# Find the position of the swarm and each robot
 	# Careful to find robot postion with forward kinematics, NOT integration
@@ -83,7 +92,7 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 		xyt_i[:,[i]] = xyt_swarm_next + xyt_i_world_frame
 	
 	# Return the results
-	return v_i, xyt_i, v, xyt_swarm_next
+	return v_i_world, v_i_rob, xyt_i, v, xyt_swarm_next
 
 def robot_jacobian(p, theta):
 	# Theta is the angle to rotate from the velocity frame to the final frame

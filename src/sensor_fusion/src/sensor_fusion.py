@@ -2,6 +2,7 @@
 import numpy as np
 import rospy
 import threading
+import time
 
 import tf2_ros
 import tf2_msgs.msg
@@ -60,6 +61,9 @@ class Fusion:
 		self.uwb_front_topic_name = rospy.get_param('~uwb_front_topic_name')
 		self.uwb_back_topic_name = rospy.get_param('~uwb_back_topic_name')
 
+		uwb_front_id = rospy.get_param('~uwb_front_id')
+		uwb_back_id = rospy.get_param('~uwb_back_id')
+
 		self.tf_frame_name_uwb = rospy.get_param('~tf_frame_name_uwb')
 		self.tf_frame_name_fused = rospy.get_param('~tf_frame_name_fused')
 		self.position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
@@ -72,11 +76,21 @@ class Fusion:
 		tag_loc_back_y = rospy.get_param('~tag_loc_back_y')
 		self.tag_loc_back = np.array([[tag_loc_back_x],[tag_loc_back_y]])
 
+		uwb_meas_std = rospy.get_param('~uwb_meas_std')
+		odom_meas_std = rospy.get_param('~odom_meas_std')
+		process_pos_std = rospy.get_param('~process_pos_std')
+		process_vel_std = rospy.get_param('~process_vel_std')
+
+		self.antenna_offsets = rospy.get_param('~antenna_offsets')
+		self.front_offset = self.antenna_offsets[uwb_front_id]
+		self.back_offset = self.antenna_offsets[uwb_back_id]
+
+		self.tag_z_height = rospy.get_param('~tag_z_height',None)
 
 		# Kalman filter state, covariance, and time
-		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]])
+		self.state = np.array([[0.0],[0.0],[0.0],[0.0],[0.0],[0.0]]) # x,y,theta,x_dot,y_dot,theta_dot
 		self.cov   = 100.0**2 * np.eye(6)
-		self.kalman_time = rospy.Time.now().to_sec()
+		self.kalman_time = time.time()
 
 		self.kalman_lock = threading.Lock()
 
@@ -91,37 +105,45 @@ class Fusion:
 		# Vector of distances to each anchor
 		self.front_dists = 0.
 		self.back_dists = 0.
-		
+
+		# IDs corresponding to anchors
+		self.front_ids = 0.
+		self.back_ids = 0.
+
+		# Initialize Extended Kalman Filter Object
+		self.ekf = EKF(uwb_meas_std, odom_meas_std, process_pos_std, process_vel_std)
+
 		# Publish position
-		self.pos_pub = rospy.Publisher(self.position_feedback_topic_name, Pose2D, queue_size=0)
+		self.pos_pub = rospy.Publisher(self.position_feedback_topic_name, Pose2D, queue_size=1)
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
 		self.rmse_pub = rospy.Publisher(self.position_feedback_topic_name + '_UWB_RMSE', Float32, queue_size=10)
 
 		# Subscribe to UWB tags
-		rospy.Subscriber(self.uwb_front_topic_name, String, self.uwb_serial_front_callback)
-		rospy.Subscriber(self.uwb_back_topic_name, String, self.uwb_serial_back_callback)
+		rospy.Subscriber(self.uwb_front_topic_name, String, self.uwb_serial_front_callback, queue_size=1)
+		rospy.Subscriber(self.uwb_back_topic_name, String, self.uwb_serial_back_callback, queue_size=1)
 
 		# Subscribe to velocity / odometry
 		if self.feedback_is_Odometry:
 			rospy.Subscriber(
-				self.velocity_feedback_topic_name, Odometry, self.odom_callback)
+				self.velocity_feedback_topic_name, Odometry, self.odom_callback, queue_size=1)
 		else: # Feedback is Velocity
 			rospy.Subscriber(
-				self.velocity_feedback_topic_name, Twist, self.odom_callback)
+				self.velocity_feedback_topic_name, Twist, self.odom_callback, queue_size=1)
 
 	def uwb_serial_front_callback(self, data):
 		if DEBUG_UWB:
 			rospy.logwarn("uwb_serial_front_callback")
-		valid, anchor_mat, dists = parse_lec_line(data.data)
+		valid, anchor_mat, dists, ids = parse_lec_line(data.data)
 		if not valid:
 			rospy.logwarn("NOT VALID")
 			rospy.logwarn(str(data))
 			return
 
-		self.front_t = rospy.Time.now().to_sec()
+		self.front_t = time.time()
 		self.front_anchors = anchor_mat
-		self.front_dists = dists
+		self.front_dists = dists 
+		self.front_ids = ids
 
 		if DEBUG_UWB:
 			rospy.logwarn("self.front_t - self.back_t")
@@ -132,15 +154,16 @@ class Fusion:
 	def uwb_serial_back_callback(self, data):
 		if DEBUG_UWB:
 			rospy.logwarn("uwb_serial_back_callback")
-		valid, anchor_mat, dists = parse_lec_line(data.data)
+		valid, anchor_mat, dists, ids = parse_lec_line(data.data)
 		if not valid:
 			rospy.logwarn("NOT VALID")
 			rospy.logwarn(str(data))
 			return
 
-		self.back_t = rospy.Time.now().to_sec();
+		self.back_t = time.time();
 		self.back_anchors = anchor_mat
 		self.back_dists = dists
+		self.back_ids = ids
 
 		if DEBUG_UWB:
 			rospy.logwarn("self.back_t - self.front_t")
@@ -152,24 +175,43 @@ class Fusion:
 		if DEBUG_UWB:
 			rospy.logwarn("Combining UWB readings!")
 		# Kalman filter
-		self.kalman_lock.acquire()
-		dt = max(self.front_t, self.back_t) - self.kalman_time;
-		if dt < 0:	
-			self.kalman_lock.release()
-			rospy.logwarn("Dropping UWB reading | dt = " + str(dt))
-			return
-		if dt > 1:
-			rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
-			dt = 1
-		self.kalman_time =  max(self.front_t, self.back_t);
+		with self.kalman_lock as lock:
+			dt = max(self.front_t, self.back_t) - self.kalman_time
+			if dt < 0:	
+				# # lock.release()
+				rospy.logwarn("Dropping UWB reading | dt = " + str(dt))
+				return
+			if dt > 0.25:
+				# rospy.logwarn("Limiting UWB timestep to 1 | dt = " + str(dt))
+				rospy.logwarn("UWB timestep is greater than 0.25 s | dt = " + str(dt))
+				dt = 0.
 
-		# Multilateration
-		uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
-		self.front_dists, self.back_dists, self.tag_loc_front, self.tag_loc_back)
+			# Ignore reading if there are less than 8 readings
+			if self.front_dists.size + self.back_dists.size < 8:
+				# # # lock.release()
+				rospy.logwarn("Dropping UWB reading | number of readings = " + str(self.front_dists.size + self.back_dists.size) + " which is less than 8" )
+				return
 
+			# Correct the readings with the offsets
+			front_anchor_offsets = np.array([[self.antenna_offsets[i] for i in self.front_ids]]).T
+			back_anchor_offsets  = np.array([[self.antenna_offsets[i] for i in self.back_ids]]).T
+			
+			corrected_front_dists = self.front_dists + self.front_offset + front_anchor_offsets
+			corrected_back_dists = self.back_dists + self.back_offset + back_anchor_offsets
 
-		self.state, self.cov, self.kalman_pos = EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
-		self.kalman_lock.release()
+			# Multilateration
+			uwb_pos, rmse = tag_pair_min_z(self.front_anchors, self.back_anchors,
+			corrected_front_dists, corrected_back_dists, self.tag_loc_front, self.tag_loc_back, self.tag_z_height)
+
+			# Ignore reading if rmse is high than ... meters
+			if rmse > 0.15:
+				# # # lock.release()
+				rospy.logwarn("Dropping UWB reading | rmse = " + str(rmse) + " is too high" )
+				return
+
+			self.kalman_time =  max(self.front_t, self.back_t)
+
+			self.state, self.cov, self.kalman_pos = self.ekf.EKF_UWB(self.state, self.cov, dt, uwb_pos[[0,1,3],np.newaxis], rmse)
 
 		# Publish
 		tf_kalman = xyt2TF(self.kalman_pos, "map", self.tf_frame_name_fused)
@@ -179,6 +221,31 @@ class Fusion:
 		tf_uwb = xyzt2TF(uwb_pos, "map", self.tf_frame_name_uwb)
 		self.tf_broadcaster.sendTransform(tf_uwb)
 		self.publish_position()
+
+		# ###
+		# import csv
+		# import os 
+		# current_dir = os.path.expanduser("~")
+		# location = os.path.join(current_dir,'uwb_multilateration_data.csv')
+		
+		# with open(location, mode='a') as data_file:
+		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+		# 	data_writer.writerow(uwb_pos.flatten().tolist())
+
+		# location = os.path.join(current_dir,'uwb_rmse_data.csv')
+		# with open(location, mode='a') as data_file:
+		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+		# 	data_writer.writerow([rmse])
+
+		# location = os.path.join(current_dir,'uwb_num_dist_readings.csv')
+		# with open(location, mode='a') as data_file:
+		# 	data_writer = csv.writer(data_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+		# 	data_writer.writerow([self.front_dists.size + self.back_dists.size])
+
+
 
 	def odom_callback(self, data):
 		# Assemble the measurement vector
@@ -193,21 +260,22 @@ class Fusion:
 		meas = np.array([[x_d],[y_d],[theta_d]])
 
 		# Kalman filter
-		self.kalman_lock.acquire()
-
-		t = rospy.Time.now().to_sec()
-		dt = t - self.kalman_time
-		if dt < 0:	
-			self.kalman_lock.release()
-			rospy.logwarn("Dropping odom reading | dt = " + str(dt))
-			return
-		if dt > 1:
-			rospy.logwarn("Limiting odom timestep to 1 | dt = " + str(dt))
-			dt = 1
-		
-		self.kalman_time = t
-		self.state, self.cov, self.kalman_pos = EKF_odom(self.state, self.cov, dt, meas)
-		self.kalman_lock.release()
+		with self.kalman_lock as lock:
+			t = time.time()
+			dt = t - self.kalman_time
+			if dt < 0:	
+				# # lock.release()
+				rospy.logwarn("Dropping odom reading | dt = " + str(dt))
+				return
+			if dt > 0.25:
+				# rospy.logwarn("Limiting odom timestep to 1 | dt = " + str(dt))
+				rospy.logwarn("Odom timestep is greater than 0.25 s | dt = " + str(dt))
+				dt = 0.
+				# self.kalman_time = t
+				# return
+			
+			self.kalman_time = t
+			self.state, self.cov, self.kalman_pos = self.ekf.EKF_odom(self.state, self.cov, dt, meas)
 
 		# Publish
 		tf_kalman = xyt2TF(self.kalman_pos, "map", self.tf_frame_name_fused);
@@ -232,7 +300,6 @@ def xyzt2TF(xyzt, header_frame_id, child_frame_id):
 	t = geometry_msgs.msg.TransformStamped()
 
 	t.header.frame_id = header_frame_id
-	#t.header.stamp = ros_time #rospy.Time.now()
 	t.header.stamp = rospy.Time.now()
 	t.child_frame_id = child_frame_id
 	t.transform.translation.x = xyzt[0]
@@ -256,7 +323,6 @@ def xyt2TF(xyt, header_frame_id, child_frame_id):
 	t = geometry_msgs.msg.TransformStamped()
 
 	t.header.frame_id = header_frame_id
-	#t.header.stamp = ros_time #rospy.Time.now()
 	t.header.stamp = rospy.Time.now()
 	t.child_frame_id = child_frame_id
 	t.transform.translation.x = xyt[0]

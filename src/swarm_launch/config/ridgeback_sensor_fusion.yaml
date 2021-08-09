@@ -1,7 +1,10 @@
-velocity_feedback_type: "Odometry"
-velocity_feedback_topic_name: "ridgeback_velocity_controller/odom"
+velocity_feedback_type: "Twist" # "Odometry"
+velocity_feedback_topic_name: "vel_feedback" # "ridgeback_velocity_controller/odom"
 uwb_front_topic_name: "uwb_serial_front"
 uwb_back_topic_name: "uwb_serial_back"
+
+uwb_front_id: '0CAD'
+uwb_back_id: '0D8F'
 
 tf_frame_name_uwb: "ridgeback_uwb"
 tf_frame_name_fused: "ridgeback_fusion"
@@ -16,3 +19,10 @@ tag_loc_front_y: 0.0254
 
 tag_loc_back_x: -0.17405
 tag_loc_back_y: 0.0254
+
+tag_z_height: 1.00
+
+uwb_meas_std: [0.5, 0.5, 0.2] # comes from uwb sensor readings data 
+odom_meas_std: [0.0001, 0.0001, 0.00005] # comes from encoder readings experiments
+process_pos_std: [0.3, 0.3, 0.4] # these are half of the max accelerations of the desired state
+process_vel_std: [0.3, 0.3, 0.4] # these are half of the max accelerations of the desired state

@@ -1,5 +1,6 @@
 <launch>
-  <group ns="ridgeback">
+  <arg name="namespace" value="ridgeback"/>
+  <group ns="$(arg namespace)">
     <remap from="/ridgeback_velocity_controller/odom" to="ridgeback_velocity_controller/odom" />
     <remap from="/imu/data" to="imu/data" />
     <remap from="/diagnostics" to="diagnostics" />
@@ -30,7 +31,17 @@
         timeout : 1.0
         priority: 255
       </rosparam>
-      <remap from="cmd_vel_out" to="ridgeback_velocity_controller/cmd_vel"/>
+      <remap from="cmd_vel_out" to="e_stop_cmd_vel"/>
+    </node>
+
+    <arg name="x_vel_scaling" value="0.99862688802896"/>
+    <arg name="y_vel_scaling" value="1.04411380840512"/>
+    <arg name="th_vel_scaling" value="0.998336106489185"/>
+
+    <node pkg="topic_tools" type="transform" name="inv_kin_scaling" args="/$(arg namespace)/e_stop_cmd_vel ridgeback_velocity_controller/cmd_vel geometry_msgs/Twist 'geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=$(arg x_vel_scaling)*m.linear.x,y=$(arg y_vel_scaling)*m.linear.y,z=m.linear.z),angular=geometry_msgs.msg.Vector3(x=m.angular.x,y=m.angular.y,z=$(arg th_vel_scaling)*m.angular.z))' --import geometry_msgs std_msgs">
+    </node>
+
+    <node pkg="topic_tools" type="transform" name="fwd_kin_scaling" args="/$(arg namespace)/ridgeback_velocity_controller/odom vel_feedback geometry_msgs/Twist 'geometry_msgs.msg.Twist(linear=geometry_msgs.msg.Vector3(x=1.0/$(arg x_vel_scaling)*m.twist.twist.linear.x,y=1.0/$(arg y_vel_scaling)*m.twist.twist.linear.y,z=m.twist.twist.linear.z),angular=geometry_msgs.msg.Vector3(x=m.twist.twist.angular.x,y=m.twist.twist.angular.y,z=1.0/$(arg th_vel_scaling)*m.twist.twist.angular.z))' --import nav_msgs geometry_msgs std_msgs">
     </node>
   </group>
 </launch>

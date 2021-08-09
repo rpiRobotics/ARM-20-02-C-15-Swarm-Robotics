@@ -5,6 +5,7 @@
 
     <node name="sensor_fusion" pkg="sensor_fusion" type="sensor_fusion.py">
         <rosparam file="$(find swarm_launch)/config/ridgeback_sensor_fusion.yaml"/>
+        <rosparam file="$(find swarm_launch)/config/antenna_calibration.yaml"/>
     </node>
 
     <node name="uwb_front" pkg="uwb_reader" type="uwb_reader.py">

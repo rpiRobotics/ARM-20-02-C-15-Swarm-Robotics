@@ -163,6 +163,8 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   src/vel_controller.py
+  src/turntable_fwd_kin.py
+  src/turntable_inv_kin.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

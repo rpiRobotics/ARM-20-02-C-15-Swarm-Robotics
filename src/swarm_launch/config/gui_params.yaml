@@ -20,10 +20,13 @@ open_loop_command_topics:
   - "/ridgeback/cmd_vel"
   - "/husky_black/cmd_vel"
   - "/husky_blue/cmd_vel"
-  
+  - "/husky_black/cmd_vel"
+  - "/husky_blue/cmd_vel"
 robot_node_names:
   - ["/uwb_front_oarbot_silver","/uwb_back_oarbot_silver","/sensor_fusion_oarbot_silver","/oarbot_silver_ctrl"]
   - ["/uwb_front_oarbot_blue","/uwb_back_oarbot_blue","/sensor_fusion_oarbot_blue","/oarbot_blue_ctrl"]
+  - []
+  - []
   - []
   - []
   - []
@@ -33,6 +36,8 @@ robot_type_information:
   - "RB"
   - "H_BLK"
   - "H_BLU"
+  - "H_BLK_TT"
+  - "H_BLU_TT"
 
 
 input_command_topic: 'deadman_switch_spacenav_twist'

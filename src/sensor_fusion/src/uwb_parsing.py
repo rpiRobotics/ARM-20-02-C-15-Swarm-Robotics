@@ -38,7 +38,7 @@ def parse_lec_line(lec_string):
 
 	# Make sure we're dealing with a valid line
 	if spl_str[0] != "DIST":
-		return False, 0, 0
+		return False, 0, 0, 0
 
 	# Two cases: 3 readings or 4 readings
 	if spl_str[IND_NUMBER_READINGS] == '4':
@@ -47,15 +47,24 @@ def parse_lec_line(lec_string):
 			 [float(spl_str[IND_Y_0]), float(spl_str[IND_Y_1]) , float(spl_str[IND_Y_2]) , float(spl_str[IND_Y_3])],
 			 [float(spl_str[IND_Z_0]), float(spl_str[IND_Z_1]) , float(spl_str[IND_Z_2]) , float(spl_str[IND_Z_3])]])
 		dists = np.array([[float(spl_str[IND_DIST_0])], [float(spl_str[IND_DIST_1])], [float(spl_str[IND_DIST_2])], [float(spl_str[IND_DIST_3])]])
+		
+		indices = [IND_ID_0, IND_ID_1, IND_ID_2, IND_ID_3]
+		ids = [spl_str[ind] for ind in indices]
 
-	else: # Three readings
+	elif spl_str[IND_NUMBER_READINGS] == '3': # Three readings
 		anchor_mat = np.array(
 			[[float(spl_str[IND_X_0]), float(spl_str[IND_X_1]) , float(spl_str[IND_X_2])],
 			 [float(spl_str[IND_Y_0]), float(spl_str[IND_Y_1]) , float(spl_str[IND_Y_2])],
 			 [float(spl_str[IND_Z_0]), float(spl_str[IND_Z_1]) , float(spl_str[IND_Z_2])]])
 		dists = np.array([[float(spl_str[IND_DIST_0])], [float(spl_str[IND_DIST_1])], [float(spl_str[IND_DIST_2])]])
+		
+		indices = [IND_ID_0, IND_ID_1, IND_ID_2]
+		ids = [spl_str[ind] for ind in indices]
 
-	return True, anchor_mat, dists
+	else:
+		return False, 0, 0, 0
+
+	return True, anchor_mat, dists, ids
 	
 
 def test_uwb_parsing():
@@ -67,24 +76,25 @@ def test_uwb_parsing():
 	uwb_string_3 = "dwm> "
 	
 	print("String 1:")
-	valid, anchor_mat, dists = parse_lec_line(uwb_string_1)
+	valid, anchor_mat, dists, ids = parse_lec_line(uwb_string_1)
 	print(valid)
 	print(anchor_mat)
 	print(dists)
+	print(ids)
 
 	print("\nString 2:")
-	valid, anchor_mat, dists = parse_lec_line(uwb_string_2)
+	valid, anchor_mat, dists, ids = parse_lec_line(uwb_string_2)
 	print(valid)
 	print(anchor_mat)
 	print(dists)
-
+	print(ids)
 
 	print("\nString 3:")
-	valid, anchor_mat, dists = parse_lec_line(uwb_string_3)
+	valid, anchor_mat, dists, ids = parse_lec_line(uwb_string_3)
 	print(valid)
 	print(anchor_mat)
 	print(dists)
-
+	print(ids)
 
 if __name__ == '__main__':
 	test_uwb_parsing()

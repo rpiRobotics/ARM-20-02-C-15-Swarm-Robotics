@@ -23,7 +23,8 @@ Alex Elias
 Drives a mobile robot to a desired position/velocity
 
 Parameters:
-	feedback_gain: Proportional gain in (m/s) / m
+	feedback_gain_xy: Proportional gain in (m/s) / m
+	feedback_gain_theta: Proportional gain in (rad/s) / rad
 
 	cmd_input_type: 'Twist' or 'State2D'
 		Twist ==> Desired position is integrated (e.g. single robot control)
@@ -32,7 +33,8 @@ Parameters:
 		
 	position_feedback_topic_name: Topic for position estimation (e.g. from sensor fusion)
 	control_cmd_publish_topic_name: Topic for motor control input
-	frame_name: Name used to send tf_frame of desired position (only when cmd_input_type is 'Twist')
+	frame_name: Name used to send tf_frame of desired position
+	is_offset_mode: True means that you are controlling only x and y, not theta
 
 	vel_lim_x: Velocity limit in X
 	vel_lim_y: Velocity limit in Y
@@ -46,40 +48,49 @@ class Controller:
 	def __init__(self):
 		rospy.init_node('closed_loop_velocity_controller', anonymous=True)
 
-		self.feedback_gain = rospy.get_param('~feedback_gain')
-	
 		input_is_State2D = ("State2D" == rospy.get_param('~cmd_input_type'))
-		position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
+		
 		cmd_input_topic_name = rospy.get_param('~cmd_input_topic_name')
 		control_cmd_publish_topic_name = rospy.get_param('~control_cmd_publish_topic_name')
 		space_mouse_topic_name = rospy.get_param('~space_mouse_topic_name')
 		
+		self.is_skid_steer_mode = rospy.get_param('~is_skid_steer_mode', False)
+		
+		if self.is_skid_steer_mode:
+			position_feedback_topic_name = rospy.get_param('~turntable_position_topic_name')
+		else:
+			position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
+
 		self.frame_name = rospy.get_param('~frame_name')
 
-		vel_lim_x = rospy.get_param('~vel_lim_x')
-		vel_lim_y = rospy.get_param('~vel_lim_y')
-		vel_lim_theta = rospy.get_param('~vel_lim_theta')
-		self.vel_limit = np.array([[vel_lim_x],[vel_lim_y],[vel_lim_theta]])
+		if self.is_skid_steer_mode is False:
+			vel_lim_x = rospy.get_param('~vel_lim_x')
+			vel_lim_y = rospy.get_param('~vel_lim_y')
+			vel_lim_theta = rospy.get_param('~vel_lim_theta')
+			self.vel_limit = np.array([[vel_lim_x],[vel_lim_y],[vel_lim_theta]])
+			self.feedback_gain_theta = rospy.get_param('~feedback_gain_theta')
 
-		self.vel_cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=10)
+		self.feedback_gain_xy = rospy.get_param('~feedback_gain_xy')
+		
+		self.vel_cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=1)
 		self.output_enable = False 
 		self.state_pos = np.array([[0.0],[0.0],[0.0]])
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
 		
 		if input_is_State2D:
-			rospy.Subscriber(cmd_input_topic_name, State2D, self.desired_state_callback)
+			rospy.Subscriber(cmd_input_topic_name, State2D, self.desired_state_callback, queue_size=1)
 		else:
-			rospy.Subscriber(cmd_input_topic_name, Twist, self.desired_vel_callback)
+			rospy.Subscriber(cmd_input_topic_name, Twist, self.desired_vel_callback, queue_size=1)
 			# Integrated desired position
 			self.q_desired = np.array([[0.0],[0.0],[0.0]])
 			self.prev_integration_time = rospy.Time.now().to_sec()
 
 		# Subscribe to space mouse buttons
-		rospy.Subscriber(space_mouse_topic_name, Joy, self.space_mouse_button_callback)
+		rospy.Subscriber(space_mouse_topic_name, Joy, self.space_mouse_button_callback, queue_size=1)
 
 		# Subscribe to Kalman Filter position
-		rospy.Subscriber(position_feedback_topic_name, Pose2D, self.state_feedback_callback)
+		rospy.Subscriber(position_feedback_topic_name, Pose2D, self.state_feedback_callback, queue_size=1)
 
 	def desired_vel_callback(self, data):
 		current_time = rospy.Time.now().to_sec()
@@ -115,7 +126,12 @@ class Controller:
 		self.process_desired_state(desired_state)
 
 	def process_desired_state(self, desired_state):
-		cmd_vel = control_law(desired_state, self.state_pos, self.vel_limit, self.feedback_gain)
+		if self.is_skid_steer_mode:
+			K = self.feedback_gain_xy
+			cmd_vel = control_law_skid_steer_mode(desired_state, self.state_pos,K)
+		else:
+			K = np.diag([self.feedback_gain_xy, self.feedback_gain_xy, self.feedback_gain_theta])
+			cmd_vel = control_law(desired_state, self.state_pos, self.vel_limit, K)
 
 		# Publish commanded velocity
 		cmd_vel_msg = Twist()

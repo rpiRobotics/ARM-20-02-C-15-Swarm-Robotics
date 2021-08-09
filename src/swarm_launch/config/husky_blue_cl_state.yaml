@@ -1,0 +1,29 @@
+# Used by vel_controller
+feedback_gain_xy: 1.5
+# feedback_gain_theta: 1.0
+is_skid_steer_mode: True
+
+cmd_input_type: 'State2D'
+# cmd_input_type: 'Twist' # Just to test with spacemouse
+cmd_input_topic_name: 'desired_state' 
+# cmd_input_topic_name: 'desired_turntable_vel' # Just to test with spacemouse
+
+position_feedback_topic_name: 'position'
+control_cmd_publish_topic_name: 'turntable_cmd_vel'
+frame_name: 'husky_blue_tt_d' # desired
+
+vel_lim_x: 1.0
+# vel_lim_y: 1.0 # There is no y direction vel for huskies
+vel_lim_theta: 2.0
+
+space_mouse_topic_name: '/tablet/spacenav/joy'
+
+# Used by turntable inv_kin & fwd_kin
+p_x: 0.3713 # m # CANNOT BE ZERO
+p_y: 0.0 # m
+
+turntable_position_topic_name: 'turntable_position'
+turntable_cmd_vel_topic_name: 'turntable_cmd_vel'
+robot_cmd_vel_topic_name: 'cmd_vel'
+tf_turntable_frame_name: 'husky_blue_tt'
+tf_robot_frame_name: 'husky_blue_fusion'

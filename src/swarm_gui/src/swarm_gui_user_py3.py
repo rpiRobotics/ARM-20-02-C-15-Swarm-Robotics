@@ -66,6 +66,7 @@ class robot_button:
         #self.button2.setFont(QFont('Ubuntu',11))
         #self.button2.setText(self.text2)
         #self.button2.pressed.connect(self.button_pressed2)
+
     def publish_out_message(self):
         message=FrameTwist()
         h=std_msgs.msg.Header()

@@ -50,153 +50,147 @@ Parameters:
 MAX_TIMESTEP = 0.1
 
 class Swarm_Control:
-    def __init__(self):
-        rospy.init_node('swarm_controller', anonymous=False)
+	def __init__(self):
+		rospy.init_node('swarm_controller', anonymous=False)
 
-        # Read in all the parameters
-        desired_swarm_vel_topic_name = rospy.get_param('~desired_swarm_vel_topic_name')
-        just_swarm_frame_vel_input_topic_name = rospy.get_param('~just_swarm_frame_vel_input_topic_name')
+		# Read in all the parameters
+		desired_swarm_vel_topic_name = rospy.get_param('~desired_swarm_vel_topic_name')
+		just_swarm_frame_vel_input_topic_name = rospy.get_param('~just_swarm_frame_vel_input_topic_name')
 
-        self.N_robots = rospy.get_param('~N_robots')
-        self.theta_scale = rospy.get_param('~theta_scale')
+		self.N_robots = rospy.get_param('~N_robots')
+		self.theta_scale = rospy.get_param('~theta_scale')
 
-        just_robot_vel_input_topic_names = ['']*self.N_robots
-        state_publish_topic_names = ['']*self.N_robots
-        self.tf_frame_names = ['']*self.N_robots
-        self.vel_pubs = [0]*self.N_robots
+		just_robot_vel_input_topic_names = ['']*self.N_robots
+		state_publish_topic_names = ['']*self.N_robots
+		self.tf_frame_names = ['']*self.N_robots
+		self.vel_pubs = [0]*self.N_robots
 
-        self.v_max = np.zeros((3, self.N_robots))
-        self.a_max = np.zeros((3, self.N_robots))
+		self.v_max = np.zeros((3, self.N_robots))
+		self.a_max = np.zeros((3, self.N_robots))
 
-        for i in range(self.N_robots):
-            just_robot_vel_input_topic_names[i] = rospy.get_param('~just_robot_vel_input_topic_name_' + str(i))
-            state_publish_topic_names[i] = rospy.get_param('~state_publish_topic_name_' + str(i))
-            self.tf_frame_names[i] = rospy.get_param('~tf_frame_name_' + str(i))
+		for i in range(self.N_robots):
+			just_robot_vel_input_topic_names[i] = rospy.get_param('~just_robot_vel_input_topic_name_' + str(i))
+			state_publish_topic_names[i] = rospy.get_param('~state_publish_topic_name_' + str(i))
+			self.tf_frame_names[i] = rospy.get_param('~tf_frame_name_' + str(i))
 
-            self.v_max[0, i] = rospy.get_param('~vel_lim_x_' 	 + str(i))
-            self.v_max[1, i] = rospy.get_param('~vel_lim_y_' 	 + str(i))
-            self.v_max[2, i] = rospy.get_param('~vel_lim_theta_' + str(i))
-            self.a_max[0, i] = rospy.get_param('~acc_lim_x_' 	 + str(i))
-            self.a_max[1, i] = rospy.get_param('~acc_lim_y_'	 + str(i))
-            self.a_max[2, i] = rospy.get_param('~acc_lim_theta_' + str(i))
+			self.v_max[0, i] = rospy.get_param('~vel_lim_x_' 	 + str(i))
+			self.v_max[1, i] = rospy.get_param('~vel_lim_y_' 	 + str(i))
+			self.v_max[2, i] = rospy.get_param('~vel_lim_theta_' + str(i))
+			self.a_max[0, i] = rospy.get_param('~acc_lim_x_' 	 + str(i))
+			self.a_max[1, i] = rospy.get_param('~acc_lim_y_'	 + str(i))
+			self.a_max[2, i] = rospy.get_param('~acc_lim_theta_' + str(i))
 
-        # Subscribe
-        rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback)
-        rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback)
-        rospy.Subscriber('/sync_frames',Bool,self.sync_frames)
-        
-        for i in range(self.N_robots):
-            rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i)
+		# Subscribe
+		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback, queue_size=1)
+		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback, queue_size=1)
+		for i in range(self.N_robots):
+			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i, queue_size=1)
 
-        # Publish
-        self.tf_broadcaster = tf2_ros.TransformBroadcaster()
-        for i in range(self.N_robots):
-            self.vel_pubs[i] = rospy.Publisher(state_publish_topic_names[i], State2D, queue_size=10)
+		# Publish
+		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
+		for i in range(self.N_robots):
+			self.vel_pubs[i] = rospy.Publisher(state_publish_topic_names[i], State2D, queue_size=1)
 
-        # Initialize local variables to keep track of swarm/robot frames
-        self.swarm_xyt = np.zeros((3,1))
-        self.robots_xyt = np.zeros((3, self.N_robots))
-        self.robots_last_velocities = np.zeros((3, self.N_robots))
-        self.last_timestep_request = rospy.get_time();
-        self.v_robots_prev = np.zeros((3,self.N_robots))
+		# Initialize local variables to keep track of swarm/robot frames
+		self.swarm_xyt = np.zeros((3,1))
+		self.robots_xyt = np.zeros((3, self.N_robots))
+		self.robots_last_velocities = np.zeros((3, self.N_robots))
+		self.last_timestep_request = rospy.get_time();
+		self.v_robots_prev = np.zeros((3,self.N_robots))
 
-        # TF publish loop
-        rate = rospy.Rate(30) # 30hz
-        while not rospy.is_shutdown():
-            self.publish_tf_frames()
-            rate.sleep()
+		# TF publish loop
+		rate = rospy.Rate(30) # 30hz
+ 		while not rospy.is_shutdown():
+ 			self.publish_tf_frames()
+ 			rate.sleep()
 
-    def desired_swarm_velocity_callback(self, data):
-        dt = self.get_timestep()
-        if dt == 0: # Exceeded MAX_TIMESTEP
-            return
+	def desired_swarm_velocity_callback(self, data):
+		dt = self.get_timestep()
+		if dt == 0: # Exceeded MAX_TIMESTEP
+			return
 
-        v_desired = np.zeros((3,1))
-        v_desired[0, 0] = data.linear.x
-        v_desired[1, 0] = data.linear.y
-        v_desired[2, 0] = data.angular.z
+		v_desired = np.zeros((3,1))
+		v_desired[0, 0] = data.linear.x
+		v_desired[1, 0] = data.linear.y
+		v_desired[2, 0] = data.angular.z
 
-        p_i_mat = self.robots_xyt[0:1+1,:]
-        theta_vec = self.robots_xyt[[2],:]
-        #print(p_i_mat)
-        #print(theta_vec)
-        v_i, xyt_i, v, xyt_swarm_next = safe_motion_controller(
-            v_desired, self.theta_scale, p_i_mat, theta_vec,
-            self.v_max, self.a_max, dt, self.N_robots, self.v_robots_prev, self.swarm_xyt)
+		p_i_mat = self.robots_xyt[0:1+1,:]
+		theta_vec = self.robots_xyt[[2],:]
+		#print(p_i_mat)
+		#print(theta_vec)
+		v_i_world, v_i_rob, xyt_i, v, xyt_swarm_next = safe_motion_controller(
+			v_desired, self.theta_scale, p_i_mat, theta_vec,
+			self.v_max, self.a_max, dt, self.N_robots, self.v_robots_prev, self.swarm_xyt)
 
-        # Don't update self.robots_xyt, since that's in the swarm frame
-        self.v_robots_prev = v_i;
-        self.swarm_xyt = xyt_swarm_next;
+		# Don't update self.robots_xyt, since that's in the swarm frame
+		self.v_robots_prev = v_i_rob;
+		self.swarm_xyt = xyt_swarm_next;
 
-        # Send desired state to each robot
-        for i in range(self.N_robots):
-            s = State2D();
-            s.pose.x = xyt_i[0,i]
-            s.pose.y = xyt_i[1,i]
-            s.pose.theta = xyt_i[2,i]
-            s.twist.linear.x = v_i[0,i]
-            s.twist.linear.y = v_i[1,i]
-            s.twist.angular.z = v_i[2,i]
-            self.vel_pubs[i].publish(s)
+		# Send desired state to each robot
+		for i in range(self.N_robots):
+			s = State2D();
+			s.pose.x = xyt_i[0,i]
+			s.pose.y = xyt_i[1,i]
+			s.pose.theta = xyt_i[2,i]
+			s.twist.linear.x = v_i_world[0,i]
+			s.twist.linear.y = v_i_world[1,i]
+			s.twist.angular.z = v_i_world[2,i]
+			self.vel_pubs[i].publish(s)
 
-    def just_swarm_frame_velocity_callback(self, data):
-        '''
-        Move the position of the swarm frame without moving the robots
-        i.e. move the swarm frame, and move the robots
-            w.r.t. the swarm frame in the opposite direction
-        '''
-        dt = self.get_timestep()
+	def just_swarm_frame_velocity_callback(self, data):
+		'''
+		Move the position of the swarm frame without moving the robots
+		i.e. move the swarm frame, and move the robots
+			w.r.t. the swarm frame in the opposite direction
+		'''
+		dt = self.get_timestep()
 
-        qd_world = np.zeros((3,1))
-        qd_world[0, 0] = data.linear.x
-        qd_world[1, 0] = data.linear.y
-        qd_world[2, 0] = data.angular.z
+		qd_world = np.zeros((3,1))
+		qd_world[0, 0] = data.linear.x
+		qd_world[1, 0] = data.linear.y
+		qd_world[2, 0] = data.angular.z
 
-        qd_swarm = rot_mat_3d(-self.swarm_xyt[2, 0]).dot(qd_world)
+		qd_swarm = rot_mat_3d(-self.swarm_xyt[2, 0]).dot(qd_world)
 
-        q_world_delta = dt * qd_world
-        q_swarm_delta = dt * qd_swarm
+		q_world_delta = dt * qd_world
+		q_swarm_delta = dt * qd_swarm
 
-        self.swarm_xyt = self.swarm_xyt + q_world_delta
+		self.swarm_xyt = self.swarm_xyt + q_world_delta
 
-        #  np.diag([1., 1., 0.]).
-        self.robots_xyt = rot_mat_3d(-q_swarm_delta[2,0]).dot(self.robots_xyt  - q_swarm_delta )
+		#  np.diag([1., 1., 0.]).
+		self.robots_xyt = rot_mat_3d(-q_swarm_delta[2,0]).dot(self.robots_xyt  - q_swarm_delta )
 
-    def just_robot_velocity_callback(self, data, i_robot):
-        # Move the position of robot i_robot in the world frame
-        dt = self.get_timestep()
+	def just_robot_velocity_callback(self, data, i_robot):
+		# Move the position of robot i_robot in the world frame
+		dt = self.get_timestep()
 
-        qd_world = np.zeros((3,1))
-        qd_world[0, 0] = data.linear.x
-        qd_world[1, 0] = data.linear.y
-        qd_world[2, 0] = data.angular.z
+		qd_world = np.zeros((3,1))
+		qd_world[0, 0] = data.linear.x
+		qd_world[1, 0] = data.linear.y
+		qd_world[2, 0] = data.angular.z
 
-        # robots_xyt is in the swarm frame
-        qd_swarm = rot_mat_3d(-self.swarm_xyt[2]).dot(qd_world)
-        self.robots_xyt[:,i_robot] = self.robots_xyt[:,i_robot] + dt * qd_swarm.flatten()
-        #print(self.robots_xyt)
+		# robots_xyt is in the swarm frame
+		qd_swarm = rot_mat_3d(-self.swarm_xyt[2]).dot(qd_world)
+		self.robots_xyt[:,i_robot] = self.robots_xyt[:,i_robot] + dt * qd_swarm.flatten()
+		#print(self.robots_xyt)
 
 
-    def get_timestep(self):
-        current_time = rospy.get_time()
-        dt = current_time - self.last_timestep_request
-        self.last_timestep_request = current_time
-        if dt > MAX_TIMESTEP:
-            dt = 0
-        return dt
-    
-    def sync_frames(self):
-        pass
-        
+	def get_timestep(self):
+		current_time = rospy.get_time()
+		dt = current_time - self.last_timestep_request
+		self.last_timestep_request = current_time
+		if dt > MAX_TIMESTEP:
+			dt = 0
+		return dt
+	
+	def publish_tf_frames(self):
+		tf_swarm_frame = xyt2TF(self.swarm_xyt, "map", "swarm_frame")
+		self.tf_broadcaster.sendTransform(tf_swarm_frame)
 
-    def publish_tf_frames(self):
-        tf_swarm_frame = xyt2TF(self.swarm_xyt, "map", "swarm_frame")
-        self.tf_broadcaster.sendTransform(tf_swarm_frame)
-
-        for i in range(self.N_robots):
-            tf_robot_i = xyt2TF(self.robots_xyt[:,i], "swarm_frame", self.tf_frame_names[i])
-            self.tf_broadcaster.sendTransform(tf_robot_i)
-
+		for i in range(self.N_robots):
+			tf_robot_i = xyt2TF(self.robots_xyt[:,i], "swarm_frame", self.tf_frame_names[i])
+			self.tf_broadcaster.sendTransform(tf_robot_i)
+            
 def rot_mat_3d(theta):
     c, s = np.cos(theta), np.sin(theta)
     return np.array([[c, -s, 0.], [s, c, 0.], [0., 0., 1.]])

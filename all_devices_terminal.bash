@@ -7,12 +7,18 @@ PASSWORDS=("1234" "rockie" "1234" "1234" "clearpath" "1234" "1234")
 #     "cd; ls;"
 #     "cd; ls;"
 #     "cd; ls;")
+COMMAND="gnome-terminal"
+
 for i in ${!HOSTS[*]} ; do
     echo "------------"
+    echo ${i}
     # echo ${HOSTS[i]}
     echo ${USERNAMES[i]}
     # echo ${PASSWORDS[i]}
     # echo ${SCRIPTS[i]}
     ssh-keygen -f "$HOME/.ssh/known_hosts" -R ${HOSTS[i]}
-    gnome-terminal --tab --title=${USERNAMES[i]} -e "sshpass -p ${PASSWORDS[i]} ssh -t -o StrictHostKeyChecking=no -o HostKeyAlgorithms='ssh-rsa' -o ConnectTimeout=2 -l ${USERNAMES[i]} ${HOSTS[i]}"
+    COMMAND+=' --tab --title='${USERNAMES[i]}' -e "sshpass -p '${PASSWORDS[i]}' ssh -t -o StrictHostKeyChecking=no -o HostKeyAlgorithms='"'ssh-rsa'"' -o ConnectTimeout=2 -l '${USERNAMES[i]}' '${HOSTS[i]}'"'
+    # gnome-terminal --tab --title=${USERNAMES[i]} -e "sshpass -p ${PASSWORDS[i]} ssh -t -o StrictHostKeyChecking=no -o HostKeyAlgorithms='ssh-rsa' -o ConnectTimeout=2 -l ${USERNAMES[i]} ${HOSTS[i]}"
 done
+
+eval $COMMAND

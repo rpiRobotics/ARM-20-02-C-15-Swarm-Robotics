@@ -175,7 +175,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.nodenames=[["/rosout"],["hello"],["hello"]]
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
-        
+
         self.syncpub=rospy.Publisher(self.sync_topic,Bool,queue_size=10)
         self.syncFrames.pressed.connect(self.sync_frames)
         self.moveswarmbutton = swarm_button(self.Moveswarm,self.closed_loop_swarm_command_topic)
@@ -183,6 +183,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.buttons.append(self.moveswarmbutton)
         self.buttons.append(self.moveswarmframebutton)
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
+
         for i in range(self.number_of_bots):
             led=LEDIndicator()
             led.setDisabled(True)
