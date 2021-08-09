@@ -1,5 +1,5 @@
 # Used by vel_controller
-feedback_gain_xy: 0.0
+feedback_gain_xy: 3.0
 # feedback_gain_theta: 1.0
 is_skid_steer_mode: True
 
