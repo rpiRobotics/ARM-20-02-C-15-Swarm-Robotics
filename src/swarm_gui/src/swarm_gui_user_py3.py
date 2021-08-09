@@ -371,6 +371,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             lines=f.readlines()
             length=len(lines)/3
             for i in range(length):
+                rospy.logwarn("swarm_gui_user.py: line 374: "+ lines[i])
                 index=3*i
                 frame_name=lines[index][12:].strip()
                 position_line=lines[index+1][1:-2]
