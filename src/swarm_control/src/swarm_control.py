@@ -8,7 +8,7 @@ import geometry_msgs.msg
 
 import tf2_ros
 import tf2_msgs.msg
-
+from std_msgs.msg import Bool
 import tf_conversions # quaternion stuff
 
 from safe_swarm_controller import *
@@ -24,25 +24,25 @@ Commands robot states (position and velocity) to achieve rigid-body motion
 
 Parameters:
 
-	desired_swarm_vel_topic_name:
-	just_swarm_frame_vel_input_topic_name:
+    desired_swarm_vel_topic_name:
+    just_swarm_frame_vel_input_topic_name:
 
-	N_robots: Numer of robots to control
+    N_robots: Numer of robots to control
 
-	theta_scale: How much we weigh theta vs x,y in choosing safe swarm velocity
-		Higher theta_scale ==> Swarm velocity follows angle commands closer
-		(But doesn't follow XY commands as closely)
+    theta_scale: How much we weigh theta vs x,y in choosing safe swarm velocity
+        Higher theta_scale ==> Swarm velocity follows angle commands closer
+        (But doesn't follow XY commands as closely)
 
-	Repeat for all N robots:
-		just_robot_vel_input_topic_name_0:
-		state_publish_topic_name_0: State2D command for robot 0
-		tf_frame_name_0: Frame name (for rviz) for robot 0
-		vel_lim_x_0: Velocity limit in X for robot 0
-		vel_lim_y_0: Velocity limit in Y for robot 0
-		vel_lim_theta_0: Velocity limit in theta for robot 0
-		acc_lim_x_0: Acceleration limit in X for robot 0
-		acc_lim_y_0: Acceleration limit in Y for robot 0
-		acc_lim_theta_0: Acceleration limit in theta for robot 0
+    Repeat for all N robots:
+        just_robot_vel_input_topic_name_0:
+        state_publish_topic_name_0: State2D command for robot 0
+        tf_frame_name_0: Frame name (for rviz) for robot 0
+        vel_lim_x_0: Velocity limit in X for robot 0
+        vel_lim_y_0: Velocity limit in Y for robot 0
+        vel_lim_theta_0: Velocity limit in theta for robot 0
+        acc_lim_x_0: Acceleration limit in X for robot 0
+        acc_lim_y_0: Acceleration limit in Y for robot 0
+        acc_lim_theta_0: Acceleration limit in theta for robot 0
 
 '''
 
@@ -190,41 +190,41 @@ class Swarm_Control:
 		for i in range(self.N_robots):
 			tf_robot_i = xyt2TF(self.robots_xyt[:,i], "swarm_frame", self.tf_frame_names[i])
 			self.tf_broadcaster.sendTransform(tf_robot_i)
-
+            
 def rot_mat_3d(theta):
-	c, s = np.cos(theta), np.sin(theta)
-	return np.array([[c, -s, 0.], [s, c, 0.], [0., 0., 1.]])
-	
+    c, s = np.cos(theta), np.sin(theta)
+    return np.array([[c, -s, 0.], [s, c, 0.], [0., 0., 1.]])
+    
 def wrapToPi(a):
-	'''
-	Wraps angle to [-pi,pi)
-	'''
-	return ((a+np.pi) % (2*np.pi))-np.pi
+    '''
+    Wraps angle to [-pi,pi)
+    '''
+    return ((a+np.pi) % (2*np.pi))-np.pi
 
 def xyt2TF(xyt, header_frame_id, child_frame_id):
-	'''
-	Converts a numpy vector [x; y; theta]
-	into a tf2_msgs.msg.TFMessage message
-	'''
-	xyt = xyt.flatten()
-	t = geometry_msgs.msg.TransformStamped()
+    '''
+    Converts a numpy vector [x; y; theta]
+    into a tf2_msgs.msg.TFMessage message
+    '''
+    xyt = xyt.flatten()
+    t = geometry_msgs.msg.TransformStamped()
 
-	t.header.frame_id = header_frame_id
-	#t.header.stamp = ros_time #rospy.Time.now()
-	t.header.stamp = rospy.Time.now()
-	t.child_frame_id = child_frame_id
-	t.transform.translation.x = xyt[0]
-	t.transform.translation.y = xyt[1]
-	t.transform.translation.z = 0
+    t.header.frame_id = header_frame_id
+    #t.header.stamp = ros_time #rospy.Time.now()
+    t.header.stamp = rospy.Time.now()
+    t.child_frame_id = child_frame_id
+    t.transform.translation.x = xyt[0]
+    t.transform.translation.y = xyt[1]
+    t.transform.translation.z = 0
 
-	q = tf_conversions.transformations.quaternion_from_euler(0, 0,xyt[2])
-	t.transform.rotation.x = q[0]
-	t.transform.rotation.y = q[1]
-	t.transform.rotation.z = q[2]
-	t.transform.rotation.w = q[3]
+    q = tf_conversions.transformations.quaternion_from_euler(0, 0,xyt[2])
+    t.transform.rotation.x = q[0]
+    t.transform.rotation.y = q[1]
+    t.transform.rotation.z = q[2]
+    t.transform.rotation.w = q[3]
 
-	return t
+    return t
 
 if __name__ == '__main__':
-	Swarm_Control()
-	rospy.spin()
+    Swarm_Control()
+    rospy.spin()
