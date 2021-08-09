@@ -48,7 +48,7 @@ def control_law_skid_steer_mode(desired_state, position,K):
 			(In the WORLD frame)
 	'''
 	error = position - desired_state[0:2+1]
-	error[2] = wrapToPi(error[2])
+	# error[2] = wrapToPi(error[2])
 
 	vel_cmd = desired_state[3:5+1] - (K*np.eye(3)).dot(error)
 
