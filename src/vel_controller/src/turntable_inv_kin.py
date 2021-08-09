@@ -24,7 +24,7 @@ Parameters:
 	p_x, p_y: Position of the turntable center in the robot frame (meters)
 		
 	position_feedback_topic_name: Topic for position estimation (e.g. from sensor fusion) to subscribe
-	control_cmd_publish_topic_name: Twist command to robot
+	robot_cmd_vel_topic_name: Twist command to robot
 	turntable_cmd_vel_topic_name: Desired command for the turntable velocities (x_dot y_dot)
 
 	vel_lim_x: Robot linear velocity limit
@@ -41,14 +41,14 @@ class TurntableInvKin:
 		self.theta = None
 	
 		position_feedback_topic_name = rospy.get_param('~position_feedback_topic_name')
-		control_cmd_publish_topic_name = rospy.get_param('~control_cmd_publish_topic_name')
+		robot_cmd_vel_topic_name = rospy.get_param('~robot_cmd_vel_topic_name')
 		turntable_cmd_vel_topic_name =  rospy.get_param('~turntable_cmd_vel_topic_name')
 
 		self.v_lim =  rospy.get_param('~vel_lim_x')
 		self.w_lim =  rospy.get_param('~vel_lim_theta')
 
 		# Publisher
-		self.cmd_pub = rospy.Publisher(control_cmd_publish_topic_name, Twist, queue_size=1)
+		self.cmd_pub = rospy.Publisher(robot_cmd_vel_topic_name, Twist, queue_size=1)
 
 		# Subscribers
 		rospy.Subscriber(turntable_cmd_vel_topic_name, Twist, self.turntable_cmd_vel_callback, queue_size=1)
