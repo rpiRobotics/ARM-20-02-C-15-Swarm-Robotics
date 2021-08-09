@@ -369,7 +369,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             rospy.logwarn("swarm_gui_user.py: line 368: "+ name)
             f = open(name, "r+")
             lines=f.readlines()
-            length=len(lines)/3
+            length=int(len(lines)/3)
             for i in range(length):
                 rospy.logwarn("swarm_gui_user.py: line 374: "+ lines[i])
                 index=3*i
