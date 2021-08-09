@@ -56,19 +56,19 @@ theta_scale: 50.0 # (m/s)/(rad/s)
 just_robot_vel_input_topic_name_0: just_robot_vel_0
 state_publish_topic_name_0: husky_black/desired_state
 tf_frame_name_0: tf_robot_0
-vel_lim_x_0: 0.2
-vel_lim_y_0: 0.2
-vel_lim_theta_0: 10.0 # 0.13635
-acc_lim_x_0: 0.6
-acc_lim_y_0: 0.6
-acc_lim_theta_0: 10.0  
+vel_lim_x_1: 0.75
+vel_lim_y_1: 0.75
+vel_lim_theta_1: 1000 # 0.13635
+acc_lim_x_1: 2.25
+acc_lim_y_1: 2.25
+acc_lim_theta_1: 1000 
 
 just_robot_vel_input_topic_name_1: just_robot_vel_1
 state_publish_topic_name_1: husky_blue/desired_state
 tf_frame_name_1: tf_robot_1
-vel_lim_x_1: 0.2
-vel_lim_y_1: 0.2
-vel_lim_theta_1: 10.0 # 0.13635
-acc_lim_x_1: 0.6
-acc_lim_y_1: 0.6
-acc_lim_theta_1: 10.0  
+vel_lim_x_1: 0.75
+vel_lim_y_1: 0.75
+vel_lim_theta_1: 1000 # 0.13635
+acc_lim_x_1: 2.25
+acc_lim_y_1: 2.25
+acc_lim_theta_1: 1000
