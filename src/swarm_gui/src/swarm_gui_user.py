@@ -365,6 +365,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
              self, 'Load Structure', 'Enter desired file name:')
         if(done1):
             name=self.package_path+'/resource/'+name+'.txt'
+            rospy.logwarm("swarm_gui_user.py: line 368: "+ name)
             f = open(name, "r+")
             lines=f.readlines()
             length=len(lines)/3
