@@ -66,7 +66,6 @@ class robot_button:
         #self.button2.setFont(QFont('Ubuntu',11))
         #self.button2.setText(self.text2)
         #self.button2.pressed.connect(self.button_pressed2)
-
     def publish_out_message(self):
         message=FrameTwist()
         h=std_msgs.msg.Header()
@@ -176,7 +175,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.nodenames=[["/rosout"],["hello"],["hello"]]
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
-        
+
         self.syncpub=rospy.Publisher(self.sync_topic,Bool,queue_size=10)
         self.syncFrames.pressed.connect(self.sync_frames)
         self.moveswarmbutton = swarm_button(self.Moveswarm,self.closed_loop_swarm_command_topic)
@@ -184,12 +183,13 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.buttons.append(self.moveswarmbutton)
         self.buttons.append(self.moveswarmframebutton)
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
+
         for i in range(self.number_of_bots):
             led=LEDIndicator()
             led.setDisabled(True)
             self.Robotlayout.addWidget(led,3,i)
             self.Leds.append(led)
-	
+    
         self.status_manager=LEDManager(self.nodenames,self.Leds)
         
         
@@ -201,7 +201,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 break
             
             robot_label=QLabel()
-            robot_label.setFixedSize(buttonwidth/self.number_of_bots,100)
+            robot_label.setFixedSize(buttonwidth//self.number_of_bots,100)
             
             robot_label.setAlignment(Qt.AlignCenter)
             robot_label.setText(self.robot_types[x])
@@ -218,8 +218,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 break
             
             
-            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth/self.number_of_bots,heightnew/8,self.robot_types[i])
-            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth/self.number_of_bots,heightnew/8,self.robot_types[i])
+            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth//self.number_of_bots,heightnew//8,self.robot_types[i])
+            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth//self.number_of_bots,heightnew//8,self.robot_types[i])
             self.Robotlayout.addWidget(button_class_object.button,1,i)
             self.Robotlayout.addWidget(button_class_object2.button,2,i)
             self.buttons.append(button_class_object)
@@ -331,7 +331,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
     def windowresized(self):
         windowwidth=self.rect().width()
         windowheight=self.rect().height()
-        f=QFont('',windowwidth/110)
+        f=QFont('',windowwidth//110)
         for i in range(len(self.buttons)):
             self.buttons[i].button.setFont(f)
         for i in range(len(self.labels)):
@@ -362,16 +362,14 @@ class SWARMGUI(QtWidgets.QMainWindow):
 
     def load_structure(self):
         name, done1 = QtWidgets.QInputDialog.getText(
-            self, 'Load Structure', 'Enter desired file name:')
-        rospy.logwarn("swarm_gui_user.py: line 365: "+ name)
+             self, 'Load Structure', 'Enter desired file name:')
         if(done1):
             name=self.package_path+'/resource/'+name+'.txt'
-            rospy.logwarn("swarm_gui_user.py: line 368: "+ name)
+            rospy.logwarm("swarm_gui_user.py: line 368: "+ name)
             f = open(name, "r+")
             lines=f.readlines()
-            length=int(len(lines)/3)
+            length=len(lines)//3
             for i in range(length):
-                rospy.logwarn("swarm_gui_user.py: line 374: "+ lines[i])
                 index=3*i
                 frame_name=lines[index][12:].strip()
                 position_line=lines[index+1][1:-2]
