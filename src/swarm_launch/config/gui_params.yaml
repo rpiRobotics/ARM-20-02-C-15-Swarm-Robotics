@@ -7,6 +7,8 @@ closed_loop_swarm_command_topic: "/desired_swarm_vel"
 
 open_loop_swarm_command_topic: "/just_swarm_vel"
 
+resize_scaling_factor: 0.1
+
 closed_loop_command_topics:
   - "/just_robot_vel_0"
   - "/just_robot_vel_1"
@@ -36,7 +38,7 @@ robot_type_information:
 
 input_command_topic: 'deadman_switch_spacenav_twist'
 
-sync_frames_topic:  'move_desired_to_current'
+tf_changer_topic: "tf_changer"
 
 swarm_tf_frame: "swarm_frame"
 
@@ -46,3 +48,10 @@ robot_tf_frames:
   - "tf_robot_2"
   - "tf_robot_3"
   - "tf_robot_4"
+
+real_robot_tf_frames:
+  - "oarbot_silver_fusion"
+  - "oarbot_blue_fusion"
+  - "ridgeback_fusion"
+  - "husky_black_fusion"
+  - "husky_blue_fusion"
