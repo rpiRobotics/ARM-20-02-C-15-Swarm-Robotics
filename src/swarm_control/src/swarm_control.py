@@ -3,7 +3,7 @@ import rospy
 
 # import State2D.msg
 from swarm_msgs.msg import State2D
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, PoseStamped
 import geometry_msgs.msg
 
 import tf2_ros
@@ -81,8 +81,10 @@ class Swarm_Control:
 			self.a_max[2, i] = rospy.get_param('~acc_lim_theta_' + str(i))
 
 		# Subscribe
+		sync_frame_topic=rospy.get_param('~frame_sync_topic_name')
 		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback, queue_size=1)
 		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback, queue_size=1)
+		rospy.Subscriber(sync_frame_topic, PoseStamped, self.frame_changer_callback, queue_size=20)
 		for i in range(self.N_robots):
 			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i, queue_size=1)
 
@@ -103,6 +105,16 @@ class Swarm_Control:
  		while not rospy.is_shutdown():
  			self.publish_tf_frames()
  			rate.sleep()
+
+	def frame_changer_callback(self,data):
+		if(data.header.frame_id in self.tf_frame_names):
+			array_position=self.tf_frame_names.index(data.header.frame_id)
+			orientations= [data.pose.orientation.x,data.pose.orientation.y,data.pose.orientation.z,data.pose.orientation.w]
+			(roll,pitch,yaw)=tf_conversions.transformations.euler_from_quaternion(orientations)
+			rospy.logwarn(np.array2string(self.robots_xyt))
+			self.robots_xyt[0,array_position]=data.pose.position.x
+			self.robots_xyt[1,array_position]=data.pose.position.y
+			self.robots_xyt[2,array_position]=yaw
 
 	def desired_swarm_velocity_callback(self, data):
 		dt = self.get_timestep()

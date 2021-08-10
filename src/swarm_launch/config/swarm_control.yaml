@@ -1,5 +1,6 @@
 desired_swarm_vel_topic_name: desired_swarm_vel
 just_swarm_frame_vel_input_topic_name: just_swarm_vel
+frame_sync_topic_name: tf_changer
 N_robots: 2
 theta_scale: 50.0 # (m/s)/(rad/s)
 
