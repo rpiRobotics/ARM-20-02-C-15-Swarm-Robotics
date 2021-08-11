@@ -1,5 +1,6 @@
 import numpy as np
 from quadprog import solve_qp
+import rospy
 
 def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 	v_max, a_max, delta_t, N, v_i_prev, xyt_swarm):
