@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5 import QtWidgets, uic
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int32
 import threading
 from geometry_msgs.msg import Pose2D, Twist, PoseStamped
 from led_indicator import LEDIndicator
@@ -92,22 +92,33 @@ class LEDManager:
     def __init__(self,nodenames,led_objects):
         self.nodenames=nodenames
         self.led_objects=led_objects
+        self.active_bots=[]
+        self.publisher=rospy.Publisher("robot_enable_status",Int32,queue_size=10)
+        self.send_value=0
+        for i in range(len(led_objects)):
+            self.active_bots.append(False)
+
+
     def poll_node_names(self):
         #nodenames is loaded from yaml file and should be a list of lists for each robot of desired nodes
         #print(self.nodenames)
-        for i in range(len(self.nodenames)):
-            current_status=True
-            for nodename in self.nodenames[i]:
-                #print(nodename)
-                if(nodename not in rosnode.get_node_names()):
-                    #print(nodename)
-                    current_status=False
-                    break
-            
-            #print("end")
-            #print(current_status)
-            self.led_objects[i].led_change(current_status)
-            #time.sleep(0.01)
+        
+        for i in range(len(self.led_objects)):
+            if(self.active_bots[i]!=self.led_objects[i].active):
+                if(self.led_objects[i].active==True):
+                    out=pow(2,i)
+                    self.send_value+=out
+                    self.active_bots[i]=True
+                else:
+                    out=pow(2,i)
+                    self.send_value-=out
+                    self.active_bots[i]=False
+
+                output=Int32()
+                output.data=int(self.send_value)
+                self.publisher.publish(output)
+           
+        time.sleep(0.01)
             
 class SWARMGUI(QtWidgets.QMainWindow):
     resized = pyqtSignal()
@@ -187,13 +198,16 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.buttons.append(self.moveswarmbutton)
         self.buttons.append(self.moveswarmframebutton)
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
-
+        
         for i in range(self.number_of_bots):
-            led=LEDIndicator()
-            led.setDisabled(True)
+            led=LEDIndicator(i)
+            #led.setDisabled(True)
+            
             self.Robotlayout.addWidget(led,3,i)
             self.Leds.append(led)
-	
+            led.led_change(True)
+            
+	    
         self.status_manager=LEDManager(self.nodenames,self.Leds)
         
         
@@ -271,6 +285,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.show()
     
    
+    
+
     def callback_gui(self,evt):
         self.status_manager.poll_node_names()
         """

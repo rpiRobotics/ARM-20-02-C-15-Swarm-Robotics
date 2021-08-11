@@ -8,7 +8,7 @@ import geometry_msgs.msg
 
 import tf2_ros
 import tf2_msgs.msg
-from std_msgs.msg import Bool
+from std_msgs.msg import Bool, Int32
 import tf_conversions # quaternion stuff
 
 from safe_swarm_controller import *
@@ -64,11 +64,12 @@ class Swarm_Control:
 		state_publish_topic_names = ['']*self.N_robots
 		self.tf_frame_names = ['']*self.N_robots
 		self.vel_pubs = [0]*self.N_robots
-
+		self.enabled_robots=[]
 		self.v_max = np.zeros((3, self.N_robots))
 		self.a_max = np.zeros((3, self.N_robots))
 
 		for i in range(self.N_robots):
+			self.enabled_robots.append(True)
 			just_robot_vel_input_topic_names[i] = rospy.get_param('~just_robot_vel_input_topic_name_' + str(i))
 			state_publish_topic_names[i] = rospy.get_param('~state_publish_topic_name_' + str(i))
 			self.tf_frame_names[i] = rospy.get_param('~tf_frame_name_' + str(i))
@@ -85,6 +86,8 @@ class Swarm_Control:
 		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback, queue_size=1)
 		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback, queue_size=1)
 		rospy.Subscriber(sync_frame_topic, PoseStamped, self.frame_changer_callback, queue_size=20)
+		rospy.Subscriber("robot_enable_status", Int32, self.robot_enable_changer, queue_size=5)
+
 		for i in range(self.N_robots):
 			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i, queue_size=1)
 
@@ -105,6 +108,22 @@ class Swarm_Control:
  		while not rospy.is_shutdown():
  			self.publish_tf_frames()
  			rate.sleep()
+
+
+	def robot_enable_changer(self,data):
+		number=data.data
+		rospy.logwarn(str(len(self.enabled_robots)))
+		rospy.logwarn(str(self.N_robots))
+		for i in range(self.N_robots-1,-1,-1):
+			if(number>>i==1):
+				number-=pow(2,i)
+				
+				self.enabled_robots[i]=False
+				rospy.logwarn("disabled robot: "+str(i+1)+"status: "+str(self.enabled_robots[i]))
+			else:
+				
+				self.enabled_robots[i]=True
+				rospy.logwarn("enabled robot: "+str(i+1)+"status: "+str(self.enabled_robots[i]))
 
 	def frame_changer_callback(self,data):
 		if(data.header.frame_id in self.tf_frame_names):
@@ -130,9 +149,22 @@ class Swarm_Control:
 		theta_vec = self.robots_xyt[[2],:]
 		#print(p_i_mat)
 		#print(theta_vec)
+		p_i_mat_copy=np.copy(p_i_mat)
+		theta_vec_copy=np.copy(theta_vec)
+		v_max_copy=np.copy(self.v_max)
+		a_max_copy=np.copy(self.a_max)
+		N_robots=self.N_robots
+		for x in len(self.enabled_robots):
+			if(not self.enabled_robots[x]):
+				p_i_mat_copy=np.delete(p_i_mat_copy,x,1)
+				theta_vec_copy=np.delete(theta_vec_copy,x,0)
+				v_max_copy=np.delete(v_max_copy,x,0)
+				a_max_copy=np.delete(a_max_copy,x,0)
+				N_robots-=1
+		
 		v_i_world, v_i_rob, xyt_i, v, xyt_swarm_next = safe_motion_controller(
 			v_desired, self.theta_scale, p_i_mat, theta_vec,
-			self.v_max, self.a_max, dt, self.N_robots, self.v_robots_prev, self.swarm_xyt)
+			self.v_max, self.a_max, dt, N_robots, self.v_robots_prev, self.swarm_xyt)
 
 		# Don't update self.robots_xyt, since that's in the swarm frame
 		self.v_robots_prev = v_i_rob;

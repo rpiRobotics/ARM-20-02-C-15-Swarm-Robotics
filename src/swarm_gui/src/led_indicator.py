@@ -1,18 +1,27 @@
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+import rospy
 
 class LEDIndicator(QAbstractButton):
     scaledSize=1000.0
-    def __init__(self):
+    def __init__(self,index):
         QAbstractButton.__init__(self)
         self.setMinimumSize(24, 24)
         self.setCheckable(True)
+        self.index=index
+        self.active=False
+        self.pressed.connect(self.led_pressed)
         # Green
         self.on_color_1 = QColor(0, 255, 0)
         self.on_color_2 = QColor(0, 192, 0)
         self.off_color_1 = QColor(255, 0, 0)
         self.off_color_2 = QColor(128, 0, 0)
+
+    def led_pressed(self):
+        self.active=not(self.active)
+        self.led_change(self.active)
+        rospy.logwarn("hello")
 
     def resizeEvent(self, QResizeEvent):
         self.update()
