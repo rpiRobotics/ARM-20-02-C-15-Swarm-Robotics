@@ -121,6 +121,7 @@ class Swarm_Control:
 	def desired_swarm_velocity_callback(self, data):
 		dt = self.get_timestep("desired_swarm_velocity")
 		if dt == 0: # Exceeded MAX_TIMESTEP
+			self.v_robots_prev *= 0.
 			return
 
 		v_desired = np.zeros((3,1))
