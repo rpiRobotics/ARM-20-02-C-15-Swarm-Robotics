@@ -1,8 +1,10 @@
 desired_swarm_vel_topic_name: desired_swarm_vel
 just_swarm_frame_vel_input_topic_name: just_swarm_vel
+
 frame_sync_topic_name: /tablet/tf_changer
 N_robots: 3
 theta_scale: 100.0 # (m/s)/(rad/s)
+
 
 just_robot_vel_input_topic_name_0: just_robot_vel_0
 state_publish_topic_name_0: oarbot_silver/desired_state
@@ -63,6 +65,7 @@ vel_lim_theta_3: 1000
 acc_lim_x_3: 2.25
 acc_lim_y_3: 2.25
 acc_lim_theta_3: 1000 
+
 
 just_robot_vel_input_topic_name_4: just_robot_vel_4
 state_publish_topic_name_4: husky_blue/desired_state
