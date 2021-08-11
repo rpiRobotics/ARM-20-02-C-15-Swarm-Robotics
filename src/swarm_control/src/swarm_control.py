@@ -151,13 +151,13 @@ class Swarm_Control:
 
 		enabled_index = np.where(self.enabled_robots)[0]
 
-		p_i_mat = self.robots_xyt[0:1+1,enabled_index]
-		theta_vec = self.robots_xyt[[2],enabled_index]
+		p_i_mat = self.robots_xyt[0:1+1,[enabled_index]]
+		theta_vec = self.robots_xyt[[2],[enabled_index]]
 		
 		v_i_world, v_i_rob, xyt_i, v, xyt_swarm_next = safe_motion_controller(
 			v_desired, self.theta_scale, p_i_mat, theta_vec,
-			self.v_max[:, enabled_index], self.a_max[:, enabled_index], dt, sum(self.enabled_robots),
-			self.v_robots_prev[:, enabled_index], self.swarm_xyt)
+			self.v_max[:, [enabled_index]], self.a_max[:, [enabled_index]], dt, sum(self.enabled_robots),
+			self.v_robots_prev[:, [enabled_index]], self.swarm_xyt)
 
 		# Don't update self.robots_xyt, since that's in the swarm frame
 		self.v_robots_prev[:, enabled_index] = v_i_rob;
