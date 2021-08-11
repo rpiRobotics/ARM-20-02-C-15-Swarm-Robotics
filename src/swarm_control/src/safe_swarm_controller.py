@@ -1,5 +1,6 @@
 import numpy as np
 from quadprog import solve_qp
+import rospy
 
 def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 	v_max, a_max, delta_t, N, v_i_prev, xyt_swarm):
@@ -56,7 +57,10 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 		lsq_param_b[index_neg, :] = np.minimum(
 			v_max[:,[i]], -v_i_prev[:,[i]]+a_max[:,[i]]*delta_t)
 
-	v = lsqlin(lsq_param_C, lsq_param_d, lsq_param_A, lsq_param_b)
+	try:
+		v = lsqlin(lsq_param_C, lsq_param_d, lsq_param_A, lsq_param_b)
+	except ValueError as e:
+		rospy.logerr(str(e) + "\r\nC: " + str(lsq_param_C) + "\r\nd: " + str(lsq_param_d) + "\r\nA: " + str(lsq_param_A) + "\r\nb: " + str(lsq_param_b))
 
 	# Find the velocity of each robot
 	v_i_world = np.zeros((3,N))

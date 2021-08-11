@@ -15,6 +15,8 @@ from safe_swarm_controller import *
 
 import numpy as np
 
+import time
+
 
 '''
 swarm_control.py
@@ -100,7 +102,7 @@ class Swarm_Control:
 		self.swarm_xyt = np.zeros((3,1))
 		self.robots_xyt = np.zeros((3, self.N_robots))
 		self.robots_last_velocities = np.zeros((3, self.N_robots))
-		self.last_timestep_request = rospy.get_time();
+		self.last_timestep_requests = {}
 		self.v_robots_prev = np.zeros((3,self.N_robots))
 
 		# TF publish loop
@@ -136,8 +138,9 @@ class Swarm_Control:
 			self.robots_xyt[2,array_position]=yaw
 
 	def desired_swarm_velocity_callback(self, data):
-		dt = self.get_timestep()
+		dt = self.get_timestep("desired_swarm_velocity")
 		if dt == 0: # Exceeded MAX_TIMESTEP
+			self.v_robots_prev *= 0.
 			return
 
 		v_desired = np.zeros((3,1))
@@ -187,7 +190,7 @@ class Swarm_Control:
 		i.e. move the swarm frame, and move the robots
 			w.r.t. the swarm frame in the opposite direction
 		'''
-		dt = self.get_timestep()
+		dt = self.get_timestep("desired_swarm_frame_velocity")
 
 		qd_world = np.zeros((3,1))
 		qd_world[0, 0] = data.linear.x
@@ -206,7 +209,7 @@ class Swarm_Control:
 
 	def just_robot_velocity_callback(self, data, i_robot):
 		# Move the position of robot i_robot in the world frame
-		dt = self.get_timestep()
+		dt = self.get_timestep("just_robot_velocty_"+str(i_robot))
 
 		qd_world = np.zeros((3,1))
 		qd_world[0, 0] = data.linear.x
@@ -219,13 +222,18 @@ class Swarm_Control:
 		#print(self.robots_xyt)
 
 
-	def get_timestep(self):
-		current_time = rospy.get_time()
-		dt = current_time - self.last_timestep_request
-		self.last_timestep_request = current_time
-		if dt > MAX_TIMESTEP:
-			dt = 0
-		return dt
+	def get_timestep(self, integrator_name):
+		current_time = time.time()
+		if integrator_name in self.last_timestep_requests:
+			dt = current_time - self.last_timestep_requests[integrator_name]
+			self.last_timestep_requests[integrator_name] = current_time
+			if dt > MAX_TIMESTEP:
+				dt = 0.0
+			return dt
+		else:
+			self.last_timestep_requests[integrator_name] = current_time
+			return 0.0
+
 	
 	def publish_tf_frames(self):
 		tf_swarm_frame = xyt2TF(self.swarm_xyt, "map", "swarm_frame")

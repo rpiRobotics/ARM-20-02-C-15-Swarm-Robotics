@@ -24,6 +24,7 @@ import signal
 import std_msgs.msg
 from swarm_msgs.msg import FrameTwist
 from tf import TransformListener
+import tf_conversions
 
 callback_lock=threading.Lock()
 
@@ -66,7 +67,6 @@ class robot_button:
         #self.button2.setFont(QFont('Ubuntu',11))
         #self.button2.setText(self.text2)
         #self.button2.pressed.connect(self.button_pressed2)
-
     def publish_out_message(self):
         message=FrameTwist()
         h=std_msgs.msg.Header()
@@ -126,18 +126,18 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.tf = TransformListener()
 
         #print(type(width))
-        heightnew=int(height/2)
+        heightnew=height//3
         
         #self.setMinimumSize(width-50,heightnew)
         #self.setMaximumSize(width-50,heightnew)
-        #self.setGeometry(0,0,width-50,heightnew)
+        self.setGeometry(0,0,width-50,heightnew)
         layout=self.layout()
-        self.setMaximumSize(width-70,heightnew)
-        self.setWindowState(Qt.WindowMinimized)
-        self.setWindowState(Qt.WindowActive)
+        #self.setMaximumSize(width-70,heightnew)
+        #self.setWindowState(Qt.WindowMinimized)
+        #self.setWindowState(Qt.WindowActive)
         #self.showMinimized()
         #layout.setSizeConstraint(QLayout.SetDefaultConstraint)
-        self.move(70,heightnew-30)
+        self.move(70,height-heightnew)
         self.resized.connect(self.windowresized)
         #self.Moveswarm.pressed.connect(self.sync_robot_motion_pressed)
         #self.Moveswarmframe.pressed.connect(self.move_swarm_frame)
@@ -168,28 +168,32 @@ class SWARMGUI(QtWidgets.QMainWindow):
             self.robot_types=rospy.get_param('robot_type_information')
             self.closed_loop_swarm_command_topic=rospy.get_param('closed_loop_swarm_command_topic')
             self.open_loop_swarm_command_topic=rospy.get_param('open_loop_swarm_command_topic')
-            self.sync_topic=rospy.get_param('sync_frames_topic')
+            #self.sync_topic=rospy.get_param('sync_frames_topic')
             self.swarm_tf=rospy.get_param('swarm_tf_frame')
             self.robot_tfs=rospy.get_param('robot_tf_frames')
+            self.real_robot_tfs=rospy.get_param('real_robot_tf_frames')
+            self.resize_swarm_scaling_factor=float(rospy.get_param('resize_scaling_factor'))
+            self.tf_changer_topic=rospy.get_param('tf_changer_topic')
         except:
             self.number_of_bots=3
             self.nodenames=[["/rosout"],["hello"],["hello"]]
             self.command_topics=["/spacenav/twist/repub","/spacenav/twist/repub2","/spacenav/twist/repub3","hello"]
             self.input_command_topic='deadman_switch_spacenav_twist'
-        
-        self.syncpub=rospy.Publisher(self.sync_topic,Bool,queue_size=10)
+
+        #self.syncpub=rospy.Publisher(self.sync_topic,Bool,queue_size=10)
         self.syncFrames.pressed.connect(self.sync_frames)
         self.moveswarmbutton = swarm_button(self.Moveswarm,self.closed_loop_swarm_command_topic)
         self.moveswarmframebutton = swarm_button(self.Moveswarmframe,self.open_loop_swarm_command_topic)
         self.buttons.append(self.moveswarmbutton)
         self.buttons.append(self.moveswarmframebutton)
         rospy.Subscriber(self.input_command_topic, Twist, self.offset_callback)
+
         for i in range(self.number_of_bots):
             led=LEDIndicator()
             led.setDisabled(True)
             self.Robotlayout.addWidget(led,3,i)
             self.Leds.append(led)
-	
+    
         self.status_manager=LEDManager(self.nodenames,self.Leds)
         
         
@@ -201,7 +205,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 break
             
             robot_label=QLabel()
-            robot_label.setFixedSize(buttonwidth/self.number_of_bots,100)
+            robot_label.setFixedSize(buttonwidth//self.number_of_bots,100)
             
             robot_label.setAlignment(Qt.AlignCenter)
             robot_label.setText(self.robot_types[x])
@@ -218,8 +222,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 break
             
             
-            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth/self.number_of_bots,heightnew/8,self.robot_types[i])
-            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth/self.number_of_bots,heightnew/8,self.robot_types[i])
+            button_class_object=robot_button(i,self.open_loop_command_topics[i],True,buttonwidth//self.number_of_bots,heightnew//8,self.robot_types[i])
+            button_class_object2=robot_button(i,self.close_loop_command_topics[i],False,buttonwidth//self.number_of_bots,heightnew//8,self.robot_types[i])
             self.Robotlayout.addWidget(button_class_object.button,1,i)
             self.Robotlayout.addWidget(button_class_object2.button,2,i)
             self.buttons.append(button_class_object)
@@ -245,11 +249,12 @@ class SWARMGUI(QtWidgets.QMainWindow):
         icon.addPixmap(QPixmap(self.plus))
         self.plusbutton.setIcon(icon)
         self.plusbutton.setIconSize(QSize(100,100))
+        self.plusbutton.pressed.connect(self.expand_structure)
         icon2=QIcon()
         icon2.addPixmap(QPixmap(self.minus))
         self.minusbutton.setIcon(icon2)
         self.minusbutton.setIconSize(QSize(100,100))
-        
+        self.minusbutton.pressed.connect(self.shrink_structure)
         rp = rospkg.RosPack()
         self.package_path = rp.get_path('swarm_gui')
         #self.plusbutton.resize(width/3,height/5)
@@ -260,8 +265,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         #rospy.Timer(rospy.Duration(0.1), self.move_swarm_frame)
         self.Savestructure.pressed.connect(self.save_structure)
         self.Loadstructure.pressed.connect(self.load_structure)
-        self.Assumestructure.pressed.connect(self.assume_structure)
-        self.tf_changer=rospy.Publisher("tf_changer",PoseStamped,queue_size=10)
+        #self.Assumestructure.pressed.connect(self.assume_structure)
+        self.tf_changer=rospy.Publisher(self.tf_changer_topic,PoseStamped,queue_size=10)
         self.windowresized()
         self.show()
     
@@ -286,6 +291,47 @@ class SWARMGUI(QtWidgets.QMainWindow):
         message.angular.z=0
         self.repubme.publish(message)
 
+    def expand_structure(self):
+        for i in range(self.number_of_bots):
+            if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(self.robot_tfs[i]):
+                t = self.tf.getLatestCommonTime(self.robot_tfs[i], self.swarm_tf)
+                trans, quaternions = self.tf.lookupTransform(self.swarm_tf,self.robot_tfs[i], t)
+                p1 = PoseStamped()
+                p1.header.frame_id = self.robot_tfs[i]
+                #rospy.logwarn(str(trans[0]))
+                trans[0]+=trans[0]*self.resize_swarm_scaling_factor
+                trans[1]+=trans[1]*self.resize_swarm_scaling_factor
+                #rospy.logwarn(str(trans[0]))
+                p1.pose.position.x = float(trans[0])
+                p1.pose.position.y = float(trans[1])
+                p1.pose.position.z = float(trans[2])
+                p1.pose.orientation.w = float(quaternions[3])
+                p1.pose.orientation.x = float(quaternions[0])
+                p1.pose.orientation.y = float(quaternions[1])
+                p1.pose.orientation.z = float(quaternions[2])
+                #p_in_base = self.tf.transformPose("/base_link", p1)
+                self.tf_changer.publish(p1)
+
+
+    def shrink_structure(self):
+        for i in range(self.number_of_bots):
+            if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(self.robot_tfs[i]):
+                t = self.tf.getLatestCommonTime(self.robot_tfs[i], self.swarm_tf)
+                trans, quaternions = self.tf.lookupTransform(self.swarm_tf,self.robot_tfs[i], t)
+                p1 = PoseStamped()
+                p1.header.frame_id = self.robot_tfs[i]
+                trans[0]-=trans[0]*self.resize_swarm_scaling_factor
+                trans[1]-=trans[1]*self.resize_swarm_scaling_factor
+                p1.pose.position.x = float(trans[0])
+                p1.pose.position.y = float(trans[1])
+                p1.pose.position.z = float(trans[2])
+                p1.pose.orientation.w = float(quaternions[3])
+                p1.pose.orientation.x = float(quaternions[0])
+                p1.pose.orientation.y = float(quaternions[1])
+                p1.pose.orientation.z = float(quaternions[2])
+                #p_in_base = self.tf.transformPose("/base_link", p1)
+                self.tf_changer.publish(p1)
+
     def offset_callback(self,data):
         with callback_lock:
             data.angular.z = data.angular.z*4.0
@@ -296,9 +342,24 @@ class SWARMGUI(QtWidgets.QMainWindow):
     
             
     def sync_frames(self):
-        syncmessage=Bool()
-        syncmessage.data=True
-        self.syncpub.publish(syncmessage)
+        for i in range(self.number_of_bots):
+            if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(self.real_robot_tfs[i]):
+                t = self.tf.getLatestCommonTime(self.real_robot_tfs[i], self.swarm_tf)
+                (trans,quaternions) = self.tf.lookupTransform(self.swarm_tf,self.real_robot_tfs[i],t)
+                p1 = PoseStamped()
+                p1.header.frame_id = self.robot_tfs[i]
+                
+                p1.pose.position.x = float(trans[0])
+                p1.pose.position.y = float(trans[1])
+                p1.pose.position.z = float(trans[2])
+                p1.pose.orientation.w = float(quaternions[3])
+                p1.pose.orientation.x = float(quaternions[0])
+                p1.pose.orientation.y = float(quaternions[1])
+                p1.pose.orientation.z = float(quaternions[2])
+                #p_in_base = self.tf.transformPose("/base_link", p1)
+                self.tf_changer.publish(p1)
+
+        
 
     def sync_robot_motion_pressed(self):
         for i in range(len(self.buttons)):
@@ -331,7 +392,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
     def windowresized(self):
         windowwidth=self.rect().width()
         windowheight=self.rect().height()
-        f=QFont('',windowwidth/110)
+        f=QFont('',windowwidth//110)
         for i in range(len(self.buttons)):
             self.buttons[i].button.setFont(f)
         for i in range(len(self.labels)):
@@ -339,7 +400,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.label.setFont(f)
         self.Savestructure.setFont(f)
         self.Loadstructure.setFont(f)
-        self.Assumestructure.setFont(f)
+        #self.Assumestructure.setFont(f)
         self.syncFrames.setFont(f)
 
     def save_structure(self):
@@ -362,16 +423,14 @@ class SWARMGUI(QtWidgets.QMainWindow):
 
     def load_structure(self):
         name, done1 = QtWidgets.QInputDialog.getText(
-            self, 'Load Structure', 'Enter desired file name:')
-        rospy.logwarn("swarm_gui_user.py: line 365: "+ name)
+             self, 'Load Structure', 'Enter desired file name:')
         if(done1):
             name=self.package_path+'/resource/'+name+'.txt'
             rospy.logwarn("swarm_gui_user.py: line 368: "+ name)
             f = open(name, "r+")
             lines=f.readlines()
-            length=int(len(lines)/3)
+            length=len(lines)//3
             for i in range(length):
-                rospy.logwarn("swarm_gui_user.py: line 374: "+ lines[i])
                 index=3*i
                 frame_name=lines[index][12:].strip()
                 position_line=lines[index+1][1:-2]
@@ -379,7 +438,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
                 rospy.loginfo(frame_name)
                 if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(frame_name):
                     rospy.loginfo(str(i))
-                    t = self.tf.getLatestCommonTime(self.swarm_tf, frame_name)
+                    #t = self.tf.getLatestCommonTime(self.swarm_tf, frame_name)
                     p1 = PoseStamped()
                     p1.header.frame_id = frame_name
                     positions=position_line.split(', ')
@@ -394,8 +453,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
                     #p_in_base = self.tf.transformPose("/base_link", p1)
                     self.tf_changer.publish(p1)
 
-    def assume_structure(self):
-        pass
+    
                 
     
 

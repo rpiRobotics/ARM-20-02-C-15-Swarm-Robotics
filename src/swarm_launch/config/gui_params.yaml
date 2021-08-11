@@ -53,5 +53,5 @@ real_robot_tf_frames:
   - "oarbot_silver_fusion"
   - "oarbot_blue_fusion"
   - "ridgeback_fusion"
-  - "husky_black_fusion"
-  - "husky_blue_fusion"
+  - "husky_black_tt"
+  - "husky_blue_tt"
