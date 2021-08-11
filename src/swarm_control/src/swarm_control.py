@@ -88,7 +88,7 @@ class Swarm_Control:
 		rospy.Subscriber(desired_swarm_vel_topic_name, Twist, self.desired_swarm_velocity_callback, queue_size=1)
 		rospy.Subscriber(just_swarm_frame_vel_input_topic_name, Twist, self.just_swarm_frame_velocity_callback, queue_size=1)
 		rospy.Subscriber(sync_frame_topic, PoseStamped, self.frame_changer_callback, queue_size=20)
-		rospy.Subscriber("robot_enable_status", Int32, self.robot_enable_changer, queue_size=5)
+		rospy.Subscriber("/tablet/robot_enable_status", Int32, self.robot_enable_changer, queue_size=5)
 
 		for i in range(self.N_robots):
 			rospy.Subscriber(just_robot_vel_input_topic_names[i], Twist, self.just_robot_velocity_callback, i, queue_size=1)
