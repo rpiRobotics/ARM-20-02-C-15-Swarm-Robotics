@@ -176,7 +176,7 @@ class Swarm_Control:
 
 	def just_robot_velocity_callback(self, data, i_robot):
 		# Move the position of robot i_robot in the world frame
-		dt = self.get_timestep("just_robot_velocty_"+str(i))
+		dt = self.get_timestep("just_robot_velocty_"+str(i_robot))
 
 		qd_world = np.zeros((3,1))
 		qd_world[0, 0] = data.linear.x
