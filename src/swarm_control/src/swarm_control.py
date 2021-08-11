@@ -164,8 +164,8 @@ class Swarm_Control:
 		self.swarm_xyt = xyt_swarm_next;
 
 		# Send desired state to each robot
-		for i_enabled in range(sum(self.enabled_robots)):
-			i = enabled_index[i_enabled]
+		for i in range(sum(self.enabled_robots)):
+			i_total = enabled_index[i]
 			
 			s = State2D();
 			s.pose.x = xyt_i[0,i]
@@ -174,7 +174,7 @@ class Swarm_Control:
 			s.twist.linear.x = v_i_world[0,i]
 			s.twist.linear.y = v_i_world[1,i]
 			s.twist.angular.z = v_i_world[2,i]
-			self.vel_pubs[i].publish(s)
+			self.vel_pubs[i_total].publish(s)
 
 	def just_swarm_frame_velocity_callback(self, data):
 		'''
