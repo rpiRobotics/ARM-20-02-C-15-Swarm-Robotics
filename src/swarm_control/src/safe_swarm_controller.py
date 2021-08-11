@@ -56,7 +56,10 @@ def safe_motion_controller(v_desired, theta_scale, p_i_mat, theta_vec,
 		lsq_param_b[index_neg, :] = np.minimum(
 			v_max[:,[i]], -v_i_prev[:,[i]]+a_max[:,[i]]*delta_t)
 
-	v = lsqlin(lsq_param_C, lsq_param_d, lsq_param_A, lsq_param_b)
+	try:
+		v = lsqlin(lsq_param_C, lsq_param_d, lsq_param_A, lsq_param_b)
+	except ValueError as e:
+		rospy.logerr(str(e) + "\r\nC: " + lsq_param_C + "\r\nd: " + lsq_param_d + "\r\nA: " + lsq_param_A + "\r\nb: " + lsq_param_b)
 
 	# Find the velocity of each robot
 	v_i_world = np.zeros((3,N))

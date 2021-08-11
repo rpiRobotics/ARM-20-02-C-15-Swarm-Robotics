@@ -120,8 +120,8 @@ class Swarm_Control:
 
 	def desired_swarm_velocity_callback(self, data):
 		dt = self.get_timestep("desired_swarm_velocity")
-		# if dt == 0: # Exceeded MAX_TIMESTEP
-		# 	return
+		if dt == 0: # Exceeded MAX_TIMESTEP
+			return
 
 		v_desired = np.zeros((3,1))
 		v_desired[0, 0] = data.linear.x
