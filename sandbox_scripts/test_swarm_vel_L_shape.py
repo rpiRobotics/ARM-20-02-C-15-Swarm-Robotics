@@ -96,12 +96,12 @@ class CmdVelTalker():
 
     def talk(self):
         if self.is_done_1 == False:
-            x_dir = +0.
-            y_dir = +1.
+            x_dir = -1.
+            y_dir = +0.
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 1.0 # meters # Amount of displacement
+                self.delta_x = 3.0 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
@@ -117,12 +117,12 @@ class CmdVelTalker():
             self.is_done_1 = self.command(direction_vec=[x_dir,y_dir,th_dir])
         
         elif self.is_done_2 == False:
-            x_dir = +1.
-            y_dir = +0.
+            x_dir = +0.
+            y_dir = +1.
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 1.5 # meters # Amount of displacement
+                self.delta_x = 1.4 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
@@ -138,12 +138,12 @@ class CmdVelTalker():
             self.is_done_2 = self.command(direction_vec=[x_dir,y_dir,th_dir])
 
         elif self.is_done_3 == False:
-            x_dir = +0.
-            y_dir = -1.
+            x_dir = +1.
+            y_dir = +0.
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 1.0 # meters # Amount of displacement
+                self.delta_x = 3.0 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
