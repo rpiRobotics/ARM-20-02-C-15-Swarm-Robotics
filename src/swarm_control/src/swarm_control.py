@@ -195,10 +195,11 @@ class Swarm_Control:
 			dt = current_time - self.last_timestep_requests[integrator_name]
 			self.last_timestep_requests[integrator_name] = current_time
 			if dt > MAX_TIMESTEP:
-				dt = 0
+				dt = 0.0
 			return dt
 		else:
 			self.last_timestep_requests[integrator_name] = current_time
+			return 0.0
 
 	
 	def publish_tf_frames(self):
