@@ -148,33 +148,25 @@ class Swarm_Control:
 		v_desired[1, 0] = data.linear.y
 		v_desired[2, 0] = data.angular.z
 
-		p_i_mat = self.robots_xyt[0:1+1,:]
-		theta_vec = self.robots_xyt[[2],:]
-		#print(p_i_mat)
-		#print(theta_vec)
-		p_i_mat_copy=np.copy(p_i_mat)
-		theta_vec_copy=np.copy(theta_vec)
-		v_max_copy=np.copy(self.v_max)
-		a_max_copy=np.copy(self.a_max)
-		N_robots=self.N_robots
-		for x in len(self.enabled_robots):
-			if(not self.enabled_robots[x]):
-				p_i_mat_copy=np.delete(p_i_mat_copy,x,1)
-				theta_vec_copy=np.delete(theta_vec_copy,x,0)
-				v_max_copy=np.delete(v_max_copy,x,0)
-				a_max_copy=np.delete(a_max_copy,x,0)
-				N_robots-=1
+
+		enabled_index = np.where(self.enabled_robots)[0]
+
+		p_i_mat = self.robots_xyt[0:1+1,enabled_index]
+		theta_vec = self.robots_xyt[[2],enabled_index]
 		
 		v_i_world, v_i_rob, xyt_i, v, xyt_swarm_next = safe_motion_controller(
 			v_desired, self.theta_scale, p_i_mat, theta_vec,
-			self.v_max, self.a_max, dt, N_robots, self.v_robots_prev, self.swarm_xyt)
+			self.v_max[:, enabled_index], self.a_max[:, enabled_index], dt, sum(self.enabled_robots),
+			self.v_robots_prev[:, enabled_index], self.swarm_xyt)
 
 		# Don't update self.robots_xyt, since that's in the swarm frame
-		self.v_robots_prev = v_i_rob;
+		self.v_robots_prev[:, enabled_index] = v_i_rob;
 		self.swarm_xyt = xyt_swarm_next;
 
 		# Send desired state to each robot
-		for i in range(self.N_robots):
+		for i_enabled in range(sum(self.enabled_robots)):
+			i = enabled_index[i_enabled]
+			
 			s = State2D();
 			s.pose.x = xyt_i[0,i]
 			s.pose.y = xyt_i[1,i]
@@ -208,18 +200,19 @@ class Swarm_Control:
 		self.robots_xyt = rot_mat_3d(-q_swarm_delta[2,0]).dot(self.robots_xyt  - q_swarm_delta )
 
 	def just_robot_velocity_callback(self, data, i_robot):
-		# Move the position of robot i_robot in the world frame
-		dt = self.get_timestep("just_robot_velocty_"+str(i_robot))
+		if(self.enabled_robots[i_robot]):
+			# Move the position of robot i_robot in the world frame
+			dt = self.get_timestep("just_robot_velocty_"+str(i_robot))
 
-		qd_world = np.zeros((3,1))
-		qd_world[0, 0] = data.linear.x
-		qd_world[1, 0] = data.linear.y
-		qd_world[2, 0] = data.angular.z
+			qd_world = np.zeros((3,1))
+			qd_world[0, 0] = data.linear.x
+			qd_world[1, 0] = data.linear.y
+			qd_world[2, 0] = data.angular.z
 
-		# robots_xyt is in the swarm frame
-		qd_swarm = rot_mat_3d(-self.swarm_xyt[2]).dot(qd_world)
-		self.robots_xyt[:,i_robot] = self.robots_xyt[:,i_robot] + dt * qd_swarm.flatten()
-		#print(self.robots_xyt)
+			# robots_xyt is in the swarm frame
+			qd_swarm = rot_mat_3d(-self.swarm_xyt[2]).dot(qd_world)
+			self.robots_xyt[:,i_robot] = self.robots_xyt[:,i_robot] + dt * qd_swarm.flatten()
+			#print(self.robots_xyt)
 
 
 	def get_timestep(self, integrator_name):
@@ -240,8 +233,9 @@ class Swarm_Control:
 		self.tf_broadcaster.sendTransform(tf_swarm_frame)
 
 		for i in range(self.N_robots):
-			tf_robot_i = xyt2TF(self.robots_xyt[:,i], "swarm_frame", self.tf_frame_names[i])
-			self.tf_broadcaster.sendTransform(tf_robot_i)
+			if(self.enabled_robots[i]):
+				tf_robot_i = xyt2TF(self.robots_xyt[:,i], "swarm_frame", self.tf_frame_names[i])
+				self.tf_broadcaster.sendTransform(tf_robot_i)
             
 def rot_mat_3d(theta):
     c, s = np.cos(theta), np.sin(theta)
