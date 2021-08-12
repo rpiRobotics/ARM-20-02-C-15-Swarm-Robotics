@@ -219,7 +219,11 @@
        </widget>
       </item>
       <item>
-       <layout class="QGridLayout" name="Robotlayout"/>
+       <layout class="QGridLayout" name="Robotlayout">
+        <property name="bottomMargin">
+         <number>30</number>
+        </property>
+       </layout>
       </item>
      </layout>
     </item>
