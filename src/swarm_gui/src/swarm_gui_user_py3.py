@@ -284,7 +284,14 @@ class SWARMGUI(QtWidgets.QMainWindow):
 
 
     def disable_rotation(self):
-        self.rotation_disabled=not(self.rotation_disabled)    
+        self.rotation_disabled=not(self.rotation_disabled)
+        if(self.rotation_disabled):
+            
+            self.Disablerotation.setStyleSheet('QPushButton {background-color: orange; color: white;}')
+            
+        else:
+            
+            self.Disablerotation.setStyleSheet('QPushButton {background-color: white; color: black;}')    
    
     def callback_gui(self,evt):
         self.status_manager.poll_node_names()

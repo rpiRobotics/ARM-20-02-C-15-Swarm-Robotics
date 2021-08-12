@@ -7,7 +7,7 @@ closed_loop_swarm_command_topic: "/desired_swarm_vel"
 
 open_loop_swarm_command_topic: "/just_swarm_vel"
 
-resize_scaling_factor: 0.1
+resize_scaling_factor: 0.05
 
 closed_loop_command_topics:
   - "/just_robot_vel_0"
