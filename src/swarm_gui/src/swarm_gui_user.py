@@ -273,7 +273,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.package_path = rp.get_path('swarm_gui')
         #self.plusbutton.resize(width/3,height/5)
         #self.minusbutton.resize(width/3,height/5)
-        
+        self.rotation_disabled=False
+        self.Disablerotation.pressed.connect(self.disable_rotation)
         #self.Savestructure.resize(width/3,height/5)
         #self.repubme=rospy.Publisher(self.input_command_topic, Twist, queue_size=0)
         #rospy.Timer(rospy.Duration(0.1), self.move_swarm_frame)
@@ -285,7 +286,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.show()
     
    
-    
+    def disable_rotation(self):
+        self.rotation_disabled=not(self.rotation_disabled)
 
     def callback_gui(self,evt):
         self.status_manager.poll_node_names()
@@ -350,7 +352,10 @@ class SWARMGUI(QtWidgets.QMainWindow):
 
     def offset_callback(self,data):
         with callback_lock:
-            data.angular.z = data.angular.z*4.0
+            if(self.rotation_disabled):
+                data.angular.z = data.angular.z*0
+            else:
+                data.angular.z = data.angular.z*1.0
             for i in range(len(self.buttons)):
                 if(self.buttons[i].enabled):
                     self.buttons[i].publisher.publish(data)
@@ -416,6 +421,8 @@ class SWARMGUI(QtWidgets.QMainWindow):
         self.label.setFont(f)
         self.Savestructure.setFont(f)
         self.Loadstructure.setFont(f)
+        self.Disablerotation.setFont(f)
+        #self.Movepath.setFont(f)
         #self.Assumestructure.setFont(f)
         self.syncFrames.setFont(f)
 
