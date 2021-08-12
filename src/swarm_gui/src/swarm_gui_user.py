@@ -355,7 +355,7 @@ class SWARMGUI(QtWidgets.QMainWindow):
             if(self.rotation_disabled):
                 data.angular.z = data.angular.z*0
             else:
-                data.angular.z = data.angular.z*4.0
+                data.angular.z = data.angular.z*1.0
             for i in range(len(self.buttons)):
                 if(self.buttons[i].enabled):
                     self.buttons[i].publisher.publish(data)
