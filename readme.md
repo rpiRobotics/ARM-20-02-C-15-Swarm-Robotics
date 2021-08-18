@@ -12,6 +12,8 @@
 
 With the devices above configurations, just run `./all_devices_initial_setup.bash`. It will install all the software automatically.
 
+![Robots](/readme_include/robots.jpg)
+
 # Ridgeback / Husky setup for remote host:
 run `sudo nano /usr/sbin/ros-start`
 
