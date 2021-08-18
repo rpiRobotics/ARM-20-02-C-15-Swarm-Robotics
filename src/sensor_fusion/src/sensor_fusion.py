@@ -118,6 +118,8 @@ class Fusion:
 		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
 
 		self.rmse_pub = rospy.Publisher(self.position_feedback_topic_name + '_UWB_RMSE', Float32, queue_size=10)
+		self.odom_pub = rospy.Publisher(self.position_feedback_topic_name + '_odom_kalman', Odometry, queue_size=10) # Only for data analysis
+		self.odom_seq = 0; # Sequence number for odometry publishing
 
 		# Subscribe to UWB tags
 		rospy.Subscriber(self.uwb_front_topic_name, String, self.uwb_serial_front_callback, queue_size=1)
@@ -284,11 +286,50 @@ class Fusion:
 
 		
 	def publish_position(self):
+		# Pose2D message for the control loop
 		pos_msg = Pose2D()
 		pos_msg.x = self.state[0][0]
 		pos_msg.y = self.state[1][0]
 		pos_msg.theta = self.state[2][0]
 		self.pos_pub.publish(pos_msg)
+
+		# Odometry messaage for data analysis
+		# Twist is in world frame, not robot frame
+		odom_msg = Odometry()
+
+		self.odom_seq =+ 1
+		odom_msg.header.seq = self.odom_seq
+		odom_msg.header.stamp = rospy.Time.now()
+		odom_msg.header.frame_id = 'map'
+
+		odom_msg.child_frame_id = self.tf_frame_name_fused
+
+		odom_msg.pose.pose.position.x = self.state[0][0]
+		odom_msg.pose.pose.position.y = self.state[0][1]
+		# odom_msg.pose.pose.position.z
+
+		q = tf_conversions.transformations.quaternion_from_euler(0, 0,self.state[0][2])
+		odom_msg.pose.pose.orientation.x = q[0]
+		odom_msg.pose.pose.orientation.y = q[1]
+		odom_msg.pose.pose.orientation.z = q[2]
+		odom_msg.pose.pose.orientation.w = q[3]
+
+		# Instead of (x, y, z, rot_x, rot_y, rot_z)
+		# Use (x, y, theta, x_dot, y_dot, theta_dot)
+		odom_msg.pose.covariance = self.cov.flatten().tolist()
+
+		odom_msg.twist.twist.linear.x = self.state[0][3]
+		odom_msg.twist.twist.linear.y = self.state[0][4]
+		#odom_msg.twist.twist.linear.z
+
+		#odom_msg.twist.twist.angular.x
+		#odom_msg.twist.twist.angular.x
+		odom_msg.twist.twist.angular.z = self.state[0][5]
+
+		#odom_msg.twist.twist.angular.covariance
+
+		self.odom_pub.publish(odom_msg)
+
 
 
 def xyzt2TF(xyzt, header_frame_id, child_frame_id):
