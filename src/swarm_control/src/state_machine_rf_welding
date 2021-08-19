@@ -107,6 +107,8 @@ class State_machine():
 
 class State_machine_ROS_node():
 	def __init__(self):
+		rospy.init_node('state_machine', anonymous=False)
+
 		# Read in parameters
 		self.robot_tf_frame_names = rospy.get_param('~robot_tf_frame_names')
 		self.robot_order = rospy.get_param('~robot_order')

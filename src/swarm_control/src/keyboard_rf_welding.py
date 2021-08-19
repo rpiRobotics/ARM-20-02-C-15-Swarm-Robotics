@@ -19,10 +19,12 @@ Parameters:
 
 class Keyboard_RF_welding():
 	def __init__(self):
+		rospy.init_node('keyboard_rf_welding', anonymous=False)
+
 		# Read in paramters
 		self.speed_x = rospy.get_param('~speed_x', 0.2)
 		self.speed_y = rospy.get_param('~speed_y', 0.1)
-		self.vel_topic_name = rospy.get_param('~vel_topic_name', 'keyboard_vel')
+		vel_topic_name = rospy.get_param('~vel_topic_name', 'keyboard_vel')
 
 		# Initialize
 		pygame.init()
@@ -52,27 +54,28 @@ class Keyboard_RF_welding():
 
 		if (u + d + l + r) == 1 and output_enabled:
 			if u:
-				v_x, v_y = SPEED_X, 0
+				v_x, v_y = self.speed_x, 0
 				text = u"\N{Upwards Arrow}"
 			elif d:
-				v_x, v_y = -SPEED_X, 0
-				text = "\N{Downwards Arrow}"
+				v_x, v_y = -self.speed_x, 0
+				text = u"\N{Downwards Arrow}"
 			elif l:
-				v_x, v_y = 0, -SPEED_Y
-				text = "\N{Leftwards Arrow}"
+				v_x, v_y = 0, self.speed_y
+				text = u"\N{Leftwards Arrow}"
 			elif r:
-				v_x, v_y = 0, SPEED_Y
-				text = "\N{Rightwards Arrow}"
+				v_x, v_y = 0, -self.speed_y
+				text = u"\N{Rightwards Arrow}"
 
 		# If we disable output, send one message of [0,0] so the robots stop
 		if output_enabled:
 			self.send_vel(v_x, v_y)
 			self.last_vel = [v_x, v_y]
-		elif not self.last_vel == [0.0, 0.0]
+		elif not self.last_vel == [0.0, 0.0]:
 			self.send_vel(0.0, 0.0)
 			self.last_vel = [0.0, 0.0]
 
 		self.update_screen_text(text)
+	
 
 
 	def update_screen_text(self, text):
@@ -107,7 +110,7 @@ class Keyboard_RF_welding():
 					pygame.quit()
 					return
 			keys = pygame.key.get_pressed()
-			process_keys(keys)
+			self.process_keys(keys)
 			rospy.sleep(0.01)
 
 
