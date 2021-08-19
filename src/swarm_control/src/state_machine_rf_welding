@@ -1,0 +1,204 @@
+#!/usr/bin/env python
+
+import rospy
+from std_msgs.msg import Int32
+from geometry_msgs.msg import PolygonStamped, Point32, TransformStamped
+import tf2_ros
+
+# TODO: integrator for workspace_center
+# TODO: integrator for x_top and x_bottom
+# TODO: timer to publish frame and outline
+# TODO: make yaml file
+# TODO: make launch file
+# TODO: add in python files to CMakeLists
+
+'''
+state_machine_rf_welding.py
+Alex Elias
+
+Enables/disables robots when they move in a line
+Robots get disabled when they get too close to the workspace boundary or each other
+Robots get enabled when they get too far from the other enabled robots
+
+Parameters:
+	robot_tf_frame_names: list of tf_frames (in tf topic) of robot desired positions,
+		ordered "top" to "bottom"
+	robot_order: list of numbers 0, 1, ..., N-1 of robots as they appear in swarm controller
+		e.g. if 3 is in position 0, this means robot_tf_frame_names[3]
+		is the 0th robot in the swarm controller
+
+	min_dist: minimum distance allowed robot-to-robot and robot-to-boundary
+	max_dist: maximum distance allowed robot-to-robot
+
+	keyboard_vel_cmd_topic_name:
+	robot_enable_topic_name:
+'''
+
+class State_machine():
+	def __init__(self, N_robots, min_dist, max_dist)):
+		self.N_robots = N_robots
+		self.state = 0
+		self.min_dist = min_dist
+		self.max_dist = max_dist
+
+	def transition(self, x_top, x_bottom, x_robots, v_x):
+		'''
+		"top" robot is robot 0
+		"bottom" robot is robot N-1
+		coordinate system points from "bottom" to "top" 
+		positive state: some "top" robots disabled
+		negative state: some "bottom" robots disabled
+
+		Inputs:
+			x_top: position of top workspace boundary
+			x_bottom: position bot bottom workspace boundary
+			x_robots: list of robot positions
+			v_x: velocity of swarm
+		
+		Output: Boolean list of robot enable status (True = Enabled)
+		'''
+
+		if self.state == 0:
+			# All robots are enabled
+			# Just watch for top and bottom robots hitting boundary
+			if x_top - x_robots[0] < self.min_dist:
+				self.state = 1
+			elif x_robots[N_robots-1] - x_bottom < self.min_dist:
+				self.state = -1
+		
+		elif self.state == N_robots:
+			# All robots are disabled
+			# Waiting for "downward" velocity
+			if v_x < 0:
+				self.state -= 1
+		
+		elif self.state == -N_robots:
+			# All robots are disabled
+			# Waiting for "upwards" velocity
+			if v_x > 0:
+				self.state += 1 
+		
+		elif self.state > 0:
+			# Some top robots are disabled
+
+			# Robot gets disabled if too close
+			if x_robots[self.state-1] - x_robots[self.state] < self.min_dist:
+				self.state += 1
+
+			# Robot gets enabled if too far
+			if x_robots[self.state-1] - x_robots[self.state] > self.max_dist:
+				self.state -= 1
+		else: # self.state < 0
+			# Some bottom robots are enabled
+
+			# Robot gets disabled if too close
+			if x_robots[self.N_robots+self.state-1] - x_robots[self.N_robots+self.state] < self.min_dist:
+				self.state -= 1
+
+			# Robot gets enabled if too far
+			if x_robots[self.N_robots+self.state-1] - x_robots[self.N_robots+self.state] > self.max_dist:
+				self.state += 1
+		
+		if self.state > 0:
+			return [False] * self.state + [True] * (self.N_robots-self.state)
+		else:
+			return [True] * (self.N_robots-(-self.state)) + [False] * (-self.state)
+
+
+class State_machine_ROS_node():
+	def __init__(self):
+		# Read in parameters
+		self.robot_tf_frame_names = rospy.get_param('~robot_tf_frame_names')
+		self.robot_order = rospy.get_param('~robot_order')
+		min_dist = rospy.get_param('~min_dist')
+		max_dist = rospy.get_param('~max_dist')
+
+		keyboard_vel_cmd_topic_name = rospy.get_param('~keyboard_vel_cmd_topic_name')
+		robot_enable_topic_name = rospy.get_param('~robot_enable_topic_name')
+
+		# Initialize
+		self.N_robots = len(self.robot_tf_frame_names)
+		self.state_machine = State_machine(self.N_robots, min_dist, max_dist)
+
+		self.workspace_outline_seq = 0
+
+		self.x_top = 1.0 # m
+		self.x_bottom = -1.0 # m
+		self.workspace_center = [0 0 0] # [m m rad]
+
+		# Publish
+		self.enable_pub = rospy.Publisher(robot_enable_topic_name, Int32, queue_size=10)
+		self.workspace_outline_pub = rospy.Publisher("workspace_outline", PolygonStamped, queue_size=10)
+		self.tf_broadcaster = tf2_ros.TransformBroadcaster()
+
+		# Subscribe
+		rospy.Subscriber(keyboard_vel_cmd_topic_name, Twist, self.keyboard_vel_callback, queue_size=1)
+		self.tf_listener = tf2_ros.TransformListener()
+
+	def send_enable_status(status_array):
+		msg = int32()
+		for i in range(self.N_robots):
+			if status_array[i]:
+				msg.data += pow(2, self.robot_order[i])
+		self.enable_pub.publish(msg)
+
+	def send_workspace_outline(self):
+		WORKSPACE_HALF_WIDTH = 1.0 # m
+
+		msg = PolygonStamped()
+		self.workspace_outline_seq += 1;
+
+		msg.header.seq = self.workspace_outline_seq
+		msg.header.stamp = rospy.Time.now()
+		msg.header.frame_id = "workspace"
+
+		msg.polygon.points = [Point32(x = self.x_top,    y =  WORKSPACE_HALF_WIDTH, z = 0.0), # top left
+							  Point32(x = self.x_top,    y = -WORKSPACE_HALF_WIDTH, z = 0.0), # top right
+							  Point32(x = self.x_bottom, y = -WORKSPACE_HALF_WIDTH, z = 0.0), # bot right
+							  Point32(x = self.x_bottom, y =  WORKSPACE_HALF_WIDTH, z = 0.0)] # bot left
+
+		self.workspace_outline_pub.publish(msg)
+
+	def send_workspace_frame(self):
+		msg = xyt2TF(self.workspace_center, "map", "workspace")
+		self.tf_broadcaster.sendTransform(msg)
+
+	def self.keyboard_vel_callback(self, data):
+		v_x = data.linear.x; # TODO: what frame is the keyboard velocity in?
+
+		# Find the robot x locations in the workspace frame
+		x_robots = [0.0] * self.N_robots
+		for i in range(N_robots)
+			t = self.tf_listener.getLatestCommonTime("workspace",self.robot_tf_frame_names[i],)
+			trans, quaternions = self.tf_listener.lookupTransform("workspace",self.robot_tf_frame_names[i], t)
+			x_robots[i] = trans[0]
+
+		status_array = self.state_machine.transition(self.x_top, self.x_bottom, x_robots, v_x)
+		self.send_enable_status(status_array)
+
+
+def xyt2TF(xyt, header_frame_id, child_frame_id):
+	'''
+	Converts a list [x y theta]
+	into a tf2_msgs.msg.TFMessage message
+	'''
+	t = TransformStamped()
+
+	t.header.frame_id = header_frame_id
+	t.header.stamp = rospy.Time.now()
+	t.child_frame_id = child_frame_id
+	t.transform.translation.x = xyt[0]
+	t.transform.translation.y = xyt[1]
+	t.transform.translation.z = 0
+
+	q = tf_conversions.transformations.quaternion_from_euler(0, 0,xyt[2])
+	t.transform.rotation.x = q[0]
+	t.transform.rotation.y = q[1]
+	t.transform.rotation.z = q[2]
+	t.transform.rotation.w = q[3]
+
+	return t
+
+if __name__ == '__main__':
+	node = State_machine_ROS_node()
+	rospy.spin()	
