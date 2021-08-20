@@ -2,14 +2,15 @@
 
 import rospy
 from std_msgs.msg import Int32
-from geometry_msgs.msg import PolygonStamped, Point32, TransformStamped, PoseStamped
+from geometry_msgs.msg import PolygonStamped, Point32, TransformStamped, PoseStamped, Twist
 import tf2_ros
+import tf_conversions
 import time
 
-# TODO: timer to publish frame and outline
 # TODO: make yaml file
 # TODO: make launch file
 # TODO: add in python files to CMakeLists
+# TODO: rotate velocity commands to line up with workspace frame
 
 '''
 state_machine_rf_welding.py
@@ -46,7 +47,7 @@ MAX_TIMESTEP = 0.1 # For velocity integration
 WORKSPACE_HALF_WIDTH = 1.0 # m
 
 class State_machine():
-    def __init__(self, N_robots, min_dist, max_dist)):
+    def __init__(self, N_robots, min_dist, max_dist):
         self.N_robots = N_robots
         self.state = 0
         self.min_dist = min_dist
@@ -71,6 +72,8 @@ class State_machine():
             Index of newly enable robot
         '''
 
+        rospy.logwarn("x_top:" + str(x_top) + " x_bottom: " + str(x_bottom) + " x_robots: " + str(x_robots) + " v_x:" + str(v_x))
+
         new_robot = None
 
         if self.state == 0:
@@ -78,17 +81,17 @@ class State_machine():
             # Just watch for top and bottom robots hitting boundary
             if x_top - x_robots[0] < self.min_dist:
                 self.state = 1
-            elif x_robots[N_robots-1] - x_bottom < self.min_dist:
+            elif x_robots[self.N_robots-1] - x_bottom < self.min_dist:
                 self.state = -1
         
-        elif self.state == N_robots:
+        elif self.state == self.N_robots:
             # All robots are disabled
             # Waiting for "downward" velocity
             if v_x < 0:
                 self.state -= 1
-                new_robot = N_robots - 1
+                new_robot = self.N_robots - 1
         
-        elif self.state == -N_robots:
+        elif self.state == -self.N_robots:
             # All robots are disabled
             # Waiting for "upwards" velocity
             if v_x > 0:
@@ -116,14 +119,14 @@ class State_machine():
             # Robot gets enabled if too far
             if x_robots[self.N_robots+self.state-1] - x_robots[self.N_robots+self.state] > self.max_dist:
                 self.state += 1
-                new_robot = N_robots - 1 + self.state
+                new_robot = self.N_robots - 1 + self.state
         
         if self.state > 0:
             status_array =  [False] * self.state + [True] * (self.N_robots-self.state)
         else:
             status_array = [True] * (self.N_robots-(-self.state)) + [False] * (-self.state)
 
-        return status_array, new_robot
+        return status_array, new_robot, self.state
 
 
 class State_machine_ROS_node():
@@ -132,6 +135,7 @@ class State_machine_ROS_node():
 
         # Read in parameters
         self.robot_desired_tf_frame_names = rospy.get_param('~robot_desired_tf_frame_names')
+        rospy.logwarn(str(self.robot_desired_tf_frame_names))
         self.robot_order                  = rospy.get_param('~robot_order')
         min_dist                          = rospy.get_param('~min_dist')
         max_dist                          = rospy.get_param('~max_dist')
@@ -157,7 +161,7 @@ class State_machine_ROS_node():
 
         self.x_top = 1.0 # m
         self.x_bottom = -1.0 # m
-        self.workspace_center = [0 0 0] # [m m rad]
+        self.workspace_center = [0, 0, 0] # [m m rad]
 
         # Publish
         self.enable_pub            = rospy.Publisher(robot_enable_topic_name, Int32,          queue_size=10)
@@ -168,19 +172,21 @@ class State_machine_ROS_node():
         # Subscribe
         rospy.Subscriber(keyboard_vel_cmd_topic_name,       Twist, self.keyboard_vel_callback,        queue_size=1)
         rospy.Subscriber(workspace_frame_vel_topic_name,    Twist, self.workspace_frame_vel_callback, queue_size=1)
-        rospy.Subscriber(x_top_vel_topic_name,              Twist, self.x_top_vel_vel_callback,       queue_size=1)
+        rospy.Subscriber(x_top_vel_topic_name,              Twist, self.x_top_vel_callback,       queue_size=1)
         rospy.Subscriber(x_bottom_vel_topic_name,           Twist, self.x_bottom_vel_callback,        queue_size=1)
-        self.tf_listener = tf2_ros.TransformListener()
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
 
         # Timers
-        rospy.Timer(rospy.Duration(0.01), publish_frames_callback)
+        rospy.Timer(rospy.Duration(0.01), self.publish_frames_callback)
 
-    def send_enable_status(status_array):
-        msg = int32()
+    def send_enable_status(self, status_array):
+        msg = Int32()
         for i in range(self.N_robots):
-            if status_array[i]:
+            if not status_array[i]:
                 msg.data += pow(2, self.robot_order[i])
         self.enable_pub.publish(msg)
+        #rospy.logwarn(str(status_array) + " " + str(msg.data))
 
     def send_workspace_outline(self):
         msg = PolygonStamped()
@@ -201,39 +207,41 @@ class State_machine_ROS_node():
         msg = xyt2TF(self.workspace_center, "map", "workspace")
         self.tf_broadcaster.sendTransform(msg)
 
-    def self.keyboard_vel_callback(self, data):
+    def keyboard_vel_callback(self, data):
         v_x = data.linear.x; # TODO: what frame is the keyboard velocity in?
 
         # Find the robot x locations in the workspace frame
         x_robots = [0.0] * self.N_robots
-        for i in range(N_robots)
+        for i in range(self.N_robots):
             #t = self.tf_listener.getLatestCommonTime("workspace",self.robot_deesired_tf_frame_names[i],)
-            trans, quaternions = self.tf_listener.lookupTransform("workspace",self.robot_desired_tf_frame_names[i], rospy.Time(0))
-            x_robots[i] = trans[0]
+            try:
+                trans = self.tf_buffer.lookup_transform("workspace",self.robot_desired_tf_frame_names[i], rospy.Time(0))
+                x_robots[i] = trans.transform.translation.x
+            except:
+                rospy.logwarn("Couldn't find transform for robot " + str(i))
 
-        status_array, new_robot = self.state_machine.transition(self.x_top, self.x_bottom, x_robots, v_x)
+        status_array, new_robot, state = self.state_machine.transition(self.x_top, self.x_bottom, x_robots, v_x)
 
         if new_robot is not None:
             self.sync_robot(new_robot)
 
         self.send_enable_status(status_array)
+        rospy.logwarn("state: " + str(state) + " enabled robots: " + str(status_array) + " new robot:" + str(new_robot))
 
     def sync_robot(self, n_robot):
-        if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(self.robot_tf_frame_names[n_robot]):
-            #t = self.tf.getLatestCommonTime(self.robot_tf_frame_names[n_robot], self.swarm_tf)
-            trans, quaternions = self.tf.lookupTransform(self.swarm_tf,self.robot_tf_frame_names[n_robot],rospy.Time(0))
+        #if self.tf.frameExists(self.swarm_tf) and self.tf.frameExists(self.robot_tf_frame_names[n_robot]):
+        #t = self.tf.getLatestCommonTime(self.robot_tf_frame_names[n_robot], self.swarm_tf)
+        try:
+            trans = self.tf_buffer.lookup_transform(self.swarm_tf,self.robot_tf_frame_names[n_robot],rospy.Time(0))
             p1 = PoseStamped()
             p1.header.frame_id = self.robot_tf_frame_names[n_robot]
             
-            p1.pose.position.x = float(trans[0])
-            p1.pose.position.y = float(trans[1])
-            p1.pose.position.z = float(trans[2])
-            p1.pose.orientation.x = float(quaternions[0])
-            p1.pose.orientation.y = float(quaternions[1])
-            p1.pose.orientation.z = float(quaternions[2])
-            p1.pose.orientation.w = float(quaternions[3])
-            #p_in_base = self.tf.transformPose("/base_link", p1)
+            p1.pose.position = trans.transform.translation
+            p1.pose.orientation = trans.transform.rotation
+
             self.tf_changer_pub.publish(p1)
+        except:
+            rospy.logerr("Couldn't sync robot " + str(n_robot))
 
     def get_timestep(self, integrator_name):
         current_time = time.time()
@@ -247,18 +255,18 @@ class State_machine_ROS_node():
             self.last_timestep_requests[integrator_name] = current_time
             return 0.0
 
-    def self.workspace_frame_vel_callback(self, data):
-        dt = get_timestep("workspace_frame_vel")
+    def workspace_frame_vel_callback(self, data):
+        dt = self.get_timestep("workspace_frame_vel")
         self.workspace_center[0] += data.linear.x * dt
         self.workspace_center[1] += data.linear.y * dt
         self.workspace_center[2] += data.angular.z * dt
 
-    def self.x_top_vel_callback(self, data):
-        dt = get_timestep("x_top_vel")
+    def x_top_vel_callback(self, data):
+        dt = self.get_timestep("x_top_vel")
         self.x_top += data.linear.x * dt
 
-    def self.x_bottom_vel_callback(self, data):
-        dt = get_timestep("x_bottom_vel")
+    def x_bottom_vel_callback(self, data):
+        dt = self.get_timestep("x_bottom_vel")
         self.x_bottom += data.linear.x * dt
 
     def publish_frames_callback(self, event):

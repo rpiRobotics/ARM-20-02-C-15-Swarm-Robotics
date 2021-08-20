@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+<!-- <group ns="ridgeback"> -->
+    <!-- <machine name="ridgeback" address="192.168.1.103" env-loader="/home/administrator/catkin_ws/scripts/env_ridgeback.sh" user="administrator" password="clearpath" default="true"/> -->
+
+    <node name="keyboard_rf_welding" pkg="swarm_control" type="keyboard_rf_welding.py">
+        <rosparam file="$(find swarm_launch)/config/keyboard_rf_welding.yaml"/>
+    </node>
+
+    <node name="state_machine_rf_welding" pkg="swarm_control" type="state_machine_rf_welding.py">
+        <rosparam file="$(find swarm_launch)/config/state_machine_rf_welding.yaml"/>
+    </node>
+<!-- </group> -->
+</launch>

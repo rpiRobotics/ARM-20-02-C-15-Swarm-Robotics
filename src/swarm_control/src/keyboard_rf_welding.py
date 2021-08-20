@@ -22,9 +22,9 @@ class Keyboard_RF_welding():
 		rospy.init_node('keyboard_rf_welding', anonymous=False)
 
 		# Read in paramters
-		self.speed_x = rospy.get_param('~speed_x', 0.2)
-		self.speed_y = rospy.get_param('~speed_y', 0.1)
-		vel_topic_name = rospy.get_param('~vel_topic_name', 'keyboard_vel')
+		self.speed_x = rospy.get_param('~speed_x')
+		self.speed_y = rospy.get_param('~speed_y')
+		vel_topic_name = rospy.get_param('~vel_topic_name')
 
 		# Initialize
 		pygame.init()
