@@ -11,6 +11,7 @@ import time
 # TODO: make launch file
 # TODO: add in python files to CMakeLists
 # TODO: rotate velocity commands to line up with workspace frame
+# TODO: keep track of last known x position (in case tf_frame cuts out when deactivated)
 
 '''
 state_machine_rf_welding.py
