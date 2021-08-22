@@ -7,11 +7,9 @@ import tf2_ros
 import tf_conversions
 import time
 import threading
+import math
 
-# TODO: make yaml file
-# TODO: make launch file
 # TODO: add in python files to CMakeLists
-# TODO: rotate velocity commands to line up with workspace frame
 
 '''
 state_machine_rf_welding.py
@@ -252,6 +250,7 @@ class State_machine_ROS_node():
                 msg_0 = Twist()
                 while(time.time() - t_0 < DECEL_TIME):
                     self.swarm_desired_vel_pub.publish(msg_0)
+                    time.sleep(0.01)
                 # 3. Add new robot (and wait)
                 self.send_enable_status(self.status_array)
                 time.sleep(SLEEP_TIME)
@@ -266,7 +265,13 @@ class State_machine_ROS_node():
                 time.sleep(SLEEP_TIME)
                 rospy.logwarn("Done removing robot " + str(rem_robot))
 
-            self.swarm_desired_vel_pub.publish(data)
+
+            # Rotate velocity command to be aligned with workspace frame
+            msg = Twist()
+            c, s = math.cos(self.workspace_center[2]), math.sin(self.workspace_center[2])
+            msg.linear.x = c * data.linear.x - s * data.linear.y
+            msg.linear.y = s * data.linear.x + c * data.linear.y
+            self.swarm_desired_vel_pub.publish(msg)
             # rospy.logwarn("state: " + str(state) + " enabled robots: " + str(status_array) + " new robot:" + str(new_robot))
 
     def sync_robot(self, n_robot):
