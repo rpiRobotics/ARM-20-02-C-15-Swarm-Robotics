@@ -7,15 +7,16 @@ robot_desired_tf_frame_names:
 
 robot_order: [3, 0, 2, 1, 4]
 
-min_dist: 0.5
-max_dist: 1.0
+min_dist: 0.2
+max_dist: 0.4
 
 workspace_frame_vel_topic_name: 'workspace_vel'
 x_top_vel_topic_name: 'x_top_vel'
 x_bottom_vel_topic_name: 'x_bottom_vel'
 
-keyboard_vel_cmd_topic_name: 'desired_swarm_vel'
+keyboard_vel_cmd_topic_name: 'rf_welding_keyboard_vel'
 robot_enable_topic_name: '/tablet/robot_enable_status'
+swarm_desired_vel_topic_name: 'desired_swarm_vel'
 
 swarm_tf: "swarm_frame"
 robot_tf_frame_names:

@@ -122,6 +122,7 @@ class Swarm_Control:
 				
 				self.enabled_robots[i]=False
 				rospy.logwarn("disabled robot: "+str(i+1)+"status: "+str(self.enabled_robots[i]))
+				self.robots_last_velocities[:,i] = 0
 			else:
 				
 				self.enabled_robots[i]=True
@@ -138,6 +139,9 @@ class Swarm_Control:
 			self.robots_xyt[2,array_position]=yaw
 
 	def desired_swarm_velocity_callback(self, data):
+		if sum(self.enabled_robots) == 0:
+			return
+
 		dt = self.get_timestep("desired_swarm_velocity")
 		if dt == 0: # Exceeded MAX_TIMESTEP
 			self.v_robots_prev *= 0.

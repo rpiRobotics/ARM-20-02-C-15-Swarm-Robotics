@@ -7,9 +7,9 @@
         <rosparam file="$(find swarm_launch)/config/keyboard_rf_welding.yaml"/>
     </node>
 
-<!--     <node name="state_machine_rf_welding" pkg="swarm_control" type="state_machine_rf_welding.py">
+    <node name="state_machine_rf_welding" pkg="swarm_control" type="state_machine_rf_welding.py">
         <rosparam file="$(find swarm_launch)/config/state_machine_rf_welding.yaml"/>
-    </node> -->
+    </node>
 
     <node name="robot_sim" pkg="swarm_control" type="robot_sim.py">
 <rosparam>

@@ -39,7 +39,7 @@ class Robot_sim:
 
         # First index is i_robot
         # Second index is [x, y, theta]
-        self.robot_states = x = [[0, 0, 0] for i in range(self.N_robots)]
+        self.robot_states = x = [[0.0, 0.0, 0.0] for i in range(self.N_robots)]
 
         # Subscribe
         for i in range(self.N_robots):
