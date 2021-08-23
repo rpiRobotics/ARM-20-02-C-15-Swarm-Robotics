@@ -4,10 +4,10 @@ robot_desired_tf_frame_names:
   - "tf_robot_2"
   - "tf_robot_1"
   - "tf_robot_4"
-robot_desired_tf_frame_names:
-  - "tf_robot_3"
-  - "tf_robot_2"
-  - "tf_robot_4"
+# robot_desired_tf_frame_names:
+#   - "tf_robot_3"
+#   - "tf_robot_2"
+#   - "tf_robot_4"
 
 
 robot_order: [3, 0, 2, 1, 4]
