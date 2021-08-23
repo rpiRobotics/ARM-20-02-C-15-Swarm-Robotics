@@ -11,21 +11,21 @@
         <rosparam file="$(find swarm_launch)/config/state_machine_rf_welding.yaml"/>
     </node>
 
-<!--     <node name="robot_sim" pkg="swarm_control" type="robot_sim.py">
+    <node name="robot_sim" pkg="swarm_control" type="robot_sim.py">
 <rosparam>
 state_command_topic_names:
   - "oarbot_silver/desired_state"
   - "oarbot_blue/desired_state"
-  - "ridgeback/desired_state"
+<!--   - "ridgeback/desired_state"
   - "husky_black/desired_state"
-  - "husky_blue/desired_state"
+  - "husky_blue/desired_state" -->
 tf_frame_names:
   - "oarbot_silver_fusion"
   - "oarbot_blue_fusion"
-  - "ridgeback_fusion"
+<!--   - "ridgeback_fusion"
   - "husky_black_tt"
-  - "husky_blue_tt"
+  - "husky_blue_tt" -->
 </rosparam>
-    </node> -->
+    </node>
 <!-- </group> -->
 </launch>

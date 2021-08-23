@@ -13,8 +13,8 @@ robot_desired_tf_frame_names:
 #robot_order: [3, 0, 2, 1, 4]
 robot_order: [3, 2, 4]
 
-min_dist: 1.5
-max_dist: 2.5
+min_dist: 0.5
+max_dist: 1.5
 
 workspace_frame_vel_topic_name: 'workspace_vel'
 x_top_vel_topic_name: 'x_top_vel'
