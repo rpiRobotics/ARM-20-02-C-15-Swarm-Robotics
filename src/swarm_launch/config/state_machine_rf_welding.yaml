@@ -14,7 +14,7 @@ robot_order: [3, 0, 2, 1, 4]
 # robot_order: [3, 2, 4]
 
 min_dist: 0.8
-max_dist: 1.5
+max_dist: 1.2
 
 workspace_frame_vel_topic_name: 'workspace_vel'
 x_top_vel_topic_name: 'x_top_vel'
