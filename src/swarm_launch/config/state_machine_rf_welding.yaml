@@ -1,14 +1,20 @@
+# robot_desired_tf_frame_names:
+#   - "tf_robot_3"
+#   - "tf_robot_0"
+#   - "tf_robot_2"
+#   - "tf_robot_1"
+#   - "tf_robot_4"
 robot_desired_tf_frame_names:
   - "tf_robot_3"
-  - "tf_robot_0"
   - "tf_robot_2"
-  - "tf_robot_1"
   - "tf_robot_4"
 
-robot_order: [3, 0, 2, 1, 4]
 
-min_dist: 0.2
-max_dist: 0.4
+#robot_order: [3, 0, 2, 1, 4]
+robot_order: [3, 2, 4]
+
+min_dist: 1.5
+max_dist: 2.5
 
 workspace_frame_vel_topic_name: 'workspace_vel'
 x_top_vel_topic_name: 'x_top_vel'
@@ -19,11 +25,15 @@ robot_enable_topic_name: '/tablet/robot_enable_status'
 swarm_desired_vel_topic_name: 'desired_swarm_vel'
 
 swarm_tf: "swarm_frame"
+# robot_tf_frame_names:
+#   - "husky_black_tt"  
+#   - "oarbot_silver_fusion"
+#   - "ridgeback_fusion"
+#   - "oarbot_blue_fusion"
+#   - "husky_blue_tt"
 robot_tf_frame_names:
   - "husky_black_tt"  
-  - "oarbot_silver_fusion"
   - "ridgeback_fusion"
-  - "oarbot_blue_fusion"
   - "husky_blue_tt"
 
 tf_changer_topic_name: '/tablet/tf_changer'
