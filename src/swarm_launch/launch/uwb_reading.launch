@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<launch>
+<!-- <group ns="husky_black"> -->
+    <!-- <machine name="husky_black" address="192.168.1.105" env-loader="/home/husky_black/catkin_ws/scripts/env_husky_black.sh" user="husky_black" password="1234" default="true"/> -->
+
+    <node name="uwb_x" pkg="uwb_reader" type="uwb_reader.py">
+        <rosparam>
+            serial_port: '/dev/serial/by-path/pci-0000:00:15.0-usb-0:3:1.0'
+            topic_name: "uwb_serial_x"
+        </rosparam>
+    </node>
+    <node name="uwb_y" pkg="uwb_reader" type="uwb_reader.py">
+        <rosparam>
+            serial_port: '/dev/serial/by-path/pci-0000:00:15.0-usb-0:3:1.0'
+            topic_name: "uwb_serial_y"
+        </rosparam>
+    </node>
+    
+<!-- </group> -->
+</launch>
