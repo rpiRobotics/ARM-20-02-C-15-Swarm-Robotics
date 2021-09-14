@@ -5,13 +5,13 @@
 
     <node name="uwb_x" pkg="uwb_reader" type="uwb_reader.py">
         <rosparam>
-            serial_port: '/dev/serial/by-path/pci-0000:00:15.0-usb-0:3:1.0'
+            serial_port: '/dev/serial/by-path/pci-0000:00:14.0-usb-0:1.2:1.0'
             topic_name: "uwb_serial_x"
         </rosparam>
     </node>
     <node name="uwb_y" pkg="uwb_reader" type="uwb_reader.py">
         <rosparam>
-            serial_port: '/dev/serial/by-path/pci-0000:00:15.0-usb-0:3:1.0'
+            serial_port: '/dev/serial/by-path/pci-0000:00:14.0-usb-0:5:1.0'
             topic_name: "uwb_serial_y"
         </rosparam>
     </node>
