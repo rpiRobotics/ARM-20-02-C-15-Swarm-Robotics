@@ -305,7 +305,7 @@ class Fusion:
 		odom_msg.child_frame_id = self.tf_frame_name_fused
 
 		odom_msg.pose.pose.position.x = self.state[0][0]
-		odom_msg.pose.pose.position.y = self.state[0][1]
+		odom_msg.pose.pose.position.y = self.state[1][0]
 		# odom_msg.pose.pose.position.z
 
 		q = tf_conversions.transformations.quaternion_from_euler(0, 0,self.state[0][2])
