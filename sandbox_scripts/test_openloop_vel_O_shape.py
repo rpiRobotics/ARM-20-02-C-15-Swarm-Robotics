@@ -114,7 +114,7 @@ class CmdVelTalker():
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 2.0 # meters # Amount of displacement
+                self.delta_x = 1.5 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
@@ -135,7 +135,7 @@ class CmdVelTalker():
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 4.0 # meters # Amount of displacement
+                self.delta_x = 3.0 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
@@ -156,7 +156,7 @@ class CmdVelTalker():
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 2.0 # meters # Amount of displacement
+                self.delta_x = 1.5 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
@@ -177,7 +177,7 @@ class CmdVelTalker():
             th_dir = +0.
 
             if self.is_t_calculated == False:
-                self.delta_x = 4.0 # meters # Amount of displacement
+                self.delta_x = 3.0 # meters # Amount of displacement
                 # OARBOTs Velocity/Acc limits (experimentally found)
                 self.v_lim = 0.1
                 self.a_lim = 0.3 #0.6
