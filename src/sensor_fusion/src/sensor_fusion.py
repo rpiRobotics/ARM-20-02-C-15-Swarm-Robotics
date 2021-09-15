@@ -308,7 +308,7 @@ class Fusion:
 		odom_msg.pose.pose.position.y = self.state[1][0]
 		# odom_msg.pose.pose.position.z
 
-		q = tf_conversions.transformations.quaternion_from_euler(0, 0,self.state[2][0])
+		q = tf_conversions.transformations.quaternion_from_euler(0, 0,self.state[0][2])
 		odom_msg.pose.pose.orientation.x = q[0]
 		odom_msg.pose.pose.orientation.y = q[1]
 		odom_msg.pose.pose.orientation.z = q[2]
