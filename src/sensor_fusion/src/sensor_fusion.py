@@ -305,6 +305,7 @@ class Fusion:
 		odom_msg.child_frame_id = self.tf_frame_name_fused
 
 		odom_msg.pose.pose.position.x = self.state[0][0]
+		rospy.logwarn(str(self.state))
 		odom_msg.pose.pose.position.y = self.state[1][0]
 		# odom_msg.pose.pose.position.z
 
