@@ -55,29 +55,29 @@ After=network.target
 ```
 [For further information about this above see this link.](https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/)
 
-## Namespacing Setup
+## 3. Namespacing Setup
 To allow for control of multiple Husky robots using namespacing then the files found in the husky_blue_startup or husky_black_startup should be moved into the '/etc/ros/melodic/ros.d' directory, this can be done automatically by running the husky_namespacing.bash executable file on the control computer once the correct IP addresses for both the control computer and the industrial computer have been setup. This process can be easily extended to more than two Huskies by editing that same bash file and expanding the three lists for HOSTS, which should be the static IP addresses of each Husky industrial computer, Usernames, which should be the usernames specified during the initial Ubuntu setup and user profile creation process (this is used to ssh into the husky and set these values correctly), and finally Passwords, which should be the password used to log into the specified user profile on the corresponding Husky industrial computer. This editing process will need to be repeated for any of the "all_devices....bash" scripts that are to be used, this is so that each device can be correctly SSH'd into and commands can be run easily.
 
-## Getting Power From Husky
+## 4. Getting Power From Husky
   
-## Mounting industrial computer inside Husky
+## 5. Mounting industrial computer inside Husky
   
   
-## Attaching wifi module
+## 6. Attaching wifi module
   
  
-## Attaching UWB sensors
+## 7. Attaching UWB sensors
   
   
-## Hardware permissions
+## 8. Hardware permissions
   
   
-## USB port identifiers
+## 9. USB port identifiers
 
   
-## Taping Wheels
+## 10. Taping Wheels
   
   
-## Attaching mounting tower
+## 11. Attaching mounting tower
 
-## Starting SWARM System
+## 12. Starting SWARM System
