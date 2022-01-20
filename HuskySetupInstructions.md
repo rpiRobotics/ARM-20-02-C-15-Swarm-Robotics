@@ -16,8 +16,13 @@ The installer will tell you to run one more command. Execute it.
 Then to install the swarm control code to be used run the following commmands:
 
 `cd to catkin workspace directory`
+
+
 `cd src`
+
+
 `git clone https://github.com/rpiRobotics/ARM-20-02-C-15-Swarm-Robotics.git`
+
 
 Be sure to then run 'catkin_make' in the catkin workspace directory to build the code.
 
