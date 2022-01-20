@@ -59,6 +59,7 @@ After=network.target
 To allow for control of multiple Husky robots using namespacing then the files found in the husky_blue_startup or husky_black_startup should be moved into the '/etc/ros/melodic/ros.d' directory, this can be done automatically by running the husky_namespacing.bash executable file on the control computer once the correct IP addresses for both the control computer and the industrial computer have been setup. This process can be easily extended to more than two Huskies by editing that same bash file and expanding the three lists for HOSTS, which should be the static IP addresses of each Husky industrial computer, Usernames, which should be the usernames specified during the initial Ubuntu setup and user profile creation process (this is used to ssh into the husky and set these values correctly), and finally Passwords, which should be the password used to log into the specified user profile on the corresponding Husky industrial computer. This editing process will need to be repeated for any of the "all_devices....bash" scripts that are to be used, this is so that each device can be correctly SSH'd into and commands can be run easily.
 
 ## 4. Getting Power From Husky
+  ![Robots](/readme_include/Husky_view.PNG)
   
 ## 5. Mounting industrial computer inside Husky
   
