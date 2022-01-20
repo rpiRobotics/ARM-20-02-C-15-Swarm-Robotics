@@ -1,6 +1,6 @@
 # Husky Robot Setup Instructions
 ## 1. Industrial Computer Setup and Initial Software Install
-When speccing out an industrial computer for use with the Husky make sure that it can be powered by 12V or 24V without exceeding the 5A current limit that the Husky's outside power ports supply. The industrial computer should also have a suitable number of USB ports to accomodate the serial to USB interface and any other sensors or additional inputs you wish to include and should be capable of running a ROS compatible linux operating system, preferably Ubuntu 18. Setup for this computer should be done outside the robot and is dependent on the user's preference, but a ROS compatible linux operating system should be installed and configured. ROS Melodic should also be installed and a catkin workspace created as described here: 
+When speccing out an industrial computer for use with the Husky make sure that it can be powered by 12V or 24V without exceeding the 5A current limit that the Husky's outside power ports supply. The industrial computer should also have a suitable number of USB ports to accomodate the serial to USB interface and any other sensors or additional inputs you wish to include and should be capable of running a ROS compatible linux operating system, preferably Ubuntu 18. Setup for this computer should be done outside the robot and is dependent on the user's preference, but ideally the username chosen for the computer should match the chosen name of the robot, but a ROS compatible linux operating system should be installed and configured. ROS Melodic should also be installed and a catkin workspace created as described here: 
 
 http://wiki.ros.org/melodic/Installation/Ubuntu
 
@@ -50,5 +50,29 @@ After=network.target
 ```
 [For further information about this above see this link.](https://www.freedesktop.org/wiki/Software/systemd/NetworkTarget/)
 
+## Namespacing Setup
+To allow for control of multiple Husky robots using namespacing then the files found in the husky_blue_startup or husky_black_startup should be moved into the '/etc/ros/melodic/ros.d' directory, this can be done automatically by running the husky_namespacing.bash executable file on the control computer once the correct IP addresses for both the control computer and the industrial computer have been setup. This process can be easily extended to more than two Huskies by editing that same bash file and expanding the three lists for HOSTS, which should be the static IP addresses of each Husky industrial computer, Usernames, which should be the usernames specified during the initial Ubuntu setup and user profile creation process (this is used to ssh into the husky and set these values correctly), and finally Passwords, which should be the password used to log into the specified user profile on the corresponding Husky industrial computer. This editing process will need to be repeated for any of the "all_devices....bash" scripts that are to be used, this is so that each device can be correctly SSH'd into and commands can be run easily.
+
+## Getting Power From Husky
+  
+## Mounting industrial computer inside Husky
+  
+  
+## Attaching wifi module
+  
+ 
+## Attaching UWB sensors
+  
+  
+## Hardware permissions
+  
+  
+## USB port identifiers
 
   
+## Taping Wheels
+  
+  
+## Attaching mounting tower
+
+## Starting SWARM System
