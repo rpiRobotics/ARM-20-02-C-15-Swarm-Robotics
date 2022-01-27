@@ -59,8 +59,10 @@ After=network.target
 To allow for control of multiple Husky robots using namespacing then the files found in the husky_blue_startup or husky_black_startup should be moved into the '/etc/ros/melodic/ros.d' directory, this can be done automatically by running the husky_namespacing.bash executable file on the control computer once the correct IP addresses for both the control computer and the industrial computer have been setup. This process can be easily extended to more than two Huskies by editing that same bash file and expanding the three lists for HOSTS, which should be the static IP addresses of each Husky industrial computer, Usernames, which should be the usernames specified during the initial Ubuntu setup and user profile creation process (this is used to ssh into the husky and set these values correctly), and finally Passwords, which should be the password used to log into the specified user profile on the corresponding Husky industrial computer. This editing process will need to be repeated for any of the "all_devices....bash" scripts that are to be used, this is so that each device can be correctly SSH'd into and commands can be run easily.
 
 ## 4. Getting Power From Husky
+To get power from the Husky to power the industrial computer, first follow the instructions in the Husky-UGV-User-Manual.pdf found in readme_include/ in this directory to remove the metal cover on top of the robot to gain access to the enclosure below which should look as shown below:
   ![Robots](/readme_include/Husky_view.PNG)
-  
+In there are three sets of connecting ports with 3 power and ground pins each, one that supplies 5V power, one at 12V and one at 24V, they all can source up to 5 A at maximum draw, which should be kept in mind while wiring into these ports. These husky ports are detachable, and for convenience should be removed from the Husky before wiring into them. A section is devoted to this in the husky manual which discusses how to use a screwdriver to add wires into the ports as shown below:
+ ![Husky Power Ports](/husky_images/husky_power_wiring.PNG)
 ## 5. Mounting industrial computer inside Husky
   
   
