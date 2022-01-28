@@ -108,10 +108,14 @@ To guarantee the correct UWB sensor is addressed, go into the file src/swarm_lau
 Then unplug the UWB sensor and call `ls` again, take note of which entry disappears, enter this entry into the yaml file as serial_port.
   
 ## 9. Taping Wheels
+To improve traction of Husky on inside surfaces, the surface of the wheels can be covered in plain packing tape which should be wrapped a few layers deep to allow the robot to move on the tape rather than the treads, this especially helps on carpeted surfaces where the aggressive treads can limit ability of the robot to move as precisely. If operating outdoors this should be ignored. 
   
-  
-## 10. Attaching mounting tower
+## 10. Attaching Fabric Engagement Tower
+CAD files for all the parts in the Fabric Engagement Tower are available in Husky_CAD_Files, and an assembly displaying the entire tower can be seen in "Husky fabric engagement.SLDASM". Any CAD parts with a product code in front of them can be purchased with that code from McMaster-Carr.
 
+https://www.mcmaster.com/
+
+The first step to assembling the Fabric Engagement tower is to bolt the part called "lower plate.SLDPRT" to the surface of the Husky top metal cover on the side farthest from the battery hookup cover. Next the 3x3 piece of aluminum strut is attached to the lower plate, this piece of strut can have a variable height, but its CAD file is "3x3 x 23.SLDPRT". Next the part known as "brgplate.SLDPRT" is mounted to the side of the 3x3 aluminum strut facing toward the center of the robot. Next, two mounted ball bearing parts are attached to the brgplate, both should be "5913K61_Low-Profile Mounted Sealed Steel Ball Bearing.SLDPRT". Then a half inch diameter aluminum shaft, "shaft.SLDPRT" should be inserted into both ball bearing mounts and fixed using the set screws on both mounts. Then, at the desired height, a washdown set screw shaft collar, "60475K72_Washdown Set Screw Shaft Collar.SLDPRT" should be attached to allow the top plate, "top plate.SLDPRT", to rest on it. Then another shaft collar should be screwed on top of the top plate to fix it at that height. On the top plate, the angle part should first be attached
 
 
 ## 11. Starting SWARM System
