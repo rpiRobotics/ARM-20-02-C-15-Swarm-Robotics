@@ -60,27 +60,58 @@ To allow for control of multiple Husky robots using namespacing then the files f
 
 ## 4. Getting Power From Husky
 To get power from the Husky to power the industrial computer, first follow the instructions in the Husky-UGV-User-Manual.pdf found in readme_include/ in this directory to remove the metal cover on top of the robot to gain access to the enclosure below which should look as shown below:
+
+
   ![Robots](/readme_include/Husky_view.PNG)
-In there are three sets of connecting ports with 3 power and ground pins each, one that supplies 5V power, one at 12V and one at 24V, they all can source up to 5 A at maximum draw, which should be kept in mind while wiring into these ports. These husky ports are detachable, and for convenience should be removed from the Husky before wiring into them. A section is devoted to this in the husky manual which discusses how to use a screwdriver to add wires into the ports as shown below:
- ![Husky Power Ports](/husky_images/husky_power_wiring.PNG)
+
+
+Inside the enclosure there are three sets of connecting ports with 3 power and ground pins each, one that supplies 5V power, one that supplies 12V and one that supplies 24V, they all can source up to 5 A at maximum draw, which should be kept in mind while wiring into these ports. These husky ports are detachable, and for convenience should be removed from the Husky before wiring into them. A section is devoted to this in the husky manual which discusses how to use a screwdriver to add wires into the ports as shown below:
+
+
+![Husky Power Ports](/husky_images/husky_power_wiring.PNG)
+
+Whatever power plug is used to power the industrial PC that was purchased might need to be cut up and wired into the appropriate power port.
 ## 5. Mounting industrial computer inside Husky
-  
+The inside of the husky enclosure there has no readily available mounting holes, so to successfully mount into the enclosure a plate must be 3D printed or lasercut to fit snugly inside the space with mounting holes that match the industrial computer chosen. An example of this mounting plate can be seen here and a 3D model of this part is available in Husky_CAD_files as "computer mounting plate.SLDPRT".
+
+
+![Husky Power Ports](/husky_images/computer mounting plate.JPG)
+
+Depending on the form factor of the industrial PC chosen, the mounting holes in this plate may need to be modified. Before replacing the metal cover on the robot, make sure to plug in any USB extension modules as well as the USB-serial cable that connects the industrial PC into the Husky robot.
   
 ## 6. Attaching wifi module
-  
+After having inserted the industrial PC into the Husky, a USB wifi module should be mounted somewhere above the enclosure to limit interference from the metal cover of the robot. The wifi module can be mounted in any number of places, such as on the 3x3 tower strut, or on a 90 degree angle piece as shown below: 
+
+![Husky Power Ports](/husky_images/UWB brkt.JPG)
+
+You should verify the integrity of the wifi connection by attempting to SSH into the robot using the static IP address and user name specified during the Industrial PC setup process.
  
 ## 7. Attaching UWB sensors
-  
-  
-## 8. Hardware permissions
-  
-  
-## 9. USB port identifiers
+Attaching the UWB sensors involves using the same 90 degree angle part shown above, CAD for this part also exists in Husky_CAD_files as "UWB brkt.SLDPRT", these parts are meant to be mounted on 2 of the opposing corners of the Husky robot, since a minimum of two UWB sensors are needed to fully localize the robot in the workspace, as can be seen below: 
 
-  
-## 10. Taping Wheels
-  
-  
-## 11. Attaching mounting tower
+![Husky Power Ports](/husky_images/2021-08-04-11-36-37-490.jpg)
 
-## 12. Starting SWARM System
+The actual setup of the UWB modules is beyond the scope of these instructions, but documentation and usage guides for the UWB modules used can be found here:
+
+https://www.decawave.com/product/mdek1001-deployment-kit/
+
+In the context of the SWARM software used, it is important to remember to change the position of the tags relative to the center of the robot in the software. This is located in src/swarm_launch/config/husky_XXXX_sensor_fusion.yaml, the values tag_loc_front_x and tag_loc_front_y correspond to the value in meters of the offset between the location of the UWB tag and the center of the robot about which the robot moves. The software also assumes the tags to be at the same height, so they should be secured at the same height as much as possible. The tag location values can be found by measuring to the center of the robot and can be refined by testing and further calibration using the closed loop motion control. The ID of the tags should also be specified in that same file.
+  
+  
+## 8. USB port identifiers
+To guarantee the correct UWB sensor is addressed, go into the file src/swarm_launch/config/husky_XXX_uwb_XXXX.yaml, and set the value of serial_port in the file to be equal to the value of the path to the usb port of the UWB sensor. This can be found by running the following commands:
+
+`cd /dev/serial/by-path/`
+
+`ls`
+
+Then unplug the UWB sensor and call `ls` again, take note of which entry disappears, enter this entry into the yaml file as serial_port.
+  
+## 9. Taping Wheels
+  
+  
+## 10. Attaching mounting tower
+
+
+
+## 11. Starting SWARM System
