@@ -1,6 +1,10 @@
 # Husky Robot Setup Instructions
 ## 1. Industrial Computer Setup and Initial Software Install
-When speccing out an industrial computer for use with the Husky make sure that it can be powered by 12V or 24V without exceeding the 5A current limit that the Husky's outside power ports supply. The industrial computer should also have a suitable number of USB ports to accomodate the serial to USB interface and any other sensors or additional inputs you wish to include and should be capable of running a ROS compatible linux operating system, preferably Ubuntu 18. Setup for this computer should be done outside the robot and is dependent on the user's preference, but ideally the username chosen for the computer should match the chosen name of the robot, but a ROS compatible linux operating system should be installed and configured. ROS Melodic should also be installed and a catkin workspace created as described here: 
+When speccing out an industrial computer for use with the Husky make sure that it can be powered by 12V or 24V without exceeding the 5A current limit that the Husky's outside power ports supply. The industrial computer used in this project was purchased from Onlogic, specifically it was a Low Profile Fanless Industrial Computer With Apollo Lake, it's motherboard was an Intel Apollo Lake N3350 Industrial Motherboard with Single Gb LAN, Memory (RAM) 1 x 8 GB SO-DIMM DDR3L 1600, Primary Storage 1 x 256 GB mSATA SSD, with mounting brackets, with AC adapter. A link to purchase this industrial PC is here:
+
+https://www.onlogic.com/ml350g-10/
+
+The industrial computer should also have a suitable number of USB ports to accomodate the serial to USB interface and any other sensors or additional inputs you wish to include and should be capable of running a ROS compatible linux operating system, preferably Ubuntu 18. Setup for this computer should be done outside the robot and is dependent on the user's preference, but ideally the username chosen for the computer should match the chosen name of the robot, but a ROS compatible linux operating system should be installed and configured. ROS Melodic should also be installed and a catkin workspace created as described here: 
 
 http://wiki.ros.org/melodic/Installation/Ubuntu
 
@@ -95,8 +99,7 @@ The actual setup of the UWB modules is beyond the scope of these instructions, b
 
 https://www.decawave.com/product/mdek1001-deployment-kit/
 
-In the context of the SWARM software used, it is important to remember to change the position of the tags relative to the center of the robot in the software. This is located in src/swarm_launch/config/husky_XXXX_sensor_fusion.yaml, the values tag_loc_front_x and tag_loc_front_y correspond to the value in meters of the offset between the location of the UWB tag and the center of the robot about which the robot moves. The software also assumes the tags to be at the same height, so they should be secured at the same height as much as possible. The tag location values can be found by measuring to the center of the robot and can be refined by testing and further calibration using the closed loop motion control. The ID of the tags should also be specified in that same file. In addition, the anchor Z positions should be 
-  
+In the context of the SWARM software used, it is important to remember to change the position of the tags relative to the center of the robot in the software. This is located in src/swarm_launch/config/husky_XXXX_sensor_fusion.yaml, the values tag_loc_front_x and tag_loc_front_y correspond to the value in meters of the offset between the location of the UWB tag and the center of the robot about which the robot moves. The software also assumes the tags to be at the same height, so they should be secured at the same height as much as possible. The tag location values can be found by measuring to the center of the robot and can be refined by testing and further calibration using the closed loop motion control. The ID of the tags should also be specified in that same file. In addition, a last bit of anchor calibration is performed according to a Decawave white paper included in this repository under readme_include/APS014_Antennna-Delay-Calibration_V1.2.pdf, and the offsets of each tag should be put into antenna_calibration.yaml.
   
 ## 8. USB port identifiers
 To guarantee the correct UWB sensor is addressed, go into the file src/swarm_launch/config/husky_XXX_uwb_XXXX.yaml, and set the value of serial_port in the file to be equal to the value of the path to the usb port of the UWB sensor. This can be found by running the following commands:
@@ -121,3 +124,9 @@ The first step to assembling the Fabric Engagement tower is to bolt the part cal
 
 
 ## 11. Starting SWARM System
+After performing all the previous steps described, make sure that you have run all_devices_initial_setup.bash which should pull all necessary github repositories into the respective Huskies, if any updates need to be pulled, run all_devices_git_pull.bash. Then run all_devices_catkin_make.bash to build all the directories in the Huskies. Finally starting from catkin_ws, run the following commands:
+
+`cd src/ARM-20-02-C-15-Swarm-Robotics/src/swarm_launch/launch`
+`roslaunch swarm_all.launch`
+
+The Huskies should start, you should be able to run `rostopic list` and see all the corresponding topics related to each Husky robots with their correct namespacing, and in addition the communication light on the front of the Husky should have turned green to indicate that it is successfully communicating with the industrial computer. If either of these are not the case you should doublecheck that you followed the steps correctly, that you can ping the husky robot's ip address and SSH into it correctly, check all associated parameter files and make sure namespacing is consistent and that rosnodes are being started correctly. If you are having a particular issue with the code in this repository feel free to leave a github issue addressing the complaint with adequate detail as to the specifics of your issue.
