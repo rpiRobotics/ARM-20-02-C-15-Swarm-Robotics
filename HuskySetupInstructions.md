@@ -75,7 +75,7 @@ Whatever power plug is used to power the industrial PC that was purchased might 
 The inside of the husky enclosure there has no readily available mounting holes, so to successfully mount into the enclosure a plate must be 3D printed or lasercut to fit snugly inside the space with mounting holes that match the industrial computer chosen. An example of this mounting plate can be seen here and a 3D model of this part is available in Husky_CAD_files as "computer mounting plate.SLDPRT".
 
 
- ![Husky_computer_mounting_plate]("/husky_images/computer mounting plate.JPG")
+ ![Husky_computer_mounting_plate](/husky_images/computer%mounting%plate.JPG)
 
 Depending on the form factor of the industrial PC chosen, the mounting holes in this plate may need to be modified. Before replacing the metal cover on the robot, make sure to plug in any USB extension modules as well as the USB-serial cable that connects the industrial PC into the Husky robot.
   
