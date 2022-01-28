@@ -117,7 +117,7 @@ https://www.mcmaster.com/
 
 The first step to assembling the Fabric Engagement tower is to bolt the part called "lower plate.SLDPRT" to the surface of the Husky top metal cover on the side farthest from the battery hookup cover. Next the 3x3 piece of aluminum strut is attached to the lower plate, this piece of strut can have a variable height, but its CAD file is "3x3 x 23.SLDPRT". Next the part known as "brgplate.SLDPRT" is mounted to the side of the 3x3 aluminum strut facing toward the center of the robot. Next, two mounted ball bearing parts are attached to the brgplate, both should be "5913K61_Low-Profile Mounted Sealed Steel Ball Bearing.SLDPRT". Then a half inch diameter aluminum shaft, "shaft.SLDPRT" should be inserted into both ball bearing mounts and fixed using the set screws on both mounts. Then, at the desired height, a washdown set screw shaft collar, "60475K72_Washdown Set Screw Shaft Collar.SLDPRT" should be attached to allow the top plate, "top plate.SLDPRT", to rest on it. Then another shaft collar should be screwed on top of the top plate to fix it at that height. On the top plate, the angle part, "angle.SLDPRT" should first be attached, the angle part has channels so that it can be moved along the plate and fixed in desired positions. Next, both of the threaded stud bumpers, "9541K37_Threaded-Stud Bumper.SLDPRT" should be screwed onto the front of their respective clamps, "6124A21_Toggle Clamp with Locking Handle.SLDPRT". both clamps should then be attached to the top plate. The end result should look as shown below: 
 
-![Husky Fabric Engagement tower](/husky_images/Husky%20fabric%20engagement%202.JPG)
+![Husky Fabric Engagement tower](/husky_images/Husky%20fabric%20engagement_2.JPG)
 
 
 ## 11. Starting SWARM System
