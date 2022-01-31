@@ -127,6 +127,7 @@ The first step to assembling the Fabric Engagement tower is to bolt the part cal
 After performing all the previous steps described, make sure that you have run all_devices_initial_setup.bash which should pull all necessary github repositories into the respective Huskies, if any updates need to be pulled, run all_devices_git_pull.bash. Then run all_devices_catkin_make.bash to build all the directories in the Huskies. Finally starting from catkin_ws, run the following commands:
 
 `cd src/ARM-20-02-C-15-Swarm-Robotics/src/swarm_launch/launch`
+
 `roslaunch swarm_all.launch`
 
 The Huskies should start, you should be able to run `rostopic list` and see all the corresponding topics related to each Husky robot with their correct namespacing, and in addition the communication light on the front of the Husky should have turned green to indicate that it is successfully communicating with the industrial computer. If either of these are not the case you should doublecheck that you followed the steps correctly, that you can ping the husky robot's ip address and SSH into it correctly, check all associated parameter files and make sure namespacing is consistent and that rosnodes are being started correctly. If you are having a particular issue with the code in this repository feel free to leave a github issue addressing the complaint with adequate detail as to the specifics of your issue.
