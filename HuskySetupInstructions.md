@@ -86,7 +86,7 @@ The inside of the husky enclosure has no readily available mounting holes, so to
 
  ![Husky_computer_mounting_plate](/husky_images/computer%20mounting%20plate_2.JPG)
 
-Depending on the form factor of the industrial PC chosen, the mounting holes in this plate may need to be modified. Before replacing the metal cover on the robot, make sure to plug in any USB extension modules as well as the USB-serial cable that connects the industrial PC into the Husky robot.
+Depending on the form factor of the industrial PC chosen, the mounting hole positions in this plate will need to be modified. Before replacing the metal cover on the robot, make sure to plug in any USB extension modules as well as the USB-serial cable that connects the industrial PC into the Husky robot.
   
 ## 6. Attaching wifi module
 After having inserted the industrial PC into the Husky, a USB wifi module should be mounted somewhere above the enclosure to limit interference from the metal cover of the robot. The wifi module can be mounted in any number of places, such as on the 3x3 tower strut, or on a 90 degree angle piece as shown below: 
