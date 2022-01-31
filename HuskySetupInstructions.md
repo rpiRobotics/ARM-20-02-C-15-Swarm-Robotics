@@ -81,7 +81,7 @@ The inside of the husky enclosure has no readily available mounting holes, so to
 
  ![Husky_drill holes](/husky_images/Husky%20side%20panel%20modification.JPG)
  
- With more precise hole positions available in /Husky_CAD_files/computer mounting plate.SLDPRT. After these holes are drilled then aluminum strut can be installed inside the Husky enclosure. Finally a plate must be 3D printed or lasercut to fit snugly inside the space with mounting holes that match the industrial computer chosen. An example of this mounting plate can be seen here and a 3D model of this part is available in Husky_CAD_files as "computer mounting plate.SLDPRT". This part can then be bolted to the aluminum strut that was installed previously.
+ With more precise hole positions available in /Husky_CAD_files/Husky side panel modification.SLDPRT. After these holes are drilled then aluminum strut can be installed inside the Husky enclosure. Finally a plate must be 3D printed or lasercut to fit snugly inside the space with mounting holes that match the industrial computer chosen. An example of this mounting plate can be seen here and a 3D model of this part is available in Husky_CAD_files as "computer mounting plate.SLDPRT". This part can then be bolted to the aluminum strut that was installed previously.
 
 
  ![Husky_computer_mounting_plate](/husky_images/computer%20mounting%20plate_2.JPG)
